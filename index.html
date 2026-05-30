@@ -79,7 +79,7 @@
             padding: 18px 24px;
             margin-bottom: 30px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            <div class="energy-counter" id="energyCounter" style="margin-top: 12px; font-size: 0.9rem; font-weight: bold;">⚡ Всего энергетиков: 0</div>
+            <div class="energy-counter" id="energyCounter" style="margin-top: 12px; font-size: 0.9rem; font-weight: bold;"> Всего энергетиков: 0</div>
         }
         .energy-counter {
             background: #eef2ff;
@@ -435,7 +435,7 @@
 <div class="app-container">
     <div class="header">
         <div class="logo">
-            <h1>⚡ энергетический сомелье IVAN ⚡</h1>
+            <h1> энергетический сомелье IVAN </h1>
             <p>облачная коллекция — доступ с любого устройства</p>
         </div>
         <div style="display: flex; gap: 12px; align-items: center;">
@@ -445,22 +445,22 @@
     </div>
 
    <div class="filters-panel">
-    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию...">
+    <input type="text" id="searchInput" class="search-input" placeholder=" Поиск по названию...">
     <div class="sort-section">
-        <span>📊 Сортировка:</span>
+        <span> Сортировка:</span>
         <div class="sort-buttons">
             <button data-sort="desc" class="sort-btn active">⬇️ По убыванию</button>
             <button data-sort="asc" class="sort-btn">⬆️ По возрастанию</button>
         </div>
     </div>
     <div class="tags-filter">
-        <span>🏷️ Фильтр по тегам:</span>
+        <span> Фильтр по тегам:</span>
         <div class="filter-tags-group" id="filterTagsContainer"></div>
         <button class="reset-filters" id="resetFiltersBtn">Сбросить</button>
     </div>
     <div class="sync-status" id="syncStatus">☁️ Синхронизация с облаком...</div>
     <!-- НОВЫЙ СЧЁТЧИК -->
-    <div class="energy-counter" id="energyCounter">⚡ Всего энергетиков: 0</div>
+    <div class="energy-counter" id="energyCounter"> Всего энергетиков: 0</div>
 </div>
 
     <div id="cardsContainer" class="cards-grid"></div>
@@ -479,7 +479,7 @@
     <button type="submit" class="submit-btn">➕ Добавить</button>
 </form></div></div>
 
-<div id="editModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeEditModal">&times;</button><h2>✏️ Редактировать</h2>
+<div id="editModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeEditModal">&times;</button><h2> Редактировать</h2>
 <form id="editDrinkForm">
     <input type="hidden" id="editDrinkId">
     <div class="form-group"><label>Название</label><input type="text" id="editName" required></div>
@@ -722,9 +722,9 @@ function applyFiltersAndRender() {
     const counter = document.getElementById('energyCounter');
     if (counter) {
         if (shown === total) {
-            counter.innerHTML = `⚡ Всего энергетиков: ${total}`;
+            counter.innerHTML = ` Всего энергетиков: ${total}`;
         } else {
-            counter.innerHTML = `🔍 Показано: ${shown} из ${total}`;
+            counter.innerHTML = ` Показано: ${shown} из ${total}`;
         }
     }
 }
