@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Энергетический сомелье Ivan | Облачная коллекция</title>
+    <!-- Firebase SDK (обязательно) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            color: #1e2a3e;
+            padding: 24px 20px;
+        }
+
+        .app-container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 28px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 32px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+        }
+
+        .logo h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #2ecc71, #f1c40f);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 3px 3px 0 #1a2a1a;
+            font-family: 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            transform: skew(-2deg);
+        }
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+            margin-top: 4px;
+        }
+
+        .btn-plus {
+            background: #2b7a4b;
+            border: none;
+            width: 52px;
+            height: 52px;
+            border-radius: 30px;
+            font-size: 36px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .btn-plus:hover { background: #1f5f3a; transform: scale(0.96); }
+
+        .filters-panel {
+            background: white;
+            border-radius: 28px;
+            padding: 18px 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 48px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        .sort-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .sort-buttons { display: flex; gap: 12px; }
+        .sort-btn {
+            background: #edf2f7;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .sort-btn.active { background: #2b7a4b; color: white; }
+
+        .tags-filter {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+        }
+        .filter-tags-group { display: flex; flex-wrap: wrap; gap: 12px; }
+        .filter-tag {
+            background: #edf2f7;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .filter-tag.selected { background: #f4a261; color: white; }
+        .reset-filters {
+            background: #e2e8f0;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        .drink-card {
+            background: white;
+            border-radius: 28px;
+            display: flex;
+            padding: 16px;
+            gap: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+        }
+        .drink-card:hover { transform: translateY(-4px); }
+        .card-img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            background: #f8fafc;
+            border-radius: 16px;
+        }
+        .card-info { flex: 1; }
+        .card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+        .tags-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .tags-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag-badge {
+            background: #eef2ff;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+        .rating-value {
+            background: #fef9e3;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #b45309;
+        }
+
+        /* Модальные окна */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            border-radius: 36px;
+            overflow-y: auto;
+            padding: 24px 28px;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            font-size: 28px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .detail-layout { display: flex; flex-wrap: wrap; gap: 28px; }
+        .detail-img img {
+            width: 100%;
+            max-width: 260px;
+            object-fit: contain;
+            border-radius: 24px;
+            background: #f8fafc;
+        }
+        .taste-block {
+            background: #fff3e0;
+            padding: 12px 16px;
+            border-radius: 24px;
+            margin: 12px 0;
+            border-left: 4px solid #f4a261;
+        }
+        .detail-description {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 24px;
+            margin-top: 12px;
+        }
+        .action-buttons { display: flex; gap: 16px; margin-top: 24px; }
+        .edit-button, .delete-button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .edit-button { background: #3182ce; color: white; }
+        .delete-button { background: #e53e3e; color: white; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { font-weight: 600; display: block; margin-bottom: 8px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 24px;
+            border: 1px solid #cbd5e1;
+        }
+        .tags-checkboxes { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
+        .tag-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 40px;
+        }
+        .file-preview { margin-top: 10px; max-width: 120px; }
+        .file-preview img { width: 100%; border-radius: 16px; }
+        .submit-btn {
+            background: #2b7a4b;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 40px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            background: white;
+            border-radius: 40px;
+            color: #5a6e7c;
+        }
+        .sync-status {
+            font-size: 0.7rem;
+            color: #2b7a4b;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        @media (max-width: 600px) {
+            .drink-card { flex-direction: column; align-items: center; text-align: center; }
+            .card-img { width: 120px; height: 120px; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <div class="logo">
+            <h1>⚡ энергетический сомелье IVAN ⚡</h1>
+            <p>облачная коллекция — доступ с любого устройства</p>
+        </div>
+        <button class="btn-plus" id="openAddModalBtn">+</button>
+    </div>
+
+    <div class="filters-panel">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию...">
+        <div class="sort-section">
+            <span>📊 Сортировка:</span>
+            <div class="sort-buttons">
+                <button data-sort="desc" class="sort-btn active">⬇️ По убыванию</button>
+                <button data-sort="asc" class="sort-btn">⬆️ По возрастанию</button>
+            </div>
+        </div>
+        <div class="tags-filter">
+            <span>🏷️ Фильтр по тегам:</span>
+            <div class="filter-tags-group" id="filterTagsContainer"></div>
+            <button class="reset-filters" id="resetFiltersBtn">Сбросить</button>
+        </div>
+        <div class="sync-status" id="syncStatus">☁️ Синхронизация с облаком...</div>
+    </div>
+
+    <div id="cardsContainer" class="cards-grid"></div>
+</div>
+
+<!-- Модальные окна -->
+<div id="detailModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeDetailModal">&times;</button><div id="detailContent"></div></div></div>
+<div id="addModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeAddModal">&times;</button><h2>✨ Добавить энергетик</h2>
+<form id="addDrinkForm">
+    <div class="form-group"><label>Название *</label><input type="text" id="drinkName" required placeholder="Monster Mango"></div>
+    <div class="form-group"><label>Фото (с компьютера)</label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
+    <div class="form-group"><label>Оценка *</label><select id="drinkRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3" selected>3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
+    <div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required placeholder="сладкий с кислинкой"></div>
+    <div class="form-group"><label>Теги</label><div id="tagsCheckboxes" class="tags-checkboxes"></div></div>
+    <div class="form-group"><label>Описание</label><textarea id="drinkDescription" rows="3"></textarea></div>
+    <button type="submit" class="submit-btn">➕ Добавить</button>
+</form></div></div>
+
+<div id="editModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeEditModal">&times;</button><h2>✏️ Редактировать</h2>
+<form id="editDrinkForm">
+    <input type="hidden" id="editDrinkId">
+    <div class="form-group"><label>Название</label><input type="text" id="editName" required></div>
+    <div class="form-group"><label>Фото</label><input type="file" id="editImageFile" accept="image/*"><div id="editImagePreview" class="file-preview"></div></div>
+    <div class="form-group"><label>Оценка</label><select id="editRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
+    <div class="form-group"><label>Вкус</label><input type="text" id="editTaste" required></div>
+    <div class="form-group"><label>Теги</label><div id="editTagsCheckboxes" class="tags-checkboxes"></div></div>
+    <div class="form-group"><label>Описание</label><textarea id="editDescription" rows="3"></textarea></div>
+    <button type="submit" class="submit-btn">💾 Сохранить</button>
+</form></div></div>
+
+<script>
+    // ================= ВАШИ ДАННЫЕ ИЗ FIREBASE =================
+    // ⚠️ Скопируйте сюда объект firebaseConfig из консоли Firebase
+    const firebaseConfig = {
+        apiKey: "ВАШ_API_KEY",
+        authDomain: "ВАШ_AUTH_DOMAIN",
+        projectId: "ВАШ_PROJECT_ID",
+        storageBucket: "ВАШ_STORAGE_BUCKET",
+        messagingSenderId: "ВАШ_SENDER_ID",
+        appId: "ВАШ_APP_ID"
+    };
+    // ============================================================
+
+    // Инициализация Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ----- ТЕГИ (как вы просили) -----
+    const AVAILABLE_TAGS = [
+        { emoji: "🚫", name: "Без сахара" }, { emoji: "🍬", name: "С сахаром" },
+        { emoji: "🥤", name: "Оригинальный" }, { emoji: "🍇", name: "Обычные фрукты" },
+        { emoji: "🌴", name: "Экзотический" }, { emoji: "⭐", name: "Эксклюзив" },
+        { emoji: "🍋", name: "Кислый" }, { emoji: "🍰", name: "Сладкий" },
+        { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" },
+        { emoji: "❓", name: "Не пробовал" }
+    ];
+
+    let energyDrinks = [];
+    let currentSort = "desc";
+    let selectedFilterTags = [];
+    let searchQuery = "";
+    let unsubscribe = null;
+
+    // DOM-элементы
+    const cardsContainer = document.getElementById('cardsContainer');
+    const filterTagsContainer = document.getElementById('filterTagsContainer');
+    const sortDescBtn = document.querySelector('[data-sort="desc"]');
+    const sortAscBtn = document.querySelector('[data-sort="asc"]');
+    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+    const searchInput = document.getElementById('searchInput');
+    const syncStatus = document.getElementById('syncStatus');
+
+    // Подключение к Firestore (реальное время)
+    function connectToFirestore() {
+        if (unsubscribe) unsubscribe();
+        syncStatus.innerHTML = '<span>🔄</span> Загрузка данных...';
+        unsubscribe = db.collection('energydrinks')
+            .orderBy('createdAt', 'desc')
+            .onSnapshot((snapshot) => {
+                energyDrinks = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    energyDrinks.push({
+                        id: doc.id,
+                        name: data.name,
+                        imageData: data.imageData || null,
+                        tags: data.tags || [],
+                        rating: data.rating || 3,
+                        taste: data.taste || "не указан",
+                        description: data.description || "Нет описания"
+                    });
+                });
+                syncStatus.innerHTML = '<span>✅</span> Синхронизировано с облаком';
+                setTimeout(() => {
+                    if (syncStatus.innerHTML.includes('Синхронизировано'))
+                        syncStatus.innerHTML = '<span>☁️</span> Данные в облаке';
+                }, 2000);
+                applyFiltersAndRender();
+            }, (error) => {
+                console.error("Firestore error:", error);
+                syncStatus.innerHTML = '<span>⚠️</span> Ошибка подключения, проверьте интернет и настройки Firebase';
+            });
+    }
+
+    // CRUD-операции с Firebase
+    async function addToFirestore(drink) {
+        try {
+            await db.collection('energydrinks').add({
+                ...drink,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            return true;
+        } catch(e) { alert("Ошибка сохранения: "+e.message); return false; }
+    }
+    async function updateInFirestore(id, drink) {
+        try {
+            await db.collection('energydrinks').doc(id).update(drink);
+            return true;
+        } catch(e) { alert("Ошибка обновления: "+e.message); return false; }
+    }
+    async function deleteFromFirestore(id) {
+        try {
+            await db.collection('energydrinks').doc(id).delete();
+            return true;
+        } catch(e) { alert("Ошибка удаления: "+e.message); return false; }
+    }
+
+    // Вспомогательные функции
+    function renderTagCheckboxes(container, selectedTags = []) {
+        container.innerHTML = '';
+        AVAILABLE_TAGS.forEach(tag => {
+            const label = document.createElement('label');
+            label.className = 'tag-check';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = tag.name;
+            if (selectedTags.includes(tag.name)) cb.checked = true;
+            const span = document.createElement('span');
+            span.innerText = `${tag.emoji} ${tag.name}`;
+            label.appendChild(cb);
+            label.appendChild(span);
+            container.appendChild(label);
+        });
+    }
+    function getSelectedTagsFromContainer(container) {
+        return Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    }
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+    function getImageSrc(drink) {
+        return drink.imageData || "https://via.placeholder.com/200?text=Нет+фото";
+    }
+
+    // Добавление
+    async function addNewDrink(event) {
+        event.preventDefault();
+        const name = document.getElementById('drinkName').value.trim();
+        const rating = parseFloat(document.getElementById('drinkRating').value);
+        const taste = document.getElementById('drinkTaste').value.trim();
+        const description = document.getElementById('drinkDescription').value.trim() || "Нет описания";
+        const selectedTags = getSelectedTagsFromContainer(tagsCheckboxesDiv);
+
+        if (!name) { alert("Введите название"); return; }
+        if (!taste) { alert("Укажите вкус"); return; }
+        if (selectedTags.length === 0) { alert("Выберите хотя бы один тег"); return; }
+
+        let imageData = selectedImageBase64;
+        const success = await addToFirestore({ name, imageData, tags: selectedTags, rating, taste, description });
+        if (success) {
+            addModal.classList.remove('active');
+            addDrinkForm.reset();
+            selectedImageBase64 = null;
+            imagePreviewDiv.innerHTML = '';
+            renderTagCheckboxes(tagsCheckboxesDiv, []);
+            searchQuery = ""; searchInput.value = "";
+            resetFiltersAndSort();
+        }
+    }
+
+    // Редактирование
+    function openEditModal(drink) {
+        document.getElementById('editDrinkId').value = drink.id;
+        document.getElementById('editName').value = drink.name;
+        document.getElementById('editRating').value = drink.rating;
+        document.getElementById('editTaste').value = drink.taste || "";
+        document.getElementById('editDescription').value = drink.description || "";
+        renderTagCheckboxes(editTagsCheckboxesDiv, drink.tags || []);
+        editImagePreviewDiv.innerHTML = '';
+        editSelectedImageBase64 = null;
+        if (drink.imageData) {
+            const img = document.createElement('img');
+            img.src = drink.imageData;
+            img.style.maxWidth = '100px';
+            img.style.borderRadius = '16px';
+            editImagePreviewDiv.appendChild(img);
+        }
+        editModal.classList.add('active');
+    }
+
+    async function saveEdit(event) {
+        event.preventDefault();
+        const id = document.getElementById('editDrinkId').value;
+        const name = document.getElementById('editName').value.trim();
+        const rating = parseFloat(document.getElementById('editRating').value);
+        const taste = document.getElementById('editTaste').value.trim();
+        const description = document.getElementById('editDescription').value.trim() || "Нет описания";
+        const selectedTags = getSelectedTagsFromContainer(editTagsCheckboxesDiv);
+        if (!name) { alert("Введите название"); return; }
+        if (!taste) { alert("Укажите вкус"); return; }
+        if (selectedTags.length === 0) { alert("Выберите хотя бы один тег"); return; }
+
+        let imageData = editSelectedImageBase64;
+        if (!imageData) {
+            const existing = energyDrinks.find(d => d.id === id);
+            if (existing) imageData = existing.imageData;
+        }
+        const success = await updateInFirestore(id, { name, imageData, tags: selectedTags, rating, taste, description });
+        if (success) {
+            editModal.classList.remove('active');
+            detailModal.classList.remove('active');
+        }
+    }
+
+    async function deleteDrink(drinkId) {
+        if (confirm("Удалить энергетик навсегда? Он исчезнет на всех устройствах.")) {
+            await deleteFromFirestore(drinkId);
+            detailModal.classList.remove('active');
+        }
+    }
+
+    // Фильтрация и рендер
+    function filterDrinks(drinks) {
+        let result = [...drinks];
+        if (searchQuery.trim()) {
+            const lower = searchQuery.toLowerCase();
+            result = result.filter(d => d.name.toLowerCase().includes(lower));
+        }
+        if (selectedFilterTags.length) {
+            result = result.filter(d => selectedFilterTags.every(tag => d.tags.includes(tag)));
+        }
+        return result;
+    }
+    function sortDrinks(drinks) {
+        const sorted = [...drinks];
+        if (currentSort === 'desc') sorted.sort((a,b) => b.rating - a.rating);
+        else sorted.sort((a,b) => a.rating - b.rating);
+        return sorted;
+    }
+    function applyFiltersAndRender() {
+        const filtered = filterDrinks(energyDrinks);
+        const sorted = sortDrinks(filtered);
+        renderCards(sorted);
+    }
+
+    function renderCards(drinksArray) {
+        if (!drinksArray.length) {
+            cardsContainer.innerHTML = `<div class="empty-message">🧃 Добавьте первый энергетик через кнопку «+». Данные будут в облаке и на всех устройствах.</div>`;
+            return;
+        }
+        cardsContainer.innerHTML = drinksArray.map(drink => `
+            <div class="drink-card" data-id="${drink.id}">
+                <img class="card-img" src="${getImageSrc(drink)}" alt="${drink.name}" onerror="this.src='https://via.placeholder.com/100?text=Ошибка'">
+                <div class="card-info">
+                    <div class="card-title">${escapeHtml(drink.name)}</div>
+                    <div class="tags-row">
+                        <div class="tags-list">
+                            ${drink.tags.map(tag => {
+                                const obj = AVAILABLE_TAGS.find(t => t.name === tag);
+                                const display = obj ? `${obj.emoji} ${obj.name}` : tag;
+                                return `<span class="tag-badge">${escapeHtml(display)}</span>`;
+                            }).join('')}
+                        </div>
+                        <div class="rating-value">⭐ ${drink.rating.toFixed(1)}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        document.querySelectorAll('.drink-card').forEach(card => {
+            const id = card.getAttribute('data-id');
+            card.addEventListener('click', () => {
+                const drink = energyDrinks.find(d => d.id === id);
+                if (drink) openDetailModal(drink);
+            });
+        });
+    }
+
+    function openDetailModal(drink) {
+        const tagSpans = drink.tags.map(tag => {
+            const obj = AVAILABLE_TAGS.find(t => t.name === tag);
+            const display = obj ? `${obj.emoji} ${obj.name}` : tag;
+            return `<span class="tag-badge">${escapeHtml(display)}</span>`;
+        }).join('');
+        document.getElementById('detailContent').innerHTML = `
+            <div class="detail-layout">
+                <div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280?text=Ошибка'"></div>
+                <div class="detail-info">
+                    <h2>${escapeHtml(drink.name)}</h2>
+                    <div class="detail-tags">${tagSpans}</div>
+                    <div style="font-size:1.5rem; font-weight:600;">⭐ ${drink.rating.toFixed(1)} / 5</div>
+                    <div class="taste-block">👅 Вкус: ${escapeHtml(drink.taste)}</div>
+                    <div class="detail-description">📝 ${escapeHtml(drink.description)}</div>
+                    <div class="action-buttons">
+                        <button class="edit-button" id="editDrinkBtn">✏️ Изменить</button>
+                        <button class="delete-button" id="deleteDrinkBtn">🗑️ Удалить</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        detailModal.classList.add('active');
+        document.getElementById('editDrinkBtn')?.addEventListener('click', () => {
+            detailModal.classList.remove('active');
+            openEditModal(drink);
+        });
+        document.getElementById('deleteDrinkBtn')?.addEventListener('click', () => deleteDrink(drink.id));
+    }
+
+    function renderFilterTags() {
+        filterTagsContainer.innerHTML = '';
+        AVAILABLE_TAGS.forEach(tag => {
+            const span = document.createElement('span');
+            span.className = 'filter-tag';
+            if (selectedFilterTags.includes(tag.name)) span.classList.add('selected');
+            span.innerText = `${tag.emoji} ${tag.name}`;
+            span.addEventListener('click', () => {
+                if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
+                else selectedFilterTags.push(tag.name);
+                renderFilterTags();
+                applyFiltersAndRender();
+            });
+            filterTagsContainer.appendChild(span);
+        });
+    }
+
+    function resetFiltersAndSort() {
+        currentSort = "desc";
+        selectedFilterTags = [];
+        searchQuery = "";
+        searchInput.value = "";
+        sortDescBtn.classList.add('active');
+        sortAscBtn.classList.remove('active');
+        renderFilterTags();
+        applyFiltersAndRender();
+    }
+
+    // Предпросмотр фото
+    let selectedImageBase64 = null;
+    let editSelectedImageBase64 = null;
+    const drinkImageFile = document.getElementById('drinkImageFile');
+    const imagePreviewDiv = document.getElementById('imagePreview');
+    const editImageFile = document.getElementById('editImageFile');
+    const editImagePreviewDiv = document.getElementById('editImagePreview');
+
+    drinkImageFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) { selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; return; }
+        const reader = new FileReader();
+        reader.onload = (ev) => { selectedImageBase64 = ev.target.result; imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
+        reader.readAsDataURL(file);
+    });
+    editImageFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) { editSelectedImageBase64 = null; editImagePreviewDiv.innerHTML = ''; return; }
+        const reader = new FileReader();
+        reader.onload = (ev) => { editSelectedImageBase64 = ev.target.result; editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
+        reader.readAsDataURL(file);
+    });
+
+    // Закрытие модалок
+    const addModal = document.getElementById('addModal');
+    const detailModalEl = document.getElementById('detailModal');
+    const editModalEl = document.getElementById('editModal');
+    function closeModals() {
+        detailModalEl.classList.remove('active');
+        addModal.classList.remove('active');
+        editModalEl.classList.remove('active');
+    }
+    document.getElementById('closeAddModal').onclick = closeModals;
+    document.getElementById('closeDetailModal').onclick = closeModals;
+    document.getElementById('closeEditModal').onclick = closeModals;
+    window.onclick = (e) => { if (e.target === addModal || e.target === editModalEl || e.target === detailModalEl) closeModals(); };
+    document.getElementById('openAddModalBtn').onclick = () => addModal.classList.add('active');
+
+    // Сортировка и сброс
+    sortDescBtn.onclick = () => { currentSort = 'desc'; sortDescBtn.classList.add('active'); sortAscBtn.classList.remove('active'); applyFiltersAndRender(); };
+    sortAscBtn.onclick = () => { currentSort = 'asc'; sortAscBtn.classList.add('active'); sortDescBtn.classList.remove('active'); applyFiltersAndRender(); };
+    resetFiltersBtn.onclick = resetFiltersAndSort;
+    searchInput.oninput = (e) => { searchQuery = e.target.value; applyFiltersAndRender(); };
+
+    // Инициализация
+    const tagsCheckboxesDiv = document.getElementById('tagsCheckboxes');
+    const editTagsCheckboxesDiv = document.getElementById('editTagsCheckboxes');
+    const addDrinkForm = document.getElementById('addDrinkForm');
+    const editDrinkForm = document.getElementById('editDrinkForm');
+
+    renderTagCheckboxes(tagsCheckboxesDiv, []);
+    renderTagCheckboxes(editTagsCheckboxesDiv, []);
+    renderFilterTags();
+    connectToFirestore();
+
+    addDrinkForm.addEventListener('submit', addNewDrink);
+    editDrinkForm.addEventListener('submit', saveEdit);
+</script>
+</body>
+</html>
