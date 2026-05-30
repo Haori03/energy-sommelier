@@ -526,27 +526,9 @@
         messagingSenderId: "735189971999",
         appId: "1:735189971999:web:bf662f3add5b5967ae912a"
     };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    if (typeof firebaseConfig === 'undefined') {
-        console.warn("⚠️ Firebase не настроен. Укажите firebaseConfig для работы облачной коллекции.");
-        // Создаём фиктивный объект, чтобы не ломать скрипт полностью (firebase не инициализируется)
-        var firebaseConfig = { projectId: "demo", apiKey: "demo" };
-    }
-
-    // Инициализация Firebase (только если есть конфиг, и он не демо-заглушка)
-    let db = null;
-    let firestoreAvailable = false;
-    try {
-        if (firebaseConfig && firebaseConfig.apiKey !== "demo") {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            firestoreAvailable = true;
-        } else {
-            console.warn("Демо-режим: Firebase не подключена, но интерфейс работает. Добавьте реальный конфиг для синхронизации.");
-        }
-    } catch(e) {
-        console.error("Ошибка инициализации Firebase:", e);
-    }
 
     // ----- ТЕГИ (фиксированный набор) -----
     const AVAILABLE_TAGS = [
