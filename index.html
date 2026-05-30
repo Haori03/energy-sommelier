@@ -9,6 +9,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
+    /* Библиотека удаления фона*/
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.0/dist/background-removal.umd.js"></script>
         * {
             margin: 0;
             padding: 0;
@@ -766,19 +768,105 @@
     const editImageFile = document.getElementById('editImageFile');
     const editImagePreviewDiv = document.getElementById('editImagePreview');
 
-    drinkImageFile.addEventListener('change', (e) => {
+    // Обработчик выбора фото с АВТОМАТИЧЕСКИМ удалением фона
+    drinkImageFile.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (!file) { selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; return; }
-        const reader = new FileReader();
-        reader.onload = (ev) => { selectedImageBase64 = ev.target.result; imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
-        reader.readAsDataURL(file);
+        if (!file) {
+            selectedImageBase64 = null;
+            imagePreviewDiv.innerHTML = '';
+            return;
+        }
+        
+        // Показываем индикатор загрузки
+        imagePreviewDiv.innerHTML = '<div style="background:#e2e8f0; padding:10px; border-radius:16px;">🔄 Удаление фона... (20-30 секунд)</div>';
+        
+        try {
+            // Создаём временную ссылку на фото для обработки
+            const imageUrl = URL.createObjectURL(file);
+            
+            // Создаём HTMLImageElement
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            
+            // Ждём загрузки изображения
+            await new Promise((resolve) => {
+                img.onload = resolve;
+            });
+            
+            // Удаляем фон
+            const blobWithoutBg = await window.removeBackground(img);
+            
+            // Конвертируем blob в base64
+            const reader = new FileReader();
+            const base64 = await new Promise((resolve) => {
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blobWithoutBg);
+            });
+            
+            selectedImageBase64 = base64;
+            
+            // Показываем превью с прозрачным фоном (будет белый или серый, но без заднего плана)
+            imagePreviewDiv.innerHTML = `
+                <div style="position: relative;">
+                    <img src="${selectedImageBase64}" style="max-width:120px; border-radius:16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="font-size:11px; text-align:center; margin-top:5px; color:#2b7a4b;">✅ Фон удалён!</div>
+                </div>
+            `;
+            
+            // Очищаем временную ссылку
+            URL.revokeObjectURL(imageUrl);
+            
+        } catch (error) {
+            console.error('Ошибка удаления фона:', error);
+            imagePreviewDiv.innerHTML = '<div style="color:red;">❌ Ошибка удаления фона, используем оригинал</div>';
+            
+            // Если не получилось удалить фон - используем оригинал
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                selectedImageBase64 = ev.target.result;
+                imagePreviewDiv.innerHTML += `<img src="${selectedImageBase64}" style="max-width:100px; border-radius:16px; margin-top:5px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
     });
-    editImageFile.addEventListener('change', (e) => {
+    // Обработчик для редактирования с удалением фона
+    editImageFile.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (!file) { editSelectedImageBase64 = null; editImagePreviewDiv.innerHTML = ''; return; }
-        const reader = new FileReader();
-        reader.onload = (ev) => { editSelectedImageBase64 = ev.target.result; editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
-        reader.readAsDataURL(file);
+        if (!file) {
+            editSelectedImageBase64 = null;
+            editImagePreviewDiv.innerHTML = '';
+            return;
+        }
+        
+        editImagePreviewDiv.innerHTML = '<div style="background:#e2e8f0; padding:10px; border-radius:16px;">🔄 Удаление фона...</div>';
+        
+        try {
+            const imageUrl = URL.createObjectURL(file);
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            await new Promise((resolve) => { img.onload = resolve; });
+            
+            const blobWithoutBg = await window.removeBackground(img);
+            const reader = new FileReader();
+            const base64 = await new Promise((resolve) => {
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blobWithoutBg);
+            });
+            
+            editSelectedImageBase64 = base64;
+            editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:120px; border-radius:16px;"><div style="font-size:11px; text-align:center; margin-top:5px;">✅ Без фона</div>`;
+            URL.revokeObjectURL(imageUrl);
+            
+        } catch (error) {
+            console.error('Ошибка удаления фона:', error);
+            editImagePreviewDiv.innerHTML = '<div style="color:red;">❌ Ошибка, используем оригинал</div>';
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                editSelectedImageBase64 = ev.target.result;
+                editImagePreviewDiv.innerHTML += `<img src="${editSelectedImageBase64}" style="max-width:100px; border-radius:16px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
     });
 
     // Закрытие модалок
