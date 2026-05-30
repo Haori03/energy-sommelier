@@ -389,6 +389,8 @@
         
         document.body.classList.remove('dark-mode');
         themeToggle.textContent = '🌙';
+        const logo = document.getElementById('logoImage');
+        if (logo) logo.src = 'logo-light.png';
         
         if (themeToggle) {
             themeToggle.addEventListener('click', toggleTheme);
@@ -429,15 +431,35 @@
     body.dark-mode .form-group label {
         color: #cbd5e1;
     }
+    .logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    }
+    .logo p {
+        font-size: 0.8rem;
+        color: #5a6e7c;
+        margin-top: 0;
+    }
+    body.dark-mode .logo p {
+        color: #94a3b8;
+    }
+    @media (max-width: 600px) {
+        .logo {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
     </style>
 </head>
 <body>
 <div class="app-container">
     <div class="header">
-        <div class="logo">
-            <h1> энергетический сомелье IVAN </h1>
-            <p>облачная коллекция — доступ с любого устройства</p>
-        </div>
+    <div class="logo">
+        <img id="logoImage" src="logo-light.png" alt="Энергетический сомелье Ivan" style="height: 60px; width: auto; object-fit: contain;">
+        <p>облачная коллекция — доступ с любого устройства</p>
+    </div>
         <div style="display: flex; gap: 12px; align-items: center;">
             <button class="theme-toggle" id="themeToggle" style="background: #f1f5f9; border: none; width: 52px; height: 52px; border-radius: 30px; font-size: 28px; cursor: pointer;">🌙</button>
             <button class="btn-plus" id="openAddModalBtn">+</button>
@@ -881,12 +903,16 @@ function applyFiltersAndRender() {
     
     const toggleTheme = () => {
         const isDark = document.body.classList.contains('dark-mode');
+        const logo = document.getElementById('logoImage');
+        
         if (isDark) {
             document.body.classList.remove('dark-mode');
             themeToggle.textContent = '🌙';
+            if (logo) logo.src = 'logo-light.png';  // Меняем на светлый лого
         } else {
             document.body.classList.add('dark-mode');
             themeToggle.textContent = '☀️';
+            if (logo) logo.src = 'logo-dark.png';   // Меняем на тёмный лого
         }
     };
     
