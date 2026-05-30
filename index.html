@@ -725,6 +725,29 @@
 
     addDrinkForm.addEventListener('submit', addNewDrink);
     editDrinkForm.addEventListener('submit', saveEdit);
+
+    // ========== ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ (без сохранения в localStorage) ==========
+    const themeToggle = document.getElementById('themeToggle');
+    
+    const toggleTheme = () => {
+        const isDark = document.body.classList.contains('dark-mode');
+        if (isDark) {
+            document.body.classList.remove('dark-mode');
+            themeToggle.textContent = '🌙';
+        } else {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+    };
+    
+    // Начальное состояние: светлая тема
+    document.body.classList.remove('dark-mode');
+    themeToggle.textContent = '🌙';
+    
+    // Вешаем обработчик
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
 </script>
 </body>
 </html>
