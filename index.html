@@ -79,8 +79,19 @@
             padding: 18px 24px;
             margin-bottom: 30px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            <div class="energy-counter" id="energyCounter" style="margin-top: 12px; font-size: 0.9rem; font-weight: bold;">⚡ Всего энергетиков: 0</div>
         }
-
+        .energy-counter {
+            background: #eef2ff;
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 40px;
+            margin-top: 12px;
+        }
+        body.dark-mode .energy-counter {
+            background: #2d3a4e;
+            color: #facc15;
+        }
         .search-input {
             width: 100%;
             padding: 12px 18px;
@@ -382,6 +393,42 @@
         if (themeToggle) {
             themeToggle.addEventListener('click', toggleTheme);
         }
+        /* Стили для модалок в тёмной теме */
+    body.dark-mode .modal-content {
+        background: #1e293b;
+        color: #e2e8f0;
+    }
+    body.dark-mode .modal-content input,
+    body.dark-mode .modal-content textarea,
+    body.dark-mode .modal-content select {
+        background: #0f172a;
+        border-color: #475569;
+        color: #f1f5f9;
+    }
+    body.dark-mode .modal-content input::placeholder,
+    body.dark-mode .modal-content textarea::placeholder {
+        color: #94a3b8;
+    }
+    body.dark-mode .tag-check {
+        background: #334155;
+        color: #e2e8f0;
+    }
+    body.dark-mode .submit-btn {
+        background: #2b7a4b;
+        color: white;
+    }
+    body.dark-mode .submit-btn:hover {
+        background: #1f5f3a;
+    }
+    body.dark-mode .modal-close {
+        color: #f1f5f9;
+    }
+    body.dark-mode .modal-close:hover {
+        color: #ef4444;
+    }
+    body.dark-mode .form-group label {
+        color: #cbd5e1;
+    }
     </style>
 </head>
 <body>
@@ -397,22 +444,24 @@
         </div>
     </div>
 
-    <div class="filters-panel">
-        <input type="text" id="searchInput" class="search-input" placeholder=" Поиск по названию...">
-        <div class="sort-section">
-            <span> Сортировка:</span>
-            <div class="sort-buttons">
-                <button data-sort="desc" class="sort-btn active">⬇️ По убыванию</button>
-                <button data-sort="asc" class="sort-btn">⬆️ По возрастанию</button>
-            </div>
+   <div class="filters-panel">
+    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию...">
+    <div class="sort-section">
+        <span>📊 Сортировка:</span>
+        <div class="sort-buttons">
+            <button data-sort="desc" class="sort-btn active">⬇️ По убыванию</button>
+            <button data-sort="asc" class="sort-btn">⬆️ По возрастанию</button>
         </div>
-        <div class="tags-filter">
-            <span> Фильтр по тегам:</span>
-            <div class="filter-tags-group" id="filterTagsContainer"></div>
-            <button class="reset-filters" id="resetFiltersBtn">Сбросить</button>
-        </div>
-        <div class="sync-status" id="syncStatus">☁️ Синхронизация с облаком...</div>
     </div>
+    <div class="tags-filter">
+        <span>🏷️ Фильтр по тегам:</span>
+        <div class="filter-tags-group" id="filterTagsContainer"></div>
+        <button class="reset-filters" id="resetFiltersBtn">Сбросить</button>
+    </div>
+    <div class="sync-status" id="syncStatus">☁️ Синхронизация с облаком...</div>
+    <!-- НОВЫЙ СЧЁТЧИК -->
+    <div class="energy-counter" id="energyCounter">⚡ Всего энергетиков: 0</div>
+</div>
 
     <div id="cardsContainer" class="cards-grid"></div>
 </div>
@@ -662,11 +711,23 @@
         else sorted.sort((a,b) => a.rating - b.rating);
         return sorted;
     }
-    function applyFiltersAndRender() {
-        const filtered = filterDrinks(energyDrinks);
-        const sorted = sortDrinks(filtered);
-        renderCards(sorted);
+function applyFiltersAndRender() {
+    const filtered = filterDrinks(energyDrinks);
+    const sorted = sortDrinks(filtered);
+    renderCards(sorted);
+    
+    // ===== СЧЁТЧИК =====
+    const total = energyDrinks.length;
+    const shown = filtered.length;
+    const counter = document.getElementById('energyCounter');
+    if (counter) {
+        if (shown === total) {
+            counter.innerHTML = `⚡ Всего энергетиков: ${total}`;
+        } else {
+            counter.innerHTML = `🔍 Показано: ${shown} из ${total}`;
+        }
     }
+}
 
     function renderCards(drinksArray) {
         if (!drinksArray.length) {
