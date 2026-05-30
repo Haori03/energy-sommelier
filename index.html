@@ -295,6 +295,93 @@
             .card-img { width: 120px; height: 120px; }
             .action-buttons { flex-direction: column; }
         }
+        .theme-toggle {
+            background: #f1f5f9;
+            border: none;
+            width: 52px;
+            height: 52px;
+            border-radius: 30px;
+            font-size: 28px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .theme-toggle:hover {
+            transform: scale(0.96);
+            background: #e2e8f0;
+        }
+        /* ========== ТЁМНАЯ ТЕМА ========== */
+        body.dark-mode {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        body.dark-mode .header,
+        body.dark-mode .filters-panel,
+        body.dark-mode .drink-card,
+        body.dark-mode .modal-content,
+        body.dark-mode .empty-message {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        body.dark-mode .search-input,
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group textarea,
+        body.dark-mode .form-group select {
+            background: #0f172a;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        body.dark-mode .sort-btn {
+            background: #2d3a4e;
+            color: #e2e8f0;
+        }
+        body.dark-mode .sort-btn.active {
+            background: #2b7a4b;
+        }
+        body.dark-mode .filter-tag {
+            background: #2d3a4e;
+        }
+        body.dark-mode .filter-tag.selected {
+            background: #f4a261;
+            color: #1e293b;
+        }
+        body.dark-mode .tag-badge {
+            background: #334155;
+        }
+        body.dark-mode .rating-value {
+            background: #2d3a2a;
+            color: #fbbf24;
+        }
+        body.dark-mode .taste-block {
+            background: #1e2a3a;
+        }
+        body.dark-mode .detail-description {
+            background: #0f172a;
+        }
+        body.dark-mode .theme-toggle {
+            background: #334155;
+        }
+        body.dark-mode .theme-toggle:hover {
+            background: #475569;
+        }
+        const themeToggle = document.getElementById('themeToggle');
+        
+        const toggleTheme = () => {
+            const isDark = document.body.classList.contains('dark-mode');
+            if (isDark) {
+                document.body.classList.remove('dark-mode');
+                themeToggle.textContent = '🌙';
+            } else {
+                document.body.classList.add('dark-mode');
+                themeToggle.textContent = '☀️';
+            }
+        };
+        
+        document.body.classList.remove('dark-mode');
+        themeToggle.textContent = '🌙';
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', toggleTheme);
+        }
     </style>
 </head>
 <body>
@@ -304,7 +391,10 @@
             <h1>⚡ энергетический сомелье IVAN ⚡</h1>
             <p>облачная коллекция — доступ с любого устройства</p>
         </div>
-        <button class="btn-plus" id="openAddModalBtn">+</button>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button class="theme-toggle" id="themeToggle" style="background: #f1f5f9; border: none; width: 52px; height: 52px; border-radius: 30px; font-size: 28px; cursor: pointer;">🌙</button>
+            <button class="btn-plus" id="openAddModalBtn">+</button>
+        </div>
     </div>
 
     <div class="filters-panel">
