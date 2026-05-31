@@ -491,8 +491,10 @@
     <div class="sort-section">
         <span> Сортировка:</span>
         <div class="sort-buttons">
-            <button data-sort="desc" class="sort-btn active">⬇️ По убыванию</button>
-            <button data-sort="asc" class="sort-btn">⬆️ По возрастанию</button>
+            <button data-sort="rating-desc" class="sort-btn active">⭐ По рейтингу ↓</button>
+            <button data-sort="rating-asc" class="sort-btn">⭐ По рейтингу ↑</button>
+            <button data-sort="name-asc" class="sort-btn">🔤 А→Я</button>
+            <button data-sort="name-desc" class="sort-btn">🔤 Я→А</button>
         </div>
     </div>
     <div class="tags-filter">
@@ -569,8 +571,6 @@
     // DOM-элементы
     const cardsContainer = document.getElementById('cardsContainer');
     const filterTagsContainer = document.getElementById('filterTagsContainer');
-    const sortDescBtn = document.querySelector('[data-sort="desc"]');
-    const sortAscBtn = document.querySelector('[data-sort="asc"]');
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
     const searchInput = document.getElementById('searchInput');
     const syncStatus = document.getElementById('syncStatus');
@@ -749,8 +749,24 @@
     }
     function sortDrinks(drinks) {
         const sorted = [...drinks];
-        if (currentSort === 'desc') sorted.sort((a,b) => b.rating - a.rating);
-        else sorted.sort((a,b) => a.rating - b.rating);
+        
+        switch(currentSort) {
+            case 'rating-desc':
+                sorted.sort((a, b) => b.rating - a.rating);
+                break;
+            case 'rating-asc':
+                sorted.sort((a, b) => a.rating - b.rating);
+                break;
+            case 'name-asc':
+                sorted.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+                break;
+            case 'name-desc':
+                sorted.sort((a, b) => b.name.localeCompare(a.name, 'ru'));
+                break;
+            default:
+                sorted.sort((a, b) => b.rating - a.rating);
+        }
+        
         return sorted;
     }
 function applyFiltersAndRender() {
@@ -851,12 +867,11 @@ function applyFiltersAndRender() {
     }
 
     function resetFiltersAndSort() {
-        currentSort = "desc";
+        currentSort = "rating-desc";  // ← теперь rating-desc вместо desc
         selectedFilterTags = [];
         searchQuery = "";
         searchInput.value = "";
-        sortDescBtn.classList.add('active');
-        sortAscBtn.classList.remove('active');
+        updateActiveSortButton();      // ← обновляем активную кнопку
         renderFilterTags();
         applyFiltersAndRender();
     }
@@ -899,8 +914,29 @@ function applyFiltersAndRender() {
     document.getElementById('openAddModalBtn').onclick = () => addModal.classList.add('active');
 
     // Сортировка и сброс
-    sortDescBtn.onclick = () => { currentSort = 'desc'; sortDescBtn.classList.add('active'); sortAscBtn.classList.remove('active'); applyFiltersAndRender(); };
-    sortAscBtn.onclick = () => { currentSort = 'asc'; sortAscBtn.classList.add('active'); sortDescBtn.classList.remove('active'); applyFiltersAndRender(); };
+    // Получаем все кнопки сортировки
+    const sortButtons = document.querySelectorAll('.sort-btn');
+    
+    // Функция обновления активной кнопки
+    function updateActiveSortButton() {
+        sortButtons.forEach(btn => {
+            const sortValue = btn.getAttribute('data-sort');
+            if (sortValue === currentSort) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+    
+    // Обработчики для каждой кнопки
+    sortButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentSort = btn.getAttribute('data-sort');
+            updateActiveSortButton();
+            applyFiltersAndRender();
+        });
+    });
     resetFiltersBtn.onclick = resetFiltersAndSort;
     searchInput.oninput = (e) => { searchQuery = e.target.value; applyFiltersAndRender(); };
 
