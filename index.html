@@ -950,6 +950,7 @@ function applyFiltersAndRender() {
     renderTagCheckboxes(editTagsCheckboxesDiv, []);
     renderFilterTags();
     connectToFirestore();
+    updateActiveSortButton();
 
     addDrinkForm.addEventListener('submit', addNewDrink);
     editDrinkForm.addEventListener('submit', saveEdit);
