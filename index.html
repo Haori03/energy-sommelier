@@ -491,10 +491,10 @@
     <div class="sort-section">
         <span> Сортировка:</span>
         <div class="sort-buttons">
-            <button data-sort="rating-desc" class="sort-btn active">⭐ По рейтингу ↓</button>
-            <button data-sort="rating-asc" class="sort-btn">⭐ По рейтингу ↑</button>
             <button data-sort="name-asc" class="sort-btn">🔤 А→Я</button>
             <button data-sort="name-desc" class="sort-btn">🔤 Я→А</button>
+            <button data-sort="rating-desc" class="sort-btn active">⭐ По рейтингу ↓</button>
+            <button data-sort="rating-asc" class="sort-btn">⭐ По рейтингу ↑</button>
         </div>
     </div>
     <div class="tags-filter">
@@ -563,7 +563,7 @@
     ];
 
     let energyDrinks = [];
-    let currentSort = "desc";
+    let currentSort = "name-desc";
     let selectedFilterTags = [];
     let searchQuery = "";
     let unsubscribe = null;
@@ -867,7 +867,7 @@ function applyFiltersAndRender() {
     }
 
     function resetFiltersAndSort() {
-        currentSort = "rating-desc";  // ← теперь rating-desc вместо desc
+        currentSort = "name-desc";  // ← теперь rating-desc вместо desc
         selectedFilterTags = [];
         searchQuery = "";
         searchInput.value = "";
