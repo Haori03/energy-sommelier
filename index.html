@@ -60,18 +60,25 @@
         .btn-plus {
             background: #2b7a4b;
             border: none;
-            width: 52px;
+            padding: 0 24px;        /* ← горизонтальные отступы */
+            min-width: 120px;       /* ← минимальная ширина */
             height: 52px;
             border-radius: 30px;
-            font-size: 36px;
+            font-size: 16px;
+            font-weight: bold;
             color: white;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;               /* ← отступ между иконкой и текстом, если будет */
             transition: 0.2s;
+            white-space: nowrap;    /* ← запрещаем перенос текста */
         }
-        .btn-plus:hover { background: #1f5f3a; transform: scale(0.96); }
+        .btn-plus:hover {
+            background: #1f5f3a;
+            transform: scale(0.96);
+        }
 
         .filters-panel {
             background: white;
