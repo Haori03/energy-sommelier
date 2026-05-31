@@ -563,7 +563,7 @@
     ];
 
     let energyDrinks = [];
-    let currentSort = "name-desc";
+    let currentSort = "name-asc";
     let selectedFilterTags = [];
     let searchQuery = "";
     let unsubscribe = null;
@@ -867,7 +867,7 @@ function applyFiltersAndRender() {
     }
 
     function resetFiltersAndSort() {
-        currentSort = "name-desc";  // ← теперь rating-desc вместо desc
+        currentSort = "name-asc";
         selectedFilterTags = [];
         searchQuery = "";
         searchInput.value = "";
