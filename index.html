@@ -187,12 +187,7 @@
 <script>
     // Firebase config (вставьте свои данные)
     const firebaseConfig = {
-        apiKey: "AIzaSyDQGjVUA8w66eGudNSK0s6PMOSjEYQbpWY",
-        authDomain: "energy-1363c.firebaseapp.com",
-        projectId: "energy-1363c",
-        storageBucket: "energy-1363c.firebasestorage.app",
-        messagingSenderId: "735189971999",
-        appId: "1:735189971999:web:bf662f3add5b5967ae912a"
+		// спрятал мои данные
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -224,12 +219,7 @@
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
     const searchInput = document.getElementById('searchInput');
     const syncStatus = document.getElementById('syncStatus');
-    // Установка правильного логотипа при загрузке
-    if (document.body.classList.contains('dark-mode')) {
-        document.getElementById('logoImage').src = 'logo-dark.png';
-    } else {
-        document.getElementById('logoImage').src = 'logo-light.png';
-    }
+
     // Функции авторизации
     function updateUIByRole() {
         const isAdmin = currentUser?.role === 'admin';
@@ -323,15 +313,15 @@
         const newAvg = sum / count;
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
     }
-    
+
     async function deleteReview(reviewId, drinkId) {
         if (!confirm('Удалить этот отзыв?')) return;
         await db.collection('reviews').doc(reviewId).delete();
     
-        // Пересчитываем среднюю оценку (админская с весом 3)
+        // Пересчитываем среднюю оценку напитка (админская оценка с весом 3)
         const drinkSnap = await db.collection('energydrinks').doc(drinkId).get();
-        const drinkData = drinkSnap.data();
-        const adminRating = drinkData.adminRating;
+        const drink = drinkSnap.data();
+        const adminRating = drink.adminRating;
         const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
         let sum = adminRating * 3;
         let count = 3;
@@ -339,14 +329,9 @@
         const newAvg = sum / count;
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
     
-        // Обновляем открытое окно деталей, беря свежие данные из energyDrinks
-        const updatedDrink = energyDrinks.find(d => d.id === drinkId);
-        if (updatedDrink) {
-            openDetailModal(updatedDrink);
-        } else {
-            detailModal.classList.remove('active');
-        }
-    }
+        // Обновляем открытое окно с деталями
+        openDetailModal({ id: drinkId, ...drink });
+    }   
     async function fetchReviews(drinkId) {
         const snap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
         return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -601,34 +586,15 @@
     document.getElementById('backToAuthFromAdminBtn').onclick = () => { adminModal.classList.remove('active'); authModal.classList.add('active'); };
     document.getElementById('registerBtn').onclick = async () => { const login = document.getElementById('regLogin').value, pass = document.getElementById('regPassword').value; if (await registerUser(login, pass)) { registerModal.classList.remove('active'); authModal.classList.add('active'); } };
     document.getElementById('adminLoginBtn').onclick = async () => { const pass = document.getElementById('adminPassword').value; await loginAsAdmin(pass); };
-    const themeToggle = document.getElementById('themeToggle'); 
-    themeToggle.onclick = () => { 
-        document.body.classList.toggle('dark-mode'); 
-        themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; 
-    };
+
     const saved = localStorage.getItem('energyUser');
     if (saved) { currentUser = JSON.parse(saved); updateUIByRole(); } else { showAuthModal(); }
 
     renderTagCheckboxes(tagsCheckboxesDiv, []); renderTagCheckboxes(editTagsCheckboxesDiv, []); renderFilterTags(); connectToFirestore(); updateActiveSortButton();
     document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
     document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
-    const themeToggle = document.getElementById('themeToggle');
-    const logo = document.getElementById('logoImage');
-    
-    function toggleTheme() {
-        const isDark = document.body.classList.contains('dark-mode');
-        if (isDark) {
-            document.body.classList.remove('dark-mode');
-            themeToggle.textContent = '🌙';
-            logo.src = 'logo-light.png';
-        } else {
-            document.body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️';
-            logo.src = 'logo-dark.png';
-        }
-    }
-    
-    themeToggle.onclick = toggleTheme;
+    const themeToggle = document.getElementById('themeToggle'); themeToggle.onclick = () => { document.body.classList.toggle('dark-mode'); themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; };
+</script>
 </body>
 </html>
 ```
