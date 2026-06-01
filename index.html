@@ -596,7 +596,11 @@
     document.getElementById('backToAuthFromAdminBtn').onclick = () => { adminModal.classList.remove('active'); authModal.classList.add('active'); };
     document.getElementById('registerBtn').onclick = async () => { const login = document.getElementById('regLogin').value, pass = document.getElementById('regPassword').value; if (await registerUser(login, pass)) { registerModal.classList.remove('active'); authModal.classList.add('active'); } };
     document.getElementById('adminLoginBtn').onclick = async () => { const pass = document.getElementById('adminPassword').value; await loginAsAdmin(pass); };
-
+    const themeToggle = document.getElementById('themeToggle'); 
+    themeToggle.onclick = () => { 
+        document.body.classList.toggle('dark-mode'); 
+        themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; 
+    };
     const saved = localStorage.getItem('energyUser');
     if (saved) { currentUser = JSON.parse(saved); updateUIByRole(); } else { showAuthModal(); }
 
