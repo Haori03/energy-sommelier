@@ -318,15 +318,15 @@
         const newAvg = sum / count;
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
     }
-
+    
     async function deleteReview(reviewId, drinkId) {
         if (!confirm('Удалить этот отзыв?')) return;
         await db.collection('reviews').doc(reviewId).delete();
     
-        // Пересчитываем среднюю оценку напитка (админская оценка с весом 3)
+        // Пересчитываем среднюю оценку (админская с весом 3)
         const drinkSnap = await db.collection('energydrinks').doc(drinkId).get();
-        const drink = drinkSnap.data();
-        const adminRating = drink.adminRating;
+        const drinkData = drinkSnap.data();
+        const adminRating = drinkData.adminRating;
         const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
         let sum = adminRating * 3;
         let count = 3;
@@ -334,9 +334,14 @@
         const newAvg = sum / count;
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
     
-        // Обновляем открытое окно с деталями
-        openDetailModal({ id: drinkId, ...drink });
-    }   
+        // Обновляем открытое окно деталей, беря свежие данные из energyDrinks
+        const updatedDrink = energyDrinks.find(d => d.id === drinkId);
+        if (updatedDrink) {
+            openDetailModal(updatedDrink);
+        } else {
+            detailModal.classList.remove('active');
+        }
+    }
     async function fetchReviews(drinkId) {
         const snap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
         return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
