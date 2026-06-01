@@ -395,6 +395,10 @@
         body.dark-mode .theme-toggle:hover {
             background: #475569;
         }
+        body.dark-mode .taste-block[style*="background: #e8f0fe"] {
+            background: #1e2a3a !important;
+            border-left-color: #60a5fa !important;
+        }
         const themeToggle = document.getElementById('themeToggle');
         
         const toggleTheme = () => {
@@ -519,15 +523,15 @@
     <div class="form-group"><label>Оценка *</label><select id="drinkRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3" selected>3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
     <div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required placeholder="Яблоко одно, сливы, виноград"></div>
     <div class="form-group">
-    <label>☕ Кофеин (мг)</label>
+    <label> Кофеин (мг)</label>
     <input type="number" id="drinkCaffeine" placeholder="например: 30" step="1" value="">
     </div>
     <div class="form-group">
-        <label>⚡ Таурин (мг)</label>
+        <label> Таурин (мг)</label>
         <input type="number" id="drinkTaurine" placeholder="например: 240" step="1" value="">
     </div>
     <div class="form-group">
-        <label>🏷️ Теги</label>
+        <label> Теги</label>
         <div id="tagsCheckboxes" class="tags-checkboxes"></div>
     </div>
     <div class="form-group"><label>Теги</label><div id="tagsCheckboxes" class="tags-checkboxes"></div></div>
@@ -543,15 +547,15 @@
     <div class="form-group"><label>Оценка</label><select id="editRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
     <div class="form-group"><label>Вкус</label><input type="text" id="editTaste" required></div>
     <div class="form-group">
-    <label>☕ Кофеин (мг)</label>
+    <label> Кофеин (мг)</label>
     <input type="number" id="editCaffeine" placeholder="мг" step="1">
     </div>
     <div class="form-group">
-        <label>⚡ Таурин (мг)</label>
+        <label> Таурин (мг)</label>
         <input type="number" id="editTaurine" placeholder="мг" step="1">
     </div>
     <div class="form-group">
-        <label>🏷️ Теги</label>
+        <label> Теги</label>
         <div id="editTagsCheckboxes" class="tags-checkboxes"></div>
     </div>
     <div class="form-group"><label>Теги</label><div id="editTagsCheckboxes" class="tags-checkboxes"></div></div>
@@ -616,7 +620,9 @@
                         tags: data.tags || [],
                         rating: data.rating || 3,
                         taste: data.taste || "не указан",
-                        description: data.description || "Нет описания"
+                        description: data.description || "Нет описания",
+                        caffeine: data.caffeine ?? null,   // новое
+                        taurine: data.taurine ?? null      // новое
                     });
                 });
                 syncStatus.innerHTML = '<span>✅</span> Синхронизировано с облаком';
@@ -688,6 +694,11 @@
         const name = document.getElementById('drinkName').value.trim();
         const rating = parseFloat(document.getElementById('drinkRating').value);
         const taste = document.getElementById('drinkTaste').value.trim();
+        const caffeine = document.getElementById('drinkCaffeine').value;      // строка
+        const taurine = document.getElementById('drinkTaurine').value;        // строка
+        // Преобразуем в число или null, если пусто
+        const caffeineValue = caffeine ? parseFloat(caffeine) : null;
+        const taurineValue = taurine ? parseFloat(taurine) : null;
         const description = document.getElementById('drinkDescription').value.trim() || "Нет описания";
         const selectedTags = getSelectedTagsFromContainer(tagsCheckboxesDiv);
 
@@ -696,7 +707,7 @@
         if (selectedTags.length === 0) { alert("Выберите хотя бы один тег"); return; }
 
         let imageData = selectedImageBase64;
-        const success = await addToFirestore({ name, imageData, tags: selectedTags, rating, taste, description });
+        const success = await addToFirestore({ name, imageData, tags: selectedTags, rating, taste, description,caffeine: caffeineValue, taurine: taurineValue});
         if (success) {
             addModal.classList.remove('active');
             addDrinkForm.reset();
@@ -715,6 +726,8 @@
         document.getElementById('editRating').value = drink.rating;
         document.getElementById('editTaste').value = drink.taste || "";
         document.getElementById('editDescription').value = drink.description || "";
+        document.getElementById('editCaffeine').value = drink.caffeine ?? '';
+        document.getElementById('editTaurine').value = drink.taurine ?? '';
         renderTagCheckboxes(editTagsCheckboxesDiv, drink.tags || []);
         editImagePreviewDiv.innerHTML = '';
         editSelectedImageBase64 = null;
@@ -736,6 +749,10 @@
         const taste = document.getElementById('editTaste').value.trim();
         const description = document.getElementById('editDescription').value.trim() || "Нет описания";
         const selectedTags = getSelectedTagsFromContainer(editTagsCheckboxesDiv);
+        const caffeine = document.getElementById('editCaffeine').value;
+        const taurine = document.getElementById('editTaurine').value;
+        const caffeineValue = caffeine ? parseFloat(caffeine) : null;
+        const taurineValue = taurine ? parseFloat(taurine) : null;
         if (!name) { alert("Введите название"); return; }
         if (!taste) { alert("Укажите вкус"); return; }
         if (selectedTags.length === 0) { alert("Выберите хотя бы один тег"); return; }
@@ -745,7 +762,7 @@
             const existing = energyDrinks.find(d => d.id === id);
             if (existing) imageData = existing.imageData;
         }
-        const success = await updateInFirestore(id, { name, imageData, tags: selectedTags, rating, taste, description });
+        const success = await updateInFirestore(id, { name, imageData, tags: selectedTags, rating, taste, description,caffeine: caffeineValue,taurine: taurineValue});
         if (success) {
             editModal.classList.remove('active');
             detailModal.classList.remove('active');
@@ -813,7 +830,7 @@ function applyFiltersAndRender() {
 
     function renderCards(drinksArray) {
         if (!drinksArray.length) {
-            cardsContainer.innerHTML = `<div class="empty-message">🧃 Добавьте первый энергетик через кнопку «+». Данные будут в облаке и на всех устройствах.</div>`;
+            cardsContainer.innerHTML = `<div class="empty-message"> Добавьте первый энергетик через кнопку «+». Данные будут в облаке и на всех устройствах.</div>`;
             return;
         }
         cardsContainer.innerHTML = drinksArray.map(drink => `
@@ -856,8 +873,11 @@ function applyFiltersAndRender() {
                     <h2>${escapeHtml(drink.name)}</h2>
                     <div class="detail-tags">${tagSpans}</div>
                     <div style="font-size:1.5rem; font-weight:600;">⭐ ${drink.rating.toFixed(1)} / 5</div>
-                    <div class="taste-block">👅 Вкус: ${escapeHtml(drink.taste)}</div>
-                    <div class="detail-description">📝 ${escapeHtml(drink.description)}</div>
+                    <div class="taste-block"> Вкус: ${escapeHtml(drink.taste)}</div>
+                    ${drink.caffeine ? `<div class="taste-block" style="background: #e8f0fe; border-left-color: #3182ce;"> Кофеин: ${drink.caffeine} мг</div>` : ''}
+                    ${drink.taurine ? `<div class="taste-block" style="background: #e8f0fe; border-left-color: #3182ce;">⚡ Таурин: ${drink.taurine} мг</div>` : ''}
+                    <div class="detail-description"> ${escapeHtml(drink.description)}</div>
+                    <div class="detail-description"> ${escapeHtml(drink.description)}</div>
                     <div class="action-buttons">
                         <button class="edit-button" id="editDrinkBtn">✏️ Изменить</button>
                         <button class="delete-button" id="deleteDrinkBtn">🗑️ Удалить</button>
