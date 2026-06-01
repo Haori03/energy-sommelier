@@ -4,514 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Энергетический сомелье Ivan | Облачная коллекция</title>
-    <!-- Firebase SDK (обязательно) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
-        }
-
-        body {
-            background: #f4f7fc;
-            color: #1e2a3e;
-            padding: 24px 20px;
-        }
-
-        .app-container {
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 28px;
-            background: white;
-            padding: 16px 24px;
-            border-radius: 32px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.03);
-        }
-
-        .logo h1 {
-            font-size: 1.9rem;
-            background: linear-gradient(135deg, #2ecc71, #f1c40f);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 3px 3px 0 #1a2a1a;
-            font-family: 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
-            text-transform: uppercase;
-            transform: skew(-2deg);
-        }
-        .logo p {
-            font-size: 0.8rem;
-            color: #5a6e7c;
-            margin-top: 4px;
-        }
-        
-        .filters-panel {
-            background: white;
-            border-radius: 28px;
-            padding: 18px 24px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        
-        .energy-counter {
-            background: #eef2ff;
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 40px;
-            margin-top: 12px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-        body.dark-mode .energy-counter {
-            background: #2d3a4e;
-            color: #cbd5e1;
-        }
-        
-        .btn-plus {
-            background: #2b7a4b;
-            border: none;
-            padding: 0 20px;
-            height: 52px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .btn-plus:hover {
-            background: #1f5f3a;
-            transform: scale(0.96);
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 12px 18px;
-            border-radius: 48px;
-            border: 1px solid #cbd5e1;
-            font-size: 1rem;
-            margin-bottom: 16px;
-        }
-
-        .sort-section {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
+        body { background: #f4f7fc; color: #1e2a3e; padding: 24px 20px; }
+        .app-container { max-width: 1300px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 28px; background: white; padding: 16px 24px; border-radius: 32px; box-shadow: 0 6px 14px rgba(0,0,0,0.03); }
+        .logo img { height: 60px; width: auto; object-fit: contain; }
+        .filters-panel { background: white; border-radius: 28px; padding: 18px 24px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .energy-counter { background: #eef2ff; display: inline-block; padding: 6px 16px; border-radius: 40px; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
+        .btn-plus, .btn-logout { background: #2b7a4b; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-logout { background: #6c757d; }
+        .btn-plus:hover, .btn-logout:hover { transform: scale(0.96); background: #1f5f3a; }
+        .btn-logout:hover { background: #5a6268; }
+        .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid #cbd5e1; font-size: 1rem; margin-bottom: 16px; }
+        .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
         .sort-buttons { display: flex; gap: 12px; }
-        .sort-btn {
-            background: #edf2f7;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 40px;
-            cursor: pointer;
-        }
+        .sort-btn { background: #edf2f7; border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; }
         .sort-btn.active { background: #2b7a4b; color: white; }
-
-        .tags-filter {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 20px;
-        }
+        .tags-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
         .filter-tags-group { display: flex; flex-wrap: wrap; gap: 12px; }
-        .filter-tag {
-            background: #edf2f7;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
+        .filter-tag { background: #edf2f7; padding: 6px 14px; border-radius: 40px; font-size: 0.85rem; cursor: pointer; }
         .filter-tag.selected { background: #f4a261; color: white; }
-        .reset-filters {
-            background: #e2e8f0;
-            border: none;
-            padding: 6px 18px;
-            border-radius: 30px;
-            cursor: pointer;
-            margin-left: auto;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 20px;
-        }
-
-        .drink-card {
-            background: white;
-            border-radius: 28px;
-            display: flex;
-            padding: 16px;
-            gap: 16px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.05);
-        }
+        .reset-filters { background: #e2e8f0; border: none; padding: 6px 18px; border-radius: 30px; cursor: pointer; margin-left: auto; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+        .drink-card { background: white; border-radius: 28px; display: flex; padding: 16px; gap: 16px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 8px 18px rgba(0,0,0,0.05); }
         .drink-card:hover { transform: translateY(-4px); }
-        .card-img {
-            width: 100px;
-            height: 100px;
-            object-fit: contain;
-            background: #f8fafc;
-            border-radius: 16px;
-        }
+        .card-img { width: 100px; height: 100px; object-fit: contain; background: #f8fafc; border-radius: 16px; }
         .card-info { flex: 1; }
         .card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
         .tags-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .tags-list { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag-badge {
-            background: #eef2ff;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-        }
-        .rating-value {
-            background: #fef9e3;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            color: #b45309;
-        }
-
-        /* Модальные окна */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(3px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
-        }
+        .tag-badge { background: #eef2ff; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; }
+        .rating-value { background: #fef9e3; padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; color: #b45309; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s; }
         .modal-overlay.active { visibility: visible; opacity: 1; }
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 900px;
-            max-height: 85vh;
-            border-radius: 36px;
-            overflow-y: auto;
-            padding: 24px 28px;
-            position: relative;
-        }
-        .modal-close {
-            position: absolute;
-            top: 18px;
-            right: 24px;
-            font-size: 28px;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        .detail-layout { 
-            display: flex; 
-            flex-wrap: nowrap; 
-            gap: 28px; 
-        }
-        .detail-img { 
-            flex-shrink: 0; 
-            width: 200px; 
-        }
-        .detail-img img {
-            width: 100%;
-            max-width: 260px;
-            object-fit: contain;
-            border-radius: 24px;
-            background: #f8fafc;
-        }
-        .taste-block {
-            background: #fff3e0;
-            padding: 12px 16px;
-            border-radius: 24px;
-            margin: 12px 0;
-            border-left: 4px solid #f4a261;
-        }
-        .detail-description {
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 24px;
-            margin-top: 12px;
-        }
-        .action-buttons { display: flex; gap: 16px; margin-top: 24px; }
-        .edit-button, .delete-button {
-            flex: 1;
-            padding: 12px;
-            border-radius: 40px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            text-align: center;
-        }
+        .modal-content { background: white; width: 90%; max-width: 900px; max-height: 85vh; border-radius: 36px; overflow-y: auto; padding: 24px 28px; position: relative; }
+        .modal-close { position: absolute; top: 18px; right: 24px; font-size: 28px; background: none; border: none; cursor: pointer; }
+        .detail-layout { display: flex; flex-wrap: nowrap; gap: 28px; }
+        .detail-img { flex-shrink: 0; width: 200px; }
+        .detail-img img { width: 100%; object-fit: contain; border-radius: 24px; background: #f8fafc; }
+        .taste-block { background: #fff3e0; padding: 12px 16px; border-radius: 24px; margin: 12px 0; border-left: 4px solid #f4a261; }
+        .detail-description { background: #f8fafc; padding: 16px; border-radius: 24px; margin-top: 12px; }
+        .action-buttons { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+        .edit-button, .delete-button, .review-button { flex: 1; padding: 12px; border-radius: 40px; font-weight: bold; border: none; cursor: pointer; text-align: center; }
         .edit-button { background: #3182ce; color: white; }
         .delete-button { background: #e53e3e; color: white; }
-
+        .review-button { background: #f4a261; color: white; }
+        .reviews-section { margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px; }
+        .review-card { background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .review-info { flex: 1; }
+        .review-user { font-weight: bold; }
+        .review-text { margin-top: 4px; }
+        .review-rating { background: #fef9e3; padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; }
+        .add-review-form { margin-top: 16px; background: #f1f5f9; border-radius: 24px; padding: 16px; }
+        .add-review-form textarea, .add-review-form select { width: 100%; padding: 8px 12px; border-radius: 24px; border: 1px solid #cbd5e1; margin-bottom: 12px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { font-weight: 600; display: block; margin-bottom: 8px; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 24px;
-            border: 1px solid #cbd5e1;
-        }
-        /* Fix для стрелки селекта, чтобы не выходила за рамки */
-        .form-group select {
-            padding-right: 32px;
-            appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 16px;
-        }
-        body.dark-mode .form-group select {
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-        }
-        
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 16px; border-radius: 24px; border: 1px solid #cbd5e1; }
+        .form-group select { padding-right: 32px; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; }
         .tags-checkboxes { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
-        .tag-check {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: #f1f5f9;
-            padding: 6px 14px;
-            border-radius: 40px;
-        }
+        .tag-check { display: flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 6px 14px; border-radius: 40px; cursor: pointer; }
         .file-preview { margin-top: 10px; max-width: 120px; }
         .file-preview img { width: 100%; border-radius: 16px; }
-        .submit-btn {
-            background: #2b7a4b;
-            color: white;
-            padding: 12px 28px;
-            border-radius: 40px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .empty-message {
-            text-align: center;
-            padding: 50px;
-            background: white;
-            border-radius: 40px;
-            color: #5a6e7c;
-        }
-        .sync-status {
-            font-size: 0.7rem;
-            color: #2b7a4b;
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        @media (max-width: 600px) {
-            .drink-card { flex-direction: column; align-items: center; text-align: center; }
-            .card-img { width: 120px; height: 120px; }
-            .action-buttons { flex-direction: column; }
-            .detail-layout { 
-                flex-wrap: wrap; 
-                justify-content: center;
-            }
-            .detail-img { 
-                width: 180px; 
-                margin: 0 auto;
-            }
-        }
-        .theme-toggle {
-            background: #f1f5f9;
-            border: none;
-            width: 52px;
-            height: 52px;
-            border-radius: 30px;
-            font-size: 28px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .theme-toggle:hover {
-            transform: scale(0.96);
-            background: #e2e8f0;
-        }
-        /* ========== ТЁМНАЯ ТЕМА ========== */
-        body.dark-mode {
-            background: #0f172a;
-            color: #e2e8f0;
-        }
-        body.dark-mode .header,
-        body.dark-mode .filters-panel,
-        body.dark-mode .drink-card,
-        body.dark-mode .modal-content,
-        body.dark-mode .empty-message {
-            background: #1e293b;
-            color: #e2e8f0;
-        }
-        body.dark-mode .search-input,
-        body.dark-mode .form-group input,
-        body.dark-mode .form-group textarea,
-        body.dark-mode .form-group select {
-            background: #0f172a;
-            border-color: #334155;
-            color: #f1f5f9;
-        }
-        body.dark-mode .sort-btn {
-            background: #2d3a4e;
-            color: #e2e8f0;
-        }
-        body.dark-mode .sort-btn.active {
-            background: #2b7a4b;
-        }
-        body.dark-mode .filter-tag {
-            background: #2d3a4e;
-        }
-        body.dark-mode .filter-tag.selected {
-            background: #f4a261;
-            color: #1e293b;
-        }
-        body.dark-mode .tag-badge {
-            background: #334155;
-        }
-        body.dark-mode .rating-value {
-            background: #2d3a2a;
-            color: #fbbf24;
-        }
-        body.dark-mode .taste-block {
-            background: #1e2a3a;
-        }
-        body.dark-mode .detail-description {
-            background: #0f172a;
-        }
-        body.dark-mode .theme-toggle {
-            background: #334155;
-        }
-        body.dark-mode .theme-toggle:hover {
-            background: #475569;
-        }
-        body.dark-mode .tag-check {
-            background: #334155;
-            color: #e2e8f0;
-        }
-        body.dark-mode .modal-content .tag-check {
-            background: #334155;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .logo p {
-            font-size: 0.8rem;
-            color: #5a6e7c;
-            margin-top: 0;
-        }
-        body.dark-mode .logo p {
-            color: #94a3b8;
-        }
-        @media (max-width: 600px) {
-            .logo {
-                flex-direction: column;
-                text-align: center;
-            }
-        }
+        .submit-btn { background: #2b7a4b; color: white; padding: 12px 28px; border-radius: 40px; border: none; font-weight: bold; cursor: pointer; }
+        .sync-status { font-size: 0.7rem; color: #2b7a4b; margin-top: 12px; display: flex; align-items: center; gap: 6px; }
+        .auth-modal .modal-content { max-width: 450px; }
+        .auth-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+        .auth-buttons button { flex: 1; padding: 12px; border-radius: 40px; border: none; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: #2b7a4b; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .user-status { background: #eef2ff; padding: 6px 16px; border-radius: 40px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; }
+        @media (max-width: 600px) { .drink-card { flex-direction: column; align-items: center; text-align: center; } .detail-layout { flex-wrap: wrap; justify-content: center; } .detail-img { width: 180px; margin: 0 auto; } }
+        body.dark-mode { background: #0f172a; color: #e2e8f0; }
+        body.dark-mode .header, body.dark-mode .filters-panel, body.dark-mode .drink-card, body.dark-mode .modal-content, body.dark-mode .empty-message, body.dark-mode .review-card, body.dark-mode .add-review-form { background: #1e293b; color: #e2e8f0; }
+        body.dark-mode .search-input, body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select, body.dark-mode .add-review-form textarea, body.dark-mode .add-review-form select { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        body.dark-mode .tag-check, body.dark-mode .filter-tag { background: #2d3a4e; }
+        body.dark-mode .tag-badge { background: #334155; }
+        body.dark-mode .rating-value { background: #2d3a2a; color: #fbbf24; }
+        body.dark-mode .taste-block, body.dark-mode .detail-description { background: #1e2a3a; }
     </style>
 </head>
 <body>
 <div class="app-container">
     <div class="header">
-        <div class="logo">
-            <img id="logoImage" src="logo-light.png" alt="Энергетический сомелье Ivan" style="height: 60px; width: auto; object-fit: contain;">
-        </div>
+        <div class="logo"><img id="logoImage" src="logo-light.png" alt="Энергетический сомелье Ivan" style="height: 60px;"></div>
         <div style="display: flex; gap: 12px; align-items: center;">
-            <button class="theme-toggle" id="themeToggle" style="background: #f1f5f9; border: none; width: 52px; height: 52px; border-radius: 30px; font-size: 28px; cursor: pointer;">🌙</button>
+            <div class="user-status" id="userStatus">Гость</div>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
             <button class="btn-plus" id="openAddModalBtn">Добавить</button>
+            <button class="btn-logout" id="logoutBtn" style="display: none;">Выход</button>
         </div>
     </div>
-
     <div class="filters-panel">
         <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию...">
-        <div class="sort-section">
-            <span>Сортировка:</span>
-            <div class="sort-buttons">
-                <button data-sort="name-asc" class="sort-btn">🔽 А→Я</button>
-                <button data-sort="name-desc" class="sort-btn">🔼 Я→А</button>
-                <button data-sort="rating-desc" class="sort-btn active">⭐ По рейтингу ↓</button>
-                <button data-sort="rating-asc" class="sort-btn">⭐ По рейтингу ↑</button>
-            </div>
-        </div>
-        <div class="tags-filter">
-            <span> Фильтр по тегам:</span>
-            <div class="filter-tags-group" id="filterTagsContainer"></div>
-            <button class="reset-filters" id="resetFiltersBtn">Сбросить</button>
-        </div>
+        <div class="sort-section"><span>Сортировка:</span><div class="sort-buttons">
+            <button data-sort="name-asc" class="sort-btn">🔽 А→Я</button><button data-sort="name-desc" class="sort-btn">🔼 Я→А</button>
+            <button data-sort="rating-desc" class="sort-btn">⭐ По рейтингу ↓</button><button data-sort="rating-asc" class="sort-btn">⭐ По рейтингу ↑</button>
+        </div></div>
+        <div class="tags-filter"><span>Фильтр по тегам:</span><div class="filter-tags-group" id="filterTagsContainer"></div><button class="reset-filters" id="resetFiltersBtn">Сбросить</button></div>
         <div class="sync-status" id="syncStatus">☁️ Синхронизация с облаком...</div>
-        <div class="energy-counter" id="energyCounter"> Всего энергетиков: 0</div>
+        <div class="energy-counter" id="energyCounter">⚡ Всего энергетиков: 0</div>
     </div>
-
     <div id="cardsContainer" class="cards-grid"></div>
 </div>
 
-<!-- Модальные окна -->
+<!-- Модалка авторизации -->
+<div id="authModal" class="modal-overlay auth-modal"><div class="modal-content"><button class="modal-close" id="closeAuthModal">&times;</button><h2 id="authTitle">Вход / Регистрация</h2>
+<div id="authForm">
+    <div class="form-group"><label>Логин</label><input type="text" id="authLogin" placeholder="Логин"></div>
+    <div class="form-group"><label>Пароль</label><input type="password" id="authPassword" placeholder="Пароль"></div>
+    <div class="auth-buttons">
+        <button id="authLoginBtn" class="btn-primary">Войти</button>
+        <button id="authRegisterBtn" class="btn-secondary">Регистрация</button>
+        <button id="authAdminBtn" class="btn-secondary">Войти как Админ</button>
+        <button id="authGuestBtn" class="btn-secondary">Пропустить (Гость)</button>
+    </div>
+</div>
+</div></div>
+
+<!-- Модалка добавления/редактирования -->
+<div id="addModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeAddModal">&times;</button><h2>➕ Добавить энергетик</h2>
+<form id="addDrinkForm"><div class="form-group"><label>Название *</label><input type="text" id="drinkName" required></div>
+<div class="form-group"><label>Фото</label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
+<div class="form-group"><label>⭐ Оценка админа *</label><select id="drinkRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3" selected>3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select><small>Учитывается с весом 3 в итоговом рейтинге</small></div>
+<div class="form-group"><label>👅 Вкус *</label><input type="text" id="drinkTaste" required></div>
+<div class="form-group"><label>⚡ Кофеин (мг)</label><input type="number" id="drinkCaffeine" step="1"></div>
+<div class="form-group"><label>💪 Таурин (мг)</label><input type="number" id="drinkTaurine" step="1"></div>
+<div class="form-group"><label>🏷️ Теги</label><div id="tagsCheckboxes" class="tags-checkboxes"></div></div>
+<div class="form-group"><label>📝 Описание</label><textarea id="drinkDescription" rows="3"></textarea></div>
+<button type="submit" class="submit-btn">➕ Добавить</button></form></div></div>
+
+<div id="editModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeEditModal">&times;</button><h2>✏️ Редактировать</h2>
+<form id="editDrinkForm"><input type="hidden" id="editDrinkId"><div class="form-group"><label>Название</label><input type="text" id="editName" required></div>
+<div class="form-group"><label>Фото</label><input type="file" id="editImageFile" accept="image/*"><div id="editImagePreview" class="file-preview"></div></div>
+<div class="form-group"><label>⭐ Оценка админа</label><select id="editRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
+<div class="form-group"><label>Вкус</label><input type="text" id="editTaste" required></div>
+<div class="form-group"><label>Кофеин (мг)</label><input type="number" id="editCaffeine" step="1"></div>
+<div class="form-group"><label>Таурин (мг)</label><input type="number" id="editTaurine" step="1"></div>
+<div class="form-group"><label>Теги</label><div id="editTagsCheckboxes" class="tags-checkboxes"></div></div>
+<div class="form-group"><label>Описание</label><textarea id="editDescription" rows="3"></textarea></div>
+<button type="submit" class="submit-btn">💾 Сохранить</button></form></div></div>
+
 <div id="detailModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeDetailModal">&times;</button><div id="detailContent"></div></div></div>
-
-<div id="addModal" class="modal-overlay">
-    <div class="modal-content">
-        <button class="modal-close" id="closeAddModal">&times;</button>
-        <h2>➕ Добавить энергетик</h2>
-        <form id="addDrinkForm">
-            <div class="form-group"><label>Название *</label><input type="text" id="drinkName" required placeholder="Monster Mango"></div>
-            <div class="form-group"><label> Фото </label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
-            <div class="form-group"><label>⭐ Оценка *</label><select id="drinkRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3" selected>3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
-            <div class="form-group"><label> Вкус *</label><input type="text" id="drinkTaste" required placeholder="Яблоко, сливы, виноград"></div>
-            <div class="form-group"><label> Кофеин (мг)</label><input type="number" id="drinkCaffeine" placeholder="например: 30" step="1" value=""></div>
-            <div class="form-group"><label> Таурин (мг)</label><input type="number" id="drinkTaurine" placeholder="например: 240" step="1" value=""></div>
-            <div class="form-group"><label> Теги</label><div id="tagsCheckboxes" class="tags-checkboxes"></div></div>
-            <div class="form-group"><label> Описание</label><textarea id="drinkDescription" rows="3"></textarea></div>
-            <button type="submit" class="submit-btn">➕ Добавить</button>
-        </form>
-    </div>
-</div>
-
-<div id="editModal" class="modal-overlay">
-    <div class="modal-content">
-        <button class="modal-close" id="closeEditModal">&times;</button>
-        <h2>✏️ Редактировать</h2>
-        <form id="editDrinkForm">
-            <input type="hidden" id="editDrinkId">
-            <div class="form-group"><label>Название</label><input type="text" id="editName" required></div>
-            <div class="form-group"><label> Фото</label><input type="file" id="editImageFile" accept="image/*"><div id="editImagePreview" class="file-preview"></div></div>
-            <div class="form-group"><label>⭐ Оценка</label><select id="editRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
-            <div class="form-group"><label> Вкус</label><input type="text" id="editTaste" required></div>
-            <div class="form-group"><label> Кофеин (мг)</label><input type="number" id="editCaffeine" placeholder="мг" step="1"></div>
-            <div class="form-group"><label> Таурин (мг)</label><input type="number" id="editTaurine" placeholder="мг" step="1"></div>
-            <div class="form-group"><label> Теги</label><div id="editTagsCheckboxes" class="tags-checkboxes"></div></div>
-            <div class="form-group"><label> Описание</label><textarea id="editDescription" rows="3"></textarea></div>
-            <button type="submit" class="submit-btn">💾 Сохранить</button>
-        </form>
-    </div>
-</div>
 
 <script>
     const firebaseConfig = {
@@ -521,11 +157,13 @@
         storageBucket: "energy-1363c.firebasestorage.app",
         messagingSenderId: "735189971999",
         appId: "1:735189971999:web:bf662f3add5b5967ae912a"
-    };
+	};
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ----- ТЕГИ -----
+    // Текущий пользователь
+    let currentUser = null; // { login, role }
+
     const AVAILABLE_TAGS = [
         { emoji: "🚫", name: "Без сахара" }, { emoji: "🍬", name: "С сахаром" }, { emoji: "😵", name: "50/50 на сахаре" },
         { emoji: "🥤", name: "Оригинальный" }, { emoji: "🍇", name: "Обычные фрукты" },
@@ -541,497 +179,332 @@
     let searchQuery = "";
     let unsubscribe = null;
 
-    // DOM-элементы
+    // DOM элементы
     const cardsContainer = document.getElementById('cardsContainer');
     const filterTagsContainer = document.getElementById('filterTagsContainer');
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
     const searchInput = document.getElementById('searchInput');
     const syncStatus = document.getElementById('syncStatus');
+    const authModal = document.getElementById('authModal');
+    const addModal = document.getElementById('addModal');
+    const editModal = document.getElementById('editModal');
+    const detailModal = document.getElementById('detailModal');
 
-    // ========== ФУНКЦИЯ РЕСАЙЗА ИЗОБРАЖЕНИЯ ДО 800x800 ==========
+    // Функция ресайза изображения
     async function resizeImageToSquare(file, targetSize = 800, quality = 0.85) {
         return new Promise((resolve, reject) => {
-            if (!file || !file.type.match('image.*')) {
-                resolve(null);
-                return;
-            }
+            if (!file || !file.type.match('image.*')) resolve(null);
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    canvas.width = targetSize;
-                    canvas.height = targetSize;
+                    canvas.width = targetSize; canvas.height = targetSize;
                     const ctx = canvas.getContext('2d');
-                    
-                    // Заливаем белым фоном (чтобы избежать черных полей при JPEG)
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0, 0, targetSize, targetSize);
-                    
-                    // Вычисляем размеры для вписывания в квадрат с сохранением пропорций
-                    let drawWidth, drawHeight, offsetX, offsetY;
-                    const imgRatio = img.width / img.height;
-                    if (imgRatio > 1) {
-                        // Ширина больше высоты
-                        drawWidth = targetSize;
-                        drawHeight = targetSize / imgRatio;
-                        offsetX = 0;
-                        offsetY = (targetSize - drawHeight) / 2;
-                    } else {
-                        // Высота больше ширины или равны
-                        drawHeight = targetSize;
-                        drawWidth = targetSize * imgRatio;
-                        offsetX = (targetSize - drawWidth) / 2;
-                        offsetY = 0;
-                    }
-                    
-                    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-                    const resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
-                    resolve(resizedDataUrl);
+                    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, targetSize, targetSize);
+                    let dw, dh, dx, dy;
+                    const ratio = img.width / img.height;
+                    if (ratio > 1) { dw = targetSize; dh = targetSize / ratio; dx = 0; dy = (targetSize - dh) / 2; }
+                    else { dh = targetSize; dw = targetSize * ratio; dx = (targetSize - dw) / 2; dy = 0; }
+                    ctx.drawImage(img, dx, dy, dw, dh);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
                 };
-                img.onerror = () => reject(new Error('Ошибка загрузки изображения'));
+                img.onerror = () => reject();
                 img.src = e.target.result;
             };
-            reader.onerror = () => reject(new Error('Ошибка чтения файла'));
+            reader.onerror = () => reject();
             reader.readAsDataURL(file);
         });
     }
-    // ============================================================
 
-    // Подключение к Firestore (реальное время)
+    // ========== АВТОРИЗАЦИЯ ==========
+    function saveSession(user) { localStorage.setItem('energyUser', JSON.stringify(user)); currentUser = user; updateUIByRole(); }
+    function clearSession() { localStorage.removeItem('energyUser'); currentUser = null; updateUIByRole(); showAuthModal(); }
+    function updateUIByRole() {
+        const isAdmin = currentUser?.role === 'admin';
+        const isUser = currentUser?.role === 'user';
+        const isGuest = !currentUser;
+        document.getElementById('openAddModalBtn').style.display = isAdmin ? 'flex' : 'none';
+        document.getElementById('logoutBtn').style.display = currentUser ? 'flex' : 'none';
+        document.getElementById('userStatus').innerHTML = currentUser ? `👤 ${currentUser.login} (${currentUser.role === 'admin' ? 'Админ' : 'Пользователь'})` : '👤 Гость';
+        if (!isAdmin && addModal.classList.contains('active')) addModal.classList.remove('active');
+    }
+    function checkAuthForAdd() { if (currentUser?.role !== 'admin') { alert('Недостаточно прав! Только администратор может добавлять энергетики.'); return false; } return true; }
+    function checkAuthForEditDelete() { if (currentUser?.role !== 'admin') { alert('Недостаточно прав! Только администратор может изменять/удалять.'); return false; } return true; }
+    function checkAuthForReview() { if (!currentUser || currentUser.role === 'guest') { alert('Необходимо войти как пользователь или администратор, чтобы оставить отзыв.'); return false; } return true; }
+
+    async function registerUser(login, password) {
+        if (!login || !password) { alert('Заполните логин и пароль'); return false; }
+        const usersRef = db.collection('users');
+        const exist = await usersRef.where('login', '==', login).get();
+        if (!exist.empty) { alert('Логин уже существует'); return false; }
+        await usersRef.add({ login, password, role: 'user' });
+        alert('Регистрация успешна! Теперь войдите.');
+        return true;
+    }
+    async function loginUser(login, password) {
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.where('login', '==', login).where('password', '==', password).get();
+        if (snapshot.empty) { alert('Неверный логин или пароль'); return false; }
+        const user = snapshot.docs[0].data();
+        saveSession({ login: user.login, role: user.role });
+        authModal.classList.remove('active');
+        return true;
+    }
+    async function loginAsAdmin(password) {
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.where('role', '==', 'admin').where('password', '==', password).get();
+        if (snapshot.empty) { alert('Неверный пароль администратора'); return false; }
+        const admin = snapshot.docs[0].data();
+        saveSession({ login: admin.login, role: 'admin' });
+        authModal.classList.remove('active');
+        return true;
+    }
+    function showAuthModal() { authModal.classList.add('active'); }
+    function closeAllModals() { authModal.classList.remove('active'); addModal.classList.remove('active'); editModal.classList.remove('active'); detailModal.classList.remove('active'); }
+
+    // ========== РАБОТА С ЭНЕРГЕТИКАМИ ==========
+    async function addToFirestore(drink) { try { await db.collection('energydrinks').add({ ...drink, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); return true; } catch(e) { alert(e.message); return false; } }
+    async function updateInFirestore(id, drink) { try { await db.collection('energydrinks').doc(id).update(drink); return true; } catch(e) { alert(e.message); return false; } }
+    async function deleteFromFirestore(id) { try { await db.collection('energydrinks').doc(id).delete(); return true; } catch(e) { alert(e.message); return false; } }
+
+    // ОТЗЫВЫ
+    async function addReview(drinkId, userId, userName, rating, text) {
+        const review = { drinkId, userId, userName, rating: Number(rating), text, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
+        await db.collection('reviews').add(review);
+        // Пересчет средней оценки энергетика
+        const drinkSnap = await db.collection('energydrinks').doc(drinkId).get();
+        const drink = drinkSnap.data();
+        const adminRating = drink.adminRating;
+        const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
+        let sum = adminRating * 3;
+        let count = 3;
+        reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
+        const newAvg = sum / count;
+        await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg, reviewsCount: count, reviewsSum: sum });
+    }
+
+    async function fetchReviews(drinkId) {
+        const snap = await db.collection('reviews').where('drinkId', '==', drinkId).orderBy('createdAt', 'desc').get();
+        return snap.docs.map(doc => doc.data());
+    }
+
+    // Подписка на энергетики
     function connectToFirestore() {
         if (unsubscribe) unsubscribe();
-        syncStatus.innerHTML = '<span>🔄</span> Загрузка данных...';
-        unsubscribe = db.collection('energydrinks')
-            .orderBy('createdAt', 'desc')
-            .onSnapshot((snapshot) => {
-                energyDrinks = [];
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    energyDrinks.push({
-                        id: doc.id,
-                        name: data.name,
-                        imageData: data.imageData || null,
-                        tags: data.tags || [],
-                        rating: data.rating || 3,
-                        taste: data.taste || "не указан",
-                        description: data.description || "Нет описания",
-                        caffeine: data.caffeine ?? null,
-                        taurine: data.taurine ?? null
-                    });
-                });
-                syncStatus.innerHTML = '<span>✅</span> Синхронизировано с облаком';
-                setTimeout(() => {
-                    if (syncStatus.innerHTML.includes('Синхронизировано'))
-                        syncStatus.innerHTML = '<span>☁️</span> Данные в облаке';
-                }, 2000);
-                applyFiltersAndRender();
-            }, (error) => {
-                console.error("Firestore error:", error);
-                syncStatus.innerHTML = '<span>⚠️</span> Ошибка подключения, проверьте интернет и настройки Firebase';
+        unsubscribe = db.collection('energydrinks').onSnapshot(snapshot => {
+            energyDrinks = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                energyDrinks.push({ id: doc.id, name: data.name, imageData: data.imageData || null, tags: data.tags || [], rating: data.averageRating || data.adminRating || 3, taste: data.taste || "", description: data.description || "", caffeine: data.caffeine ?? null, taurine: data.taurine ?? null, adminRating: data.adminRating });
             });
+            applyFiltersAndRender();
+            syncStatus.innerHTML = '✅ Синхронизировано';
+            setTimeout(() => { syncStatus.innerHTML = '☁️ Данные в облаке'; }, 2000);
+        }, error => { syncStatus.innerHTML = '⚠️ Ошибка подключения'; });
     }
 
-    // CRUD-операции с Firebase
-    async function addToFirestore(drink) {
-        try {
-            await db.collection('energydrinks').add({
-                ...drink,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            return true;
-        } catch(e) { alert("Ошибка сохранения: "+e.message); return false; }
-    }
-    async function updateInFirestore(id, drink) {
-        try {
-            await db.collection('energydrinks').doc(id).update(drink);
-            return true;
-        } catch(e) { alert("Ошибка обновления: "+e.message); return false; }
-    }
-    async function deleteFromFirestore(id) {
-        try {
-            await db.collection('energydrinks').doc(id).delete();
-            return true;
-        } catch(e) { alert("Ошибка удаления: "+e.message); return false; }
-    }
-
-    function renderTagCheckboxes(container, selectedTags = []) {
+    function renderTagCheckboxes(container, selected = []) {
         container.innerHTML = '';
         AVAILABLE_TAGS.forEach(tag => {
-            const label = document.createElement('label');
-            label.className = 'tag-check';
-            const cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.value = tag.name;
-            if (selectedTags.includes(tag.name)) cb.checked = true;
-            const span = document.createElement('span');
-            span.innerText = `${tag.emoji} ${tag.name}`;
-            label.appendChild(cb);
-            label.appendChild(span);
-            container.appendChild(label);
+            const label = document.createElement('label'); label.className = 'tag-check';
+            const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag.name; if (selected.includes(tag.name)) cb.checked = true;
+            const span = document.createElement('span'); span.innerText = `${tag.emoji} ${tag.name}`;
+            label.appendChild(cb); label.appendChild(span); container.appendChild(label);
         });
     }
-    function getSelectedTagsFromContainer(container) {
-        return Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    function getSelectedTags(container) { return Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value); }
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+    function getImageSrc(drink) { return drink.imageData || "https://via.placeholder.com/200?text=Нет+фото"; }
+
+    function filterDrinks(arr) {
+        let res = [...arr];
+        if (searchQuery.trim()) res = res.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()));
+        if (selectedFilterTags.length) res = res.filter(d => selectedFilterTags.every(t => d.tags.includes(t)));
+        return res;
     }
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-    }
-    function getImageSrc(drink) {
-        return drink.imageData || "https://via.placeholder.com/200?text=Нет+фото";
-    }
-
-    // Добавление
-    let selectedImageBase64 = null;
-    let editSelectedImageBase64 = null;
-    const tagsCheckboxesDiv = document.getElementById('tagsCheckboxes');
-    const editTagsCheckboxesDiv = document.getElementById('editTagsCheckboxes');
-    const addDrinkForm = document.getElementById('addDrinkForm');
-    const editDrinkForm = document.getElementById('editDrinkForm');
-    const drinkImageFile = document.getElementById('drinkImageFile');
-    const imagePreviewDiv = document.getElementById('imagePreview');
-    const editImageFile = document.getElementById('editImageFile');
-    const editImagePreviewDiv = document.getElementById('editImagePreview');
-
-    // Обработчик выбора фото для добавления с ресайзом
-    drinkImageFile.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) {
-            selectedImageBase64 = null;
-            imagePreviewDiv.innerHTML = '';
-            return;
-        }
-        try {
-            const resized = await resizeImageToSquare(file, 800, 0.85);
-            selectedImageBase64 = resized;
-            imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px; border-radius:16px;">`;
-        } catch(err) {
-            console.error('Ошибка обработки фото:', err);
-            alert('Не удалось обработать изображение. Попробуйте другой файл.');
-            selectedImageBase64 = null;
-            imagePreviewDiv.innerHTML = '';
-        }
-    });
-
-    // Обработчик выбора фото для редактирования с ресайзом
-    editImageFile.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) {
-            editSelectedImageBase64 = null;
-            editImagePreviewDiv.innerHTML = '';
-            return;
-        }
-        try {
-            const resized = await resizeImageToSquare(file, 800, 0.85);
-            editSelectedImageBase64 = resized;
-            editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px; border-radius:16px;">`;
-        } catch(err) {
-            console.error('Ошибка обработки фото:', err);
-            alert('Не удалось обработать изображение. Попробуйте другой файл.');
-            editSelectedImageBase64 = null;
-            editImagePreviewDiv.innerHTML = '';
-        }
-    });
-
-    async function addNewDrink(event) {
-        event.preventDefault();
-        const name = document.getElementById('drinkName').value.trim();
-        const rating = parseFloat(document.getElementById('drinkRating').value);
-        const taste = document.getElementById('drinkTaste').value.trim();
-        const caffeine = document.getElementById('drinkCaffeine').value;
-        const taurine = document.getElementById('drinkTaurine').value;
-        const caffeineValue = caffeine ? parseFloat(caffeine) : null;
-        const taurineValue = taurine ? parseFloat(taurine) : null;
-        const description = document.getElementById('drinkDescription').value.trim() || "Нет описания";
-        const selectedTags = getSelectedTagsFromContainer(tagsCheckboxesDiv);
-
-        if (!name) { alert("Введите название"); return; }
-        if (!taste) { alert("Укажите вкус"); return; }
-        if (selectedTags.length === 0) { alert("Выберите хотя бы один тег"); return; }
-
-        let imageData = selectedImageBase64;
-        const success = await addToFirestore({ name, imageData, tags: selectedTags, rating, taste, description, caffeine: caffeineValue, taurine: taurineValue });
-        if (success) {
-            addModal.classList.remove('active');
-            addDrinkForm.reset();
-            selectedImageBase64 = null;
-            imagePreviewDiv.innerHTML = '';
-            renderTagCheckboxes(tagsCheckboxesDiv, []);
-            searchQuery = ""; searchInput.value = "";
-            resetFiltersAndSort();
-        }
-    }
-
-    // Редактирование
-    function openEditModal(drink) {
-        document.getElementById('editDrinkId').value = drink.id;
-        document.getElementById('editName').value = drink.name;
-        document.getElementById('editRating').value = drink.rating;
-        document.getElementById('editTaste').value = drink.taste || "";
-        document.getElementById('editDescription').value = drink.description || "";
-        document.getElementById('editCaffeine').value = drink.caffeine ?? '';
-        document.getElementById('editTaurine').value = drink.taurine ?? '';
-        renderTagCheckboxes(editTagsCheckboxesDiv, drink.tags || []);
-        editImagePreviewDiv.innerHTML = '';
-        editSelectedImageBase64 = null;
-        if (drink.imageData) {
-            const img = document.createElement('img');
-            img.src = drink.imageData;
-            img.style.maxWidth = '100px';
-            img.style.borderRadius = '16px';
-            editImagePreviewDiv.appendChild(img);
-        }
-        editModal.classList.add('active');
-    }
-
-    async function saveEdit(event) {
-        event.preventDefault();
-        const id = document.getElementById('editDrinkId').value;
-        const name = document.getElementById('editName').value.trim();
-        const rating = parseFloat(document.getElementById('editRating').value);
-        const taste = document.getElementById('editTaste').value.trim();
-        const description = document.getElementById('editDescription').value.trim() || "Нет описания";
-        const selectedTags = getSelectedTagsFromContainer(editTagsCheckboxesDiv);
-        const caffeine = document.getElementById('editCaffeine').value;
-        const taurine = document.getElementById('editTaurine').value;
-        const caffeineValue = caffeine ? parseFloat(caffeine) : null;
-        const taurineValue = taurine ? parseFloat(taurine) : null;
-        if (!name) { alert("Введите название"); return; }
-        if (!taste) { alert("Укажите вкус"); return; }
-        if (selectedTags.length === 0) { alert("Выберите хотя бы один тег"); return; }
-
-        let imageData = editSelectedImageBase64;
-        if (!imageData) {
-            const existing = energyDrinks.find(d => d.id === id);
-            if (existing) imageData = existing.imageData;
-        }
-        const success = await updateInFirestore(id, { name, imageData, tags: selectedTags, rating, taste, description, caffeine: caffeineValue, taurine: taurineValue });
-        if (success) {
-            editModal.classList.remove('active');
-            detailModal.classList.remove('active');
-        }
-    }
-
-    async function deleteDrink(drinkId) {
-        if (confirm("Удалить энергетик навсегда? Он исчезнет на всех устройствах.")) {
-            await deleteFromFirestore(drinkId);
-            detailModal.classList.remove('active');
-        }
-    }
-
-    // Фильтрация и рендер
-    function filterDrinks(drinks) {
-        let result = [...drinks];
-        if (searchQuery.trim()) {
-            const lower = searchQuery.toLowerCase();
-            result = result.filter(d => d.name.toLowerCase().includes(lower));
-        }
-        if (selectedFilterTags.length) {
-            result = result.filter(d => selectedFilterTags.every(tag => d.tags.includes(tag)));
-        }
-        return result;
-    }
-    function sortDrinks(drinks) {
-        const sorted = [...drinks];
-        switch(currentSort) {
-            case 'rating-desc': sorted.sort((a, b) => b.rating - a.rating); break;
-            case 'rating-asc': sorted.sort((a, b) => a.rating - b.rating); break;
-            case 'name-asc': sorted.sort((a, b) => a.name.localeCompare(b.name, 'ru')); break;
-            case 'name-desc': sorted.sort((a, b) => b.name.localeCompare(a.name, 'ru')); break;
-            default: sorted.sort((a, b) => b.rating - a.rating);
-        }
+    function sortDrinks(arr) {
+        const sorted = [...arr];
+        if (currentSort === 'name-asc') sorted.sort((a,b) => a.name.localeCompare(b.name));
+        else if (currentSort === 'name-desc') sorted.sort((a,b) => b.name.localeCompare(a.name));
+        else if (currentSort === 'rating-asc') sorted.sort((a,b) => a.rating - b.rating);
+        else sorted.sort((a,b) => b.rating - a.rating);
         return sorted;
     }
     function applyFiltersAndRender() {
         const filtered = filterDrinks(energyDrinks);
         const sorted = sortDrinks(filtered);
         renderCards(sorted);
-        const total = energyDrinks.length;
-        const shown = filtered.length;
         const counter = document.getElementById('energyCounter');
-        if (counter) {
-            if (shown === total) counter.innerHTML = ` Всего энергетиков: ${total}`;
-            else counter.innerHTML = ` Показано: ${shown} из ${total}`;
-        }
+        if (counter) counter.innerHTML = `⚡ Всего энергетиков: ${energyDrinks.length}${filtered.length !== energyDrinks.length ? ` (показано ${filtered.length})` : ''}`;
     }
-
-    function renderCards(drinksArray) {
-        if (!drinksArray.length) {
-            cardsContainer.innerHTML = `<div class="empty-message">🍹 Добавьте первый энергетик через кнопку «Добавить». Данные будут в облаке и на всех устройствах.</div>`;
-            return;
-        }
-        cardsContainer.innerHTML = drinksArray.map(drink => `
+    function renderCards(drinks) {
+        if (!drinks.length) { cardsContainer.innerHTML = '<div class="empty-message">🍹 Добавьте первый энергетик</div>'; return; }
+        cardsContainer.innerHTML = drinks.map(drink => `
             <div class="drink-card" data-id="${drink.id}">
-                <img class="card-img" src="${getImageSrc(drink)}" alt="${drink.name}" onerror="this.src='https://via.placeholder.com/100?text=Ошибка'">
+                <img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/100'">
                 <div class="card-info">
                     <div class="card-title">${escapeHtml(drink.name)}</div>
-                    <div class="tags-row">
-                        <div class="tags-list">
-                            ${drink.tags.map(tag => {
-                                const obj = AVAILABLE_TAGS.find(t => t.name === tag);
-                                const display = obj ? `${obj.emoji} ${obj.name}` : tag;
-                                return `<span class="tag-badge">${escapeHtml(display)}</span>`;
-                            }).join('')}
-                        </div>
-                        <div class="rating-value">⭐ ${drink.rating.toFixed(1)}</div>
-                    </div>
+                    <div class="tags-row"><div class="tags-list">${drink.tags.map(t => { const obj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${obj ? obj.emoji : ''} ${escapeHtml(t)}</span>`; }).join('')}</div>
+                    <div class="rating-value">⭐ ${drink.rating ? drink.rating.toFixed(1) : '?'}</div></div>
                 </div>
-            </div>
-        `).join('');
-        document.querySelectorAll('.drink-card').forEach(card => {
-            const id = card.getAttribute('data-id');
-            card.addEventListener('click', () => {
-                const drink = energyDrinks.find(d => d.id === id);
-                if (drink) openDetailModal(drink);
-            });
-        });
+            </div>`).join('');
+        document.querySelectorAll('.drink-card').forEach(card => { card.addEventListener('click', () => { const drink = energyDrinks.find(d => d.id === card.dataset.id); if (drink) openDetailModal(drink); }); });
     }
 
-    function openDetailModal(drink) {
-        const tagSpans = drink.tags.map(tag => {
-            const obj = AVAILABLE_TAGS.find(t => t.name === tag);
-            const display = obj ? `${obj.emoji} ${obj.name}` : tag;
-            return `<span class="tag-badge">${escapeHtml(display)}</span>`;
-        }).join('');
+    async function openDetailModal(drink) {
+        const reviews = await fetchReviews(drink.id);
+        const tagSpans = drink.tags.map(t => { const obj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${obj ? obj.emoji : ''} ${escapeHtml(t)}</span>`; }).join('');
+        const isUser = currentUser && currentUser.role !== 'admin';
+        const isAdmin = currentUser?.role === 'admin';
+        const showReviewForm = currentUser && (currentUser.role === 'user' || currentUser.role === 'admin');
         document.getElementById('detailContent').innerHTML = `
             <div class="detail-layout">
-                <div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280?text=Ошибка'"></div>
+                <div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280'"></div>
                 <div class="detail-info">
                     <h2>${escapeHtml(drink.name)}</h2>
-                    <div class="detail-tags" style="margin: 10px 0;">${tagSpans}</div>
-                    <div style="font-size:1.5rem; font-weight:600;">⭐ ${drink.rating.toFixed(1)} / 5</div>
-                    <div class="taste-block"> Вкус: ${escapeHtml(drink.taste)}</div>
-                    ${drink.caffeine ? `<div class="taste-block" style="background: #e8f0fe; border-left-color: #3182ce;"> Кофеин: ${drink.caffeine} мг</div>` : ''}
-                    ${drink.taurine ? `<div class="taste-block" style="background: #e8f0fe; border-left-color: #3182ce;"> Таурин: ${drink.taurine} мг</div>` : ''}
+                    <div class="detail-tags">${tagSpans}</div>
+                    <div style="font-size:1.5rem; font-weight:600;">⭐ ${drink.rating ? drink.rating.toFixed(1) : '?'} / 5</div>
+                    <div class="taste-block">👅 Вкус: ${escapeHtml(drink.taste)}</div>
+                    ${drink.caffeine ? `<div class="taste-block">⚡ Кофеин: ${drink.caffeine} мг</div>` : ''}
+                    ${drink.taurine ? `<div class="taste-block">💪 Таурин: ${drink.taurine} мг</div>` : ''}
                     <div class="detail-description">📄 ${escapeHtml(drink.description)}</div>
                     <div class="action-buttons">
-                        <button class="edit-button" id="editDrinkBtn">✏️ Изменить</button>
-                        <button class="delete-button" id="deleteDrinkBtn">🗑️ Удалить</button>
+                        ${isAdmin ? `<button class="edit-button" id="editDrinkBtn">✏️ Изменить</button><button class="delete-button" id="deleteDrinkBtn">🗑️ Удалить</button>` : ''}
+                        ${showReviewForm ? `<button class="review-button" id="showReviewFormBtn">📝 Оставить отзыв</button>` : ''}
                     </div>
+                    <div class="reviews-section"><h3>Отзывы пользователей</h3><div id="reviewsList"></div></div>
                 </div>
-            </div>
-        `;
+            </div>`;
+        const reviewsDiv = document.getElementById('reviewsList');
+        reviewsDiv.innerHTML = reviews.length ? reviews.map(r => `<div class="review-card"><div class="review-info"><div class="review-user">${escapeHtml(r.userName)}</div><div class="review-text">${escapeHtml(r.text)}</div></div><div class="review-rating">⭐ ${r.rating}</div></div>`).join('') : '<p>Пока нет отзывов. Будьте первым!</p>';
+        if (showReviewForm) {
+            const reviewBtn = document.getElementById('showReviewFormBtn');
+            reviewBtn.addEventListener('click', () => {
+                const existingForm = document.getElementById('dynamicReviewForm');
+                if (existingForm) existingForm.remove();
+                const formHtml = `<div id="dynamicReviewForm" class="add-review-form"><textarea id="reviewText" rows="2" placeholder="Ваш комментарий"></textarea><select id="reviewRating"><option value="5">5⭐</option><option value="4">4⭐</option><option value="3">3⭐</option><option value="2">2⭐</option><option value="1">1⭐</option></select><button id="submitReviewBtn" class="submit-btn">Отправить отзыв</button></div>`;
+                reviewsDiv.insertAdjacentHTML('afterend', formHtml);
+                document.getElementById('submitReviewBtn').onclick = async () => {
+                    const text = document.getElementById('reviewText').value.trim();
+                    const rating = document.getElementById('reviewRating').value;
+                    if (!text) { alert('Напишите комментарий'); return; }
+                    await addReview(drink.id, currentUser.login, currentUser.login, rating, text);
+                    alert('Отзыв добавлен!');
+                    openDetailModal(drink); // обновить
+                };
+            });
+        }
+        if (isAdmin) {
+            document.getElementById('editDrinkBtn')?.addEventListener('click', () => { detailModal.classList.remove('active'); openEditModal(drink); });
+            document.getElementById('deleteDrinkBtn')?.addEventListener('click', async () => { if (confirm('Удалить?')) await deleteFromFirestore(drink.id); detailModal.classList.remove('active'); });
+        }
         detailModal.classList.add('active');
-        document.getElementById('editDrinkBtn')?.addEventListener('click', () => {
-            detailModal.classList.remove('active');
-            openEditModal(drink);
-        });
-        document.getElementById('deleteDrinkBtn')?.addEventListener('click', () => deleteDrink(drink.id));
     }
 
+    // Добавление/Редактирование (только админ)
+    let selectedImageBase64 = null, editSelectedImageBase64 = null;
+    const tagsCheckboxesDiv = document.getElementById('tagsCheckboxes'), editTagsCheckboxesDiv = document.getElementById('editTagsCheckboxes');
+    const drinkImageFile = document.getElementById('drinkImageFile'), editImageFile = document.getElementById('editImageFile');
+    const imagePreviewDiv = document.getElementById('imagePreview'), editImagePreviewDiv = document.getElementById('editImagePreview');
+    drinkImageFile.onchange = async (e) => { const file = e.target.files[0]; if (!file) return; selectedImageBase64 = await resizeImageToSquare(file, 800, 0.85); imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px;">`; };
+    editImageFile.onchange = async (e) => { const file = e.target.files[0]; if (!file) return; editSelectedImageBase64 = await resizeImageToSquare(file, 800, 0.85); editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px;">`; };
+    async function addNewDrink(e) {
+        e.preventDefault(); if (!checkAuthForAdd()) return;
+        const name = document.getElementById('drinkName').value.trim();
+        const adminRating = parseFloat(document.getElementById('drinkRating').value);
+        const taste = document.getElementById('drinkTaste').value.trim();
+        const caffeine = document.getElementById('drinkCaffeine').value; const taurine = document.getElementById('drinkTaurine').value;
+        const description = document.getElementById('drinkDescription').value.trim() || "Нет описания";
+        const tags = getSelectedTags(tagsCheckboxesDiv);
+        if (!name || !taste || !tags.length) { alert('Заполните все поля'); return; }
+        const drink = { name, imageData: selectedImageBase64, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: adminRating, reviewsCount: 3, reviewsSum: adminRating * 3 };
+        if (await addToFirestore(drink)) { closeAllModals(); addDrinkForm.reset(); selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; renderTagCheckboxes(tagsCheckboxesDiv, []); }
+    }
+    function openEditModal(drink) {
+        document.getElementById('editDrinkId').value = drink.id;
+        document.getElementById('editName').value = drink.name;
+        document.getElementById('editRating').value = drink.adminRating || 3;
+        document.getElementById('editTaste').value = drink.taste;
+        document.getElementById('editDescription').value = drink.description;
+        document.getElementById('editCaffeine').value = drink.caffeine ?? '';
+        document.getElementById('editTaurine').value = drink.taurine ?? '';
+        renderTagCheckboxes(editTagsCheckboxesDiv, drink.tags);
+        editImagePreviewDiv.innerHTML = drink.imageData ? `<img src="${drink.imageData}" style="max-width:100px;">` : '';
+        editSelectedImageBase64 = null;
+        editModal.classList.add('active');
+    }
+    async function saveEdit(e) {
+        e.preventDefault(); if (!checkAuthForEditDelete()) return;
+        const id = document.getElementById('editDrinkId').value;
+        const name = document.getElementById('editName').value.trim();
+        const adminRating = parseFloat(document.getElementById('editRating').value);
+        const taste = document.getElementById('editTaste').value.trim();
+        const description = document.getElementById('editDescription').value.trim();
+        const tags = getSelectedTags(editTagsCheckboxesDiv);
+        const caffeine = document.getElementById('editCaffeine').value; const taurine = document.getElementById('editTaurine').value;
+        if (!name || !taste || !tags.length) { alert('Заполните поля'); return; }
+        let imageData = editSelectedImageBase64;
+        if (!imageData) { const old = energyDrinks.find(d => d.id === id); if (old) imageData = old.imageData; }
+        // пересчет средней при изменении adminRating
+        const reviewsSnap = await db.collection('reviews').where('drinkId', '==', id).get();
+        let sum = adminRating * 3; let count = 3;
+        reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
+        const newAvg = sum / count;
+        await updateInFirestore(id, { name, imageData, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: newAvg, reviewsCount: count, reviewsSum: sum });
+        closeAllModals();
+    }
+
+    // Фильтры тегов (эксклюзив для сахарных)
     function renderFilterTags() {
         filterTagsContainer.innerHTML = '';
-        
-        // Группа "сахарных" тегов (будут работать как радио-кнопки)
         const sugarTags = ["Без сахара", "С сахаром", "50/50 на сахаре"];
-        
         AVAILABLE_TAGS.forEach(tag => {
-            const span = document.createElement('span');
-            span.className = 'filter-tag';
-            if (selectedFilterTags.includes(tag.name)) span.classList.add('selected');
+            const span = document.createElement('span'); span.className = 'filter-tag'; if (selectedFilterTags.includes(tag.name)) span.classList.add('selected');
             span.innerText = `${tag.emoji} ${tag.name}`;
-            
-            span.addEventListener('click', () => {
-                // Проверяем, относится ли тег к "сахарным"
+            span.onclick = () => {
                 if (sugarTags.includes(tag.name)) {
-                    // Эксклюзивный режим: если этот тег уже выбран - снимаем его
-                    if (selectedFilterTags.includes(tag.name)) {
-                        selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
-                    } else {
-                        // Убираем все другие "сахарные" теги и добавляем текущий
-                        selectedFilterTags = selectedFilterTags.filter(t => !sugarTags.includes(t));
-                        selectedFilterTags.push(tag.name);
-                    }
+                    if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
+                    else { selectedFilterTags = selectedFilterTags.filter(t => !sugarTags.includes(t)); selectedFilterTags.push(tag.name); }
                 } else {
-                    // Обычный режим для остальных тегов (можно выбирать несколько)
-                    if (selectedFilterTags.includes(tag.name)) {
-                        selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
-                    } else {
-                        selectedFilterTags.push(tag.name);
-                    }
+                    if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
+                    else selectedFilterTags.push(tag.name);
                 }
-                
-                renderFilterTags();      // Перерисовываем кнопки
-                applyFiltersAndRender(); // Применяем фильтры
-            });
-            
+                renderFilterTags(); applyFiltersAndRender();
+            };
             filterTagsContainer.appendChild(span);
         });
     }
-
-    function resetFiltersAndSort() {
-        currentSort = "name-asc";
-        selectedFilterTags = [];
-        searchQuery = "";
-        searchInput.value = "";
-        updateActiveSortButton();
-        renderFilterTags();
-        applyFiltersAndRender();
-    }
-
-    // Сортировка
+    function resetFiltersAndSort() { currentSort = "name-asc"; selectedFilterTags = []; searchQuery = ""; searchInput.value = ""; updateActiveSortButton(); renderFilterTags(); applyFiltersAndRender(); }
     const sortButtons = document.querySelectorAll('.sort-btn');
-    function updateActiveSortButton() {
-        sortButtons.forEach(btn => {
-            const sortValue = btn.getAttribute('data-sort');
-            if (sortValue === currentSort) btn.classList.add('active');
-            else btn.classList.remove('active');
-        });
-    }
-    sortButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentSort = btn.getAttribute('data-sort');
-            updateActiveSortButton();
-            applyFiltersAndRender();
-        });
-    });
+    function updateActiveSortButton() { sortButtons.forEach(btn => { if (btn.dataset.sort === currentSort) btn.classList.add('active'); else btn.classList.remove('active'); }); }
+    sortButtons.forEach(btn => { btn.onclick = () => { currentSort = btn.dataset.sort; updateActiveSortButton(); applyFiltersAndRender(); }; });
     resetFiltersBtn.onclick = resetFiltersAndSort;
     searchInput.oninput = (e) => { searchQuery = e.target.value; applyFiltersAndRender(); };
 
-    // Закрытие модалок
-    const addModal = document.getElementById('addModal');
-    const detailModalEl = document.getElementById('detailModal');
-    const editModalEl = document.getElementById('editModal');
-    function closeModals() {
-        detailModalEl.classList.remove('active');
-        addModal.classList.remove('active');
-        editModalEl.classList.remove('active');
-    }
-    document.getElementById('closeAddModal').onclick = closeModals;
-    document.getElementById('closeDetailModal').onclick = closeModals;
-    document.getElementById('closeEditModal').onclick = closeModals;
-    window.onclick = (e) => { if (e.target === addModal || e.target === editModalEl || e.target === detailModalEl) closeModals(); };
-    document.getElementById('openAddModalBtn').onclick = () => addModal.classList.add('active');
+    // Модалки и инициализация
+    document.getElementById('openAddModalBtn').onclick = () => { if (checkAuthForAdd()) addModal.classList.add('active'); };
+    document.getElementById('logoutBtn').onclick = () => { clearSession(); location.reload(); };
+    document.getElementById('closeAddModal').onclick = closeAllModals;
+    document.getElementById('closeEditModal').onclick = closeAllModals;
+    document.getElementById('closeDetailModal').onclick = closeAllModals;
+    document.getElementById('closeAuthModal').onclick = closeAllModals;
+    window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeAllModals(); };
 
-    // Инициализация
-    renderTagCheckboxes(tagsCheckboxesDiv, []);
-    renderTagCheckboxes(editTagsCheckboxesDiv, []);
-    renderFilterTags();
-    connectToFirestore();
-    updateActiveSortButton();
+    // Авторизация кнопки
+    document.getElementById('authLoginBtn').onclick = async () => { const login = document.getElementById('authLogin').value, pass = document.getElementById('authPassword').value; await loginUser(login, pass); };
+    document.getElementById('authRegisterBtn').onclick = async () => { const login = document.getElementById('authLogin').value, pass = document.getElementById('authPassword').value; if (await registerUser(login, pass)) { document.getElementById('authLogin').value = ''; document.getElementById('authPassword').value = ''; } };
+    document.getElementById('authAdminBtn').onclick = async () => { const pass = document.getElementById('authPassword').value; await loginAsAdmin(pass); };
+    document.getElementById('authGuestBtn').onclick = () => { clearSession(); authModal.classList.remove('active'); };
 
-    addDrinkForm.addEventListener('submit', addNewDrink);
-    editDrinkForm.addEventListener('submit', saveEdit);
+    // Восстановление сессии
+    const saved = localStorage.getItem('energyUser');
+    if (saved) { currentUser = JSON.parse(saved); updateUIByRole(); } else { showAuthModal(); }
 
-    // Тёмная тема
-    const themeToggleBtn = document.getElementById('themeToggle');
-    const toggleTheme = () => {
-        const isDark = document.body.classList.contains('dark-mode');
-        const logo = document.getElementById('logoImage');
-        if (isDark) {
-            document.body.classList.remove('dark-mode');
-            themeToggleBtn.textContent = '🌙';
-            if (logo) logo.src = 'logo-light.png';
-        } else {
-            document.body.classList.add('dark-mode');
-            themeToggleBtn.textContent = '☀️';
-            if (logo) logo.src = 'logo-dark.png';
-        }
-    };
-    document.body.classList.remove('dark-mode');
-    themeToggleBtn.textContent = '🌙';
-    if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+    renderTagCheckboxes(tagsCheckboxesDiv, []); renderTagCheckboxes(editTagsCheckboxesDiv, []); renderFilterTags(); connectToFirestore(); updateActiveSortButton();
+    document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
+    document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
+    const themeToggle = document.getElementById('themeToggle'); themeToggle.onclick = () => { document.body.classList.toggle('dark-mode'); themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; };
 </script>
 </body>
 </html>
