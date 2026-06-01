@@ -603,8 +603,23 @@
     renderTagCheckboxes(tagsCheckboxesDiv, []); renderTagCheckboxes(editTagsCheckboxesDiv, []); renderFilterTags(); connectToFirestore(); updateActiveSortButton();
     document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
     document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
-    const themeToggle = document.getElementById('themeToggle'); themeToggle.onclick = () => { document.body.classList.toggle('dark-mode'); themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; };
-</script>
+    const themeToggle = document.getElementById('themeToggle');
+    const logo = document.getElementById('logoImage');
+    
+    function toggleTheme() {
+        const isDark = document.body.classList.contains('dark-mode');
+        if (isDark) {
+            document.body.classList.remove('dark-mode');
+            themeToggle.textContent = '🌙';
+            logo.src = 'logo-light.png';
+        } else {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+            logo.src = 'logo-dark.png';
+        }
+    }
+    
+    themeToggle.onclick = toggleTheme;
 </body>
 </html>
 ```
