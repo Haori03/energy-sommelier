@@ -453,10 +453,10 @@
     <div class="filters-panel">
         <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию...">
         <div class="sort-section">
-            <span>📊 Сортировка:</span>
+            <span>Сортировка:</span>
             <div class="sort-buttons">
-                <button data-sort="name-asc" class="sort-btn">🔤 А→Я</button>
-                <button data-sort="name-desc" class="sort-btn">🔤 Я→А</button>
+                <button data-sort="name-asc" class="sort-btn">🔽 А→Я</button>
+                <button data-sort="name-desc" class="sort-btn">🔼 Я→А</button>
                 <button data-sort="rating-desc" class="sort-btn active">⭐ По рейтингу ↓</button>
                 <button data-sort="rating-asc" class="sort-btn">⭐ По рейтингу ↑</button>
             </div>
@@ -515,7 +515,7 @@
 
 <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyDQGjVUA8w66eGudNSK0s6PMOSjEYQbpWY",
+		apiKey: "AIzaSyDQGjVUA8w66eGudNSK0s6PMOSjEYQbpWY",
         authDomain: "energy-1363c.firebaseapp.com",
         projectId: "energy-1363c",
         storageBucket: "energy-1363c.firebasestorage.app",
@@ -547,6 +547,56 @@
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
     const searchInput = document.getElementById('searchInput');
     const syncStatus = document.getElementById('syncStatus');
+
+    // ========== ФУНКЦИЯ РЕСАЙЗА ИЗОБРАЖЕНИЯ ДО 800x800 ==========
+    async function resizeImageToSquare(file, targetSize = 800, quality = 0.85) {
+        return new Promise((resolve, reject) => {
+            if (!file || !file.type.match('image.*')) {
+                resolve(null);
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = targetSize;
+                    canvas.height = targetSize;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Заливаем белым фоном (чтобы избежать черных полей при JPEG)
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, targetSize, targetSize);
+                    
+                    // Вычисляем размеры для вписывания в квадрат с сохранением пропорций
+                    let drawWidth, drawHeight, offsetX, offsetY;
+                    const imgRatio = img.width / img.height;
+                    if (imgRatio > 1) {
+                        // Ширина больше высоты
+                        drawWidth = targetSize;
+                        drawHeight = targetSize / imgRatio;
+                        offsetX = 0;
+                        offsetY = (targetSize - drawHeight) / 2;
+                    } else {
+                        // Высота больше ширины или равны
+                        drawHeight = targetSize;
+                        drawWidth = targetSize * imgRatio;
+                        offsetX = (targetSize - drawWidth) / 2;
+                        offsetY = 0;
+                    }
+                    
+                    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+                    const resizedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                    resolve(resizedDataUrl);
+                };
+                img.onerror = () => reject(new Error('Ошибка загрузки изображения'));
+                img.src = e.target.result;
+            };
+            reader.onerror = () => reject(new Error('Ошибка чтения файла'));
+            reader.readAsDataURL(file);
+        });
+    }
+    // ============================================================
 
     // Подключение к Firestore (реальное время)
     function connectToFirestore() {
@@ -644,19 +694,44 @@
     const editImageFile = document.getElementById('editImageFile');
     const editImagePreviewDiv = document.getElementById('editImagePreview');
 
-    drinkImageFile.addEventListener('change', (e) => {
+    // Обработчик выбора фото для добавления с ресайзом
+    drinkImageFile.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (!file) { selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; return; }
-        const reader = new FileReader();
-        reader.onload = (ev) => { selectedImageBase64 = ev.target.result; imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
-        reader.readAsDataURL(file);
+        if (!file) {
+            selectedImageBase64 = null;
+            imagePreviewDiv.innerHTML = '';
+            return;
+        }
+        try {
+            const resized = await resizeImageToSquare(file, 800, 0.85);
+            selectedImageBase64 = resized;
+            imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px; border-radius:16px;">`;
+        } catch(err) {
+            console.error('Ошибка обработки фото:', err);
+            alert('Не удалось обработать изображение. Попробуйте другой файл.');
+            selectedImageBase64 = null;
+            imagePreviewDiv.innerHTML = '';
+        }
     });
-    editImageFile.addEventListener('change', (e) => {
+
+    // Обработчик выбора фото для редактирования с ресайзом
+    editImageFile.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (!file) { editSelectedImageBase64 = null; editImagePreviewDiv.innerHTML = ''; return; }
-        const reader = new FileReader();
-        reader.onload = (ev) => { editSelectedImageBase64 = ev.target.result; editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
-        reader.readAsDataURL(file);
+        if (!file) {
+            editSelectedImageBase64 = null;
+            editImagePreviewDiv.innerHTML = '';
+            return;
+        }
+        try {
+            const resized = await resizeImageToSquare(file, 800, 0.85);
+            editSelectedImageBase64 = resized;
+            editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px; border-radius:16px;">`;
+        } catch(err) {
+            console.error('Ошибка обработки фото:', err);
+            alert('Не удалось обработать изображение. Попробуйте другой файл.');
+            editSelectedImageBase64 = null;
+            editImagePreviewDiv.innerHTML = '';
+        }
     });
 
     async function addNewDrink(event) {
@@ -847,17 +922,40 @@
 
     function renderFilterTags() {
         filterTagsContainer.innerHTML = '';
+        
+        // Группа "сахарных" тегов (будут работать как радио-кнопки)
+        const sugarTags = ["Без сахара", "С сахаром", "50/50 на сахаре"];
+        
         AVAILABLE_TAGS.forEach(tag => {
             const span = document.createElement('span');
             span.className = 'filter-tag';
             if (selectedFilterTags.includes(tag.name)) span.classList.add('selected');
             span.innerText = `${tag.emoji} ${tag.name}`;
+            
             span.addEventListener('click', () => {
-                if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
-                else selectedFilterTags.push(tag.name);
-                renderFilterTags();
-                applyFiltersAndRender();
+                // Проверяем, относится ли тег к "сахарным"
+                if (sugarTags.includes(tag.name)) {
+                    // Эксклюзивный режим: если этот тег уже выбран - снимаем его
+                    if (selectedFilterTags.includes(tag.name)) {
+                        selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
+                    } else {
+                        // Убираем все другие "сахарные" теги и добавляем текущий
+                        selectedFilterTags = selectedFilterTags.filter(t => !sugarTags.includes(t));
+                        selectedFilterTags.push(tag.name);
+                    }
+                } else {
+                    // Обычный режим для остальных тегов (можно выбирать несколько)
+                    if (selectedFilterTags.includes(tag.name)) {
+                        selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
+                    } else {
+                        selectedFilterTags.push(tag.name);
+                    }
+                }
+                
+                renderFilterTags();      // Перерисовываем кнопки
+                applyFiltersAndRender(); // Применяем фильтры
             });
+            
             filterTagsContainer.appendChild(span);
         });
     }
