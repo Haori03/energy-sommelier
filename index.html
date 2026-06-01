@@ -224,7 +224,12 @@
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
     const searchInput = document.getElementById('searchInput');
     const syncStatus = document.getElementById('syncStatus');
-
+    // Установка правильного логотипа при загрузке
+    if (document.body.classList.contains('dark-mode')) {
+        document.getElementById('logoImage').src = 'logo-dark.png';
+    } else {
+        document.getElementById('logoImage').src = 'logo-light.png';
+    }
     // Функции авторизации
     function updateUIByRole() {
         const isAdmin = currentUser?.role === 'admin';
