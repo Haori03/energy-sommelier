@@ -598,7 +598,23 @@
     renderTagCheckboxes(tagsCheckboxesDiv, []); renderTagCheckboxes(editTagsCheckboxesDiv, []); renderFilterTags(); connectToFirestore(); updateActiveSortButton();
     document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
     document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
-    const themeToggle = document.getElementById('themeToggle'); themeToggle.onclick = () => { document.body.classList.toggle('dark-mode'); themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; };
+    // Функция обновления логотипа
+    const logoImage = document.getElementById('logoImage');
+    function updateLogo() {
+        if (document.body.classList.contains('dark-mode')) {
+            logoImage.src = 'logo-dark.png';
+        } else {
+            logoImage.src = 'logo-light.png';
+        }
+    }
+    updateLogo(); // установить при загрузке
+    
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.onclick = () => {
+        document.body.classList.toggle('dark-mode');
+        themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        updateLogo(); // обновить логотип после смены темы
+    };
 </script>
 </body>
 </html>
