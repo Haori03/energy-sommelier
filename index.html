@@ -517,7 +517,19 @@
     <div class="form-group"><label>Название *</label><input type="text" id="drinkName" required placeholder="Monster Mango"></div>
     <div class="form-group"><label>Фото (с компьютера)</label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
     <div class="form-group"><label>Оценка *</label><select id="drinkRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3" selected>3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
-    <div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required placeholder="сладкий с кислинкой"></div>
+    <div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required placeholder="Яблоко одно, сливы, виноград"></div>
+    <div class="form-group">
+    <label>☕ Кофеин (мг)</label>
+    <input type="number" id="drinkCaffeine" placeholder="например: 30" step="1" value="">
+    </div>
+    <div class="form-group">
+        <label>⚡ Таурин (мг)</label>
+        <input type="number" id="drinkTaurine" placeholder="например: 240" step="1" value="">
+    </div>
+    <div class="form-group">
+        <label>🏷️ Теги</label>
+        <div id="tagsCheckboxes" class="tags-checkboxes"></div>
+    </div>
     <div class="form-group"><label>Теги</label><div id="tagsCheckboxes" class="tags-checkboxes"></div></div>
     <div class="form-group"><label>Описание</label><textarea id="drinkDescription" rows="3"></textarea></div>
     <button type="submit" class="submit-btn">➕ Добавить</button>
@@ -530,6 +542,18 @@
     <div class="form-group"><label>Фото</label><input type="file" id="editImageFile" accept="image/*"><div id="editImagePreview" class="file-preview"></div></div>
     <div class="form-group"><label>Оценка</label><select id="editRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
     <div class="form-group"><label>Вкус</label><input type="text" id="editTaste" required></div>
+    <div class="form-group">
+    <label>☕ Кофеин (мг)</label>
+    <input type="number" id="editCaffeine" placeholder="мг" step="1">
+    </div>
+    <div class="form-group">
+        <label>⚡ Таурин (мг)</label>
+        <input type="number" id="editTaurine" placeholder="мг" step="1">
+    </div>
+    <div class="form-group">
+        <label>🏷️ Теги</label>
+        <div id="editTagsCheckboxes" class="tags-checkboxes"></div>
+    </div>
     <div class="form-group"><label>Теги</label><div id="editTagsCheckboxes" class="tags-checkboxes"></div></div>
     <div class="form-group"><label>Описание</label><textarea id="editDescription" rows="3"></textarea></div>
     <button type="submit" class="submit-btn">💾 Сохранить</button>
