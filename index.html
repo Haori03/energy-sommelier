@@ -318,9 +318,28 @@
         const newAvg = sum / count;
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
     }
+
+    async function deleteReview(reviewId, drinkId) {
+        if (!confirm('Удалить этот отзыв?')) return;
+        await db.collection('reviews').doc(reviewId).delete();
+    
+        // Пересчитываем среднюю оценку напитка (админская оценка с весом 3)
+        const drinkSnap = await db.collection('energydrinks').doc(drinkId).get();
+        const drink = drinkSnap.data();
+        const adminRating = drink.adminRating;
+        const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
+        let sum = adminRating * 3;
+        let count = 3;
+        reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
+        const newAvg = sum / count;
+        await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
+    
+        // Обновляем открытое окно с деталями
+        openDetailModal({ id: drinkId, ...drink });
+    }   
     async function fetchReviews(drinkId) {
-        const snap = await db.collection('reviews').where('drinkId', '==', drinkId).orderBy('createdAt', 'desc').get();
-        return snap.docs.map(doc => doc.data());
+        const snap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
+        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
 
     function connectToFirestore() {
@@ -428,7 +447,29 @@
                 </div>
             </div>`;
         const reviewsDiv = document.getElementById('reviewsList');
-        reviewsDiv.innerHTML = reviews.length ? reviews.map(r => `<div class="review-card"><div class="review-info"><div class="review-user">${escapeHtml(r.userName)}</div><div class="review-text">${escapeHtml(r.text)}</div></div><div class="review-rating">${r.rating}</div></div>`).join('') : '<p>Пока нет отзывов.</p>';
+        reviewsDiv.innerHTML = reviews.length ? reviews.map(review => {
+            const canDelete = (currentUser?.role === 'admin') || (currentUser?.login === review.userName);
+            return `
+                <div class="review-card" data-review-id="${review.id}">
+                    <div class="review-info">
+                        <div class="review-user">${escapeHtml(review.userName)}</div>
+                        <div class="review-text">${escapeHtml(review.text)}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="review-rating">${review.rating}</div>
+                        ${canDelete ? `<button class="delete-review-btn" data-review-id="${review.id}" style="background:none; border:none; cursor:pointer; font-size:1.3rem;">🗑️</button>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('') : '<p>Пока нет отзывов.</p>';
+        // Обработчики удаления отзывов
+        document.querySelectorAll('.delete-review-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const reviewId = btn.getAttribute('data-review-id');
+                if (reviewId) await deleteReview(reviewId, drink.id);
+            });
+        });
         if (showReviewForm) {
             const reviewBtn = document.getElementById('showReviewFormBtn');
             if (reviewBtn) reviewBtn.onclick = () => {
