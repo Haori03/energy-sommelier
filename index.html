@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -56,55 +55,36 @@
             color: #5a6e7c;
             margin-top: 4px;
         }
-        .btn-plus {
-            background: #2b7a4b;
-            border: none;
-            padding: 0 24px;
-            min-width: 120px;
-            height: 52px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            line-height: 1;           /* убираем лишние межстрочные отступы */
-            transition: 0.2s;
-        }
-        .btn-plus:hover {
-            background: #1f5f3a;
-            transform: scale(0.96);
-        }
-
+        
         .filters-panel {
             background: white;
             border-radius: 28px;
             padding: 18px 24px;
             margin-bottom: 30px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            <div class="energy-counter" id="energyCounter" style="margin-top: 12px; font-size: 0.9rem; font-weight: bold;"> Всего энергетиков: 0</div>
         }
+        
         .energy-counter {
             background: #eef2ff;
             display: inline-block;
             padding: 6px 16px;
             border-radius: 40px;
             margin-top: 12px;
+            font-size: 0.9rem;
+            font-weight: bold;
         }
         body.dark-mode .energy-counter {
             background: #2d3a4e;
             color: #cbd5e1;
         }
+        
         .btn-plus {
             background: #2b7a4b;
             border: none;
-            padding: 0 20px;  /* ← вместо фиксированной ширины */
+            padding: 0 20px;
             height: 52px;
             border-radius: 30px;
-            font-size: 16px;  /* ← уменьшил шрифт */
+            font-size: 16px;
             font-weight: bold;
             color: white;
             cursor: pointer;
@@ -113,6 +93,11 @@
             justify-content: center;
             transition: 0.2s;
         }
+        .btn-plus:hover {
+            background: #1f5f3a;
+            transform: scale(0.96);
+        }
+        
         .search-input {
             width: 100%;
             padding: 12px 18px;
@@ -245,7 +230,15 @@
             border: none;
             cursor: pointer;
         }
-        .detail-layout { display: flex; flex-wrap: wrap; gap: 28px; }
+        .detail-layout { 
+            display: flex; 
+            flex-wrap: nowrap; 
+            gap: 28px; 
+        }
+        .detail-img { 
+            flex-shrink: 0; 
+            width: 200px; 
+        }
         .detail-img img {
             width: 100%;
             max-width: 260px;
@@ -287,6 +280,19 @@
             border-radius: 24px;
             border: 1px solid #cbd5e1;
         }
+        /* Fix для стрелки селекта, чтобы не выходила за рамки */
+        .form-group select {
+            padding-right: 32px;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+        body.dark-mode .form-group select {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+        }
+        
         .tags-checkboxes { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
         .tag-check {
             display: flex;
@@ -326,6 +332,14 @@
             .drink-card { flex-direction: column; align-items: center; text-align: center; }
             .card-img { width: 120px; height: 120px; }
             .action-buttons { flex-direction: column; }
+            .detail-layout { 
+                flex-wrap: wrap; 
+                justify-content: center;
+            }
+            .detail-img { 
+                width: 180px; 
+                margin: 0 auto;
+            }
         }
         .theme-toggle {
             background: #f1f5f9;
@@ -395,177 +409,111 @@
         body.dark-mode .theme-toggle:hover {
             background: #475569;
         }
-        body.dark-mode .taste-block[style*="background: #e8f0fe"] {
-            background: #1e2a3a !important;
-            border-left-color: #60a5fa !important;
+        body.dark-mode .tag-check {
+            background: #334155;
+            color: #e2e8f0;
         }
-        const themeToggle = document.getElementById('themeToggle');
-        
-        const toggleTheme = () => {
-            const isDark = document.body.classList.contains('dark-mode');
-            if (isDark) {
-                document.body.classList.remove('dark-mode');
-                themeToggle.textContent = '🌙';
-            } else {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = '☀️';
-            }
-        };
-        
-        document.body.classList.remove('dark-mode');
-        themeToggle.textContent = '🌙';
-        const logo = document.getElementById('logoImage');
-        if (logo) logo.src = 'logo-light.png';
-        
-        if (themeToggle) {
-            themeToggle.addEventListener('click', toggleTheme);
+        body.dark-mode .modal-content .tag-check {
+            background: #334155;
         }
-        /* Стили для модалок в тёмной теме */
-    body.dark-mode .modal-content {
-        background: #1e293b;
-        color: #e2e8f0;
-    }
-    body.dark-mode .modal-content input,
-    body.dark-mode .modal-content textarea,
-    body.dark-mode .modal-content select {
-        background: #0f172a;
-        border-color: #475569;
-        color: #f1f5f9;
-    }
-    body.dark-mode .modal-content input::placeholder,
-    body.dark-mode .modal-content textarea::placeholder {
-        color: #94a3b8;
-    }
-    body.dark-mode .tag-check {
-        background: #334155;
-        color: #e2e8f0;
-    }
-    body.dark-mode .submit-btn {
-        background: #2b7a4b;
-        color: white;
-    }
-    body.dark-mode .submit-btn:hover {
-        background: #1f5f3a;
-    }
-    body.dark-mode .modal-close {
-        color: #f1f5f9;
-    }
-    body.dark-mode .modal-close:hover {
-        color: #ef4444;
-    }
-    body.dark-mode .form-group label {
-        color: #cbd5e1;
-    }
-    .logo {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-    }
-    .logo p {
-        font-size: 0.8rem;
-        color: #5a6e7c;
-        margin-top: 0;
-    }
-    body.dark-mode .logo p {
-        color: #94a3b8;
-    }
-    @media (max-width: 600px) {
         .logo {
-            flex-direction: column;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
-    }
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+            margin-top: 0;
+        }
+        body.dark-mode .logo p {
+            color: #94a3b8;
+        }
+        @media (max-width: 600px) {
+            .logo {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="app-container">
     <div class="header">
-    <div class="logo">
-        <img id="logoImage" src="logo-light.png" alt="Энергетический сомелье Ivan" style="height: 60px; width: auto; object-fit: contain;">
-    </div>
+        <div class="logo">
+            <img id="logoImage" src="logo-light.png" alt="Энергетический сомелье Ivan" style="height: 60px; width: auto; object-fit: contain;">
+        </div>
         <div style="display: flex; gap: 12px; align-items: center;">
             <button class="theme-toggle" id="themeToggle" style="background: #f1f5f9; border: none; width: 52px; height: 52px; border-radius: 30px; font-size: 28px; cursor: pointer;">🌙</button>
             <button class="btn-plus" id="openAddModalBtn">Добавить</button>
         </div>
     </div>
 
-   <div class="filters-panel">
-    <input type="text" id="searchInput" class="search-input" placeholder=" Поиск по названию...">
-    <div class="sort-section">
-        <span> Сортировка:</span>
-        <div class="sort-buttons">
-            <button data-sort="name-asc" class="sort-btn">🔤 А→Я</button>
-            <button data-sort="name-desc" class="sort-btn">🔤 Я→А</button>
-            <button data-sort="rating-desc" class="sort-btn active">⭐ По рейтингу ↓</button>
-            <button data-sort="rating-asc" class="sort-btn">⭐ По рейтингу ↑</button>
+    <div class="filters-panel">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию...">
+        <div class="sort-section">
+            <span>📊 Сортировка:</span>
+            <div class="sort-buttons">
+                <button data-sort="name-asc" class="sort-btn">🔤 А→Я</button>
+                <button data-sort="name-desc" class="sort-btn">🔤 Я→А</button>
+                <button data-sort="rating-desc" class="sort-btn active">⭐ По рейтингу ↓</button>
+                <button data-sort="rating-asc" class="sort-btn">⭐ По рейтингу ↑</button>
+            </div>
         </div>
+        <div class="tags-filter">
+            <span> Фильтр по тегам:</span>
+            <div class="filter-tags-group" id="filterTagsContainer"></div>
+            <button class="reset-filters" id="resetFiltersBtn">Сбросить</button>
+        </div>
+        <div class="sync-status" id="syncStatus">☁️ Синхронизация с облаком...</div>
+        <div class="energy-counter" id="energyCounter"> Всего энергетиков: 0</div>
     </div>
-    <div class="tags-filter">
-        <span> Фильтр по тегам:</span>
-        <div class="filter-tags-group" id="filterTagsContainer"></div>
-        <button class="reset-filters" id="resetFiltersBtn">Сбросить</button>
-    </div>
-    <div class="sync-status" id="syncStatus">☁️ Синхронизация с облаком...</div>
-    <!-- НОВЫЙ СЧЁТЧИК -->
-    <div class="energy-counter" id="energyCounter"> Всего энергетиков: 0</div>
-</div>
 
     <div id="cardsContainer" class="cards-grid"></div>
 </div>
 
 <!-- Модальные окна -->
 <div id="detailModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeDetailModal">&times;</button><div id="detailContent"></div></div></div>
-<div id="addModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeAddModal">&times;</button><h2> Добавить энергетик</h2>
-<form id="addDrinkForm">
-    <div class="form-group"><label>Название *</label><input type="text" id="drinkName" required placeholder="Monster Mango"></div>
-    <div class="form-group"><label>Фото (с компьютера)</label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
-    <div class="form-group"><label>Оценка *</label><select id="drinkRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3" selected>3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
-    <div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required placeholder="Яблоко одно, сливы, виноград"></div>
-    <div class="form-group">
-    <label> Кофеин (мг)</label>
-    <input type="number" id="drinkCaffeine" placeholder="например: 30" step="1" value="">
-    </div>
-    <div class="form-group">
-        <label> Таурин (мг)</label>
-        <input type="number" id="drinkTaurine" placeholder="например: 240" step="1" value="">
-    </div>
-    <div class="form-group">
-        <label> Теги</label>
-        <div id="tagsCheckboxes" class="tags-checkboxes"></div>
-    </div>
-    <div class="form-group"><label>Теги</label><div id="tagsCheckboxes" class="tags-checkboxes"></div></div>
-    <div class="form-group"><label>Описание</label><textarea id="drinkDescription" rows="3"></textarea></div>
-    <button type="submit" class="submit-btn">➕ Добавить</button>
-</form></div></div>
 
-<div id="editModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeEditModal">&times;</button><h2> Редактировать</h2>
-<form id="editDrinkForm">
-    <input type="hidden" id="editDrinkId">
-    <div class="form-group"><label>Название</label><input type="text" id="editName" required></div>
-    <div class="form-group"><label>Фото</label><input type="file" id="editImageFile" accept="image/*"><div id="editImagePreview" class="file-preview"></div></div>
-    <div class="form-group"><label>Оценка</label><select id="editRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
-    <div class="form-group"><label>Вкус</label><input type="text" id="editTaste" required></div>
-    <div class="form-group">
-    <label> Кофеин (мг)</label>
-    <input type="number" id="editCaffeine" placeholder="мг" step="1">
+<div id="addModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" id="closeAddModal">&times;</button>
+        <h2>➕ Добавить энергетик</h2>
+        <form id="addDrinkForm">
+            <div class="form-group"><label>Название *</label><input type="text" id="drinkName" required placeholder="Monster Mango"></div>
+            <div class="form-group"><label> Фото </label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
+            <div class="form-group"><label>⭐ Оценка *</label><select id="drinkRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3" selected>3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
+            <div class="form-group"><label> Вкус *</label><input type="text" id="drinkTaste" required placeholder="Яблоко, сливы, виноград"></div>
+            <div class="form-group"><label> Кофеин (мг)</label><input type="number" id="drinkCaffeine" placeholder="например: 30" step="1" value=""></div>
+            <div class="form-group"><label> Таурин (мг)</label><input type="number" id="drinkTaurine" placeholder="например: 240" step="1" value=""></div>
+            <div class="form-group"><label> Теги</label><div id="tagsCheckboxes" class="tags-checkboxes"></div></div>
+            <div class="form-group"><label> Описание</label><textarea id="drinkDescription" rows="3"></textarea></div>
+            <button type="submit" class="submit-btn">➕ Добавить</button>
+        </form>
     </div>
-    <div class="form-group">
-        <label> Таурин (мг)</label>
-        <input type="number" id="editTaurine" placeholder="мг" step="1">
+</div>
+
+<div id="editModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" id="closeEditModal">&times;</button>
+        <h2>✏️ Редактировать</h2>
+        <form id="editDrinkForm">
+            <input type="hidden" id="editDrinkId">
+            <div class="form-group"><label>Название</label><input type="text" id="editName" required></div>
+            <div class="form-group"><label> Фото</label><input type="file" id="editImageFile" accept="image/*"><div id="editImagePreview" class="file-preview"></div></div>
+            <div class="form-group"><label>⭐ Оценка</label><select id="editRating"><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div>
+            <div class="form-group"><label> Вкус</label><input type="text" id="editTaste" required></div>
+            <div class="form-group"><label> Кофеин (мг)</label><input type="number" id="editCaffeine" placeholder="мг" step="1"></div>
+            <div class="form-group"><label> Таурин (мг)</label><input type="number" id="editTaurine" placeholder="мг" step="1"></div>
+            <div class="form-group"><label> Теги</label><div id="editTagsCheckboxes" class="tags-checkboxes"></div></div>
+            <div class="form-group"><label> Описание</label><textarea id="editDescription" rows="3"></textarea></div>
+            <button type="submit" class="submit-btn">💾 Сохранить</button>
+        </form>
     </div>
-    <div class="form-group">
-        <label> Теги</label>
-        <div id="editTagsCheckboxes" class="tags-checkboxes"></div>
-    </div>
-    <div class="form-group"><label>Теги</label><div id="editTagsCheckboxes" class="tags-checkboxes"></div></div>
-    <div class="form-group"><label>Описание</label><textarea id="editDescription" rows="3"></textarea></div>
-    <button type="submit" class="submit-btn">💾 Сохранить</button>
-</form></div></div>
+</div>
 
 <script>
-    // ================= ВАШИ ДАННЫЕ ИЗ FIREBASE =================
-    // ⚠️ Скопируйте сюда объект firebaseConfig из консоли Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDQGjVUA8w66eGudNSK0s6PMOSjEYQbpWY",
         authDomain: "energy-1363c.firebaseapp.com",
@@ -574,13 +522,10 @@
         messagingSenderId: "735189971999",
         appId: "1:735189971999:web:bf662f3add5b5967ae912a"
     };
-    // ============================================================
-
-    // Инициализация Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ----- ТЕГИ (как вы просили) -----
+    // ----- ТЕГИ -----
     const AVAILABLE_TAGS = [
         { emoji: "🚫", name: "Без сахара" }, { emoji: "🍬", name: "С сахаром" }, { emoji: "😵", name: "50/50 на сахаре" },
         { emoji: "🥤", name: "Оригинальный" }, { emoji: "🍇", name: "Обычные фрукты" },
@@ -591,7 +536,7 @@
     ];
 
     let energyDrinks = [];
-    let currentSort = "name-asc";
+    let currentSort = "rating-desc";
     let selectedFilterTags = [];
     let searchQuery = "";
     let unsubscribe = null;
@@ -621,8 +566,8 @@
                         rating: data.rating || 3,
                         taste: data.taste || "не указан",
                         description: data.description || "Нет описания",
-                        caffeine: data.caffeine ?? null,   // новое
-                        taurine: data.taurine ?? null      // новое
+                        caffeine: data.caffeine ?? null,
+                        taurine: data.taurine ?? null
                     });
                 });
                 syncStatus.innerHTML = '<span>✅</span> Синхронизировано с облаком';
@@ -660,7 +605,6 @@
         } catch(e) { alert("Ошибка удаления: "+e.message); return false; }
     }
 
-    // Вспомогательные функции
     function renderTagCheckboxes(container, selectedTags = []) {
         container.innerHTML = '';
         AVAILABLE_TAGS.forEach(tag => {
@@ -689,14 +633,39 @@
     }
 
     // Добавление
+    let selectedImageBase64 = null;
+    let editSelectedImageBase64 = null;
+    const tagsCheckboxesDiv = document.getElementById('tagsCheckboxes');
+    const editTagsCheckboxesDiv = document.getElementById('editTagsCheckboxes');
+    const addDrinkForm = document.getElementById('addDrinkForm');
+    const editDrinkForm = document.getElementById('editDrinkForm');
+    const drinkImageFile = document.getElementById('drinkImageFile');
+    const imagePreviewDiv = document.getElementById('imagePreview');
+    const editImageFile = document.getElementById('editImageFile');
+    const editImagePreviewDiv = document.getElementById('editImagePreview');
+
+    drinkImageFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) { selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; return; }
+        const reader = new FileReader();
+        reader.onload = (ev) => { selectedImageBase64 = ev.target.result; imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
+        reader.readAsDataURL(file);
+    });
+    editImageFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) { editSelectedImageBase64 = null; editImagePreviewDiv.innerHTML = ''; return; }
+        const reader = new FileReader();
+        reader.onload = (ev) => { editSelectedImageBase64 = ev.target.result; editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
+        reader.readAsDataURL(file);
+    });
+
     async function addNewDrink(event) {
         event.preventDefault();
         const name = document.getElementById('drinkName').value.trim();
         const rating = parseFloat(document.getElementById('drinkRating').value);
         const taste = document.getElementById('drinkTaste').value.trim();
-        const caffeine = document.getElementById('drinkCaffeine').value;      // строка
-        const taurine = document.getElementById('drinkTaurine').value;        // строка
-        // Преобразуем в число или null, если пусто
+        const caffeine = document.getElementById('drinkCaffeine').value;
+        const taurine = document.getElementById('drinkTaurine').value;
         const caffeineValue = caffeine ? parseFloat(caffeine) : null;
         const taurineValue = taurine ? parseFloat(taurine) : null;
         const description = document.getElementById('drinkDescription').value.trim() || "Нет описания";
@@ -707,7 +676,7 @@
         if (selectedTags.length === 0) { alert("Выберите хотя бы один тег"); return; }
 
         let imageData = selectedImageBase64;
-        const success = await addToFirestore({ name, imageData, tags: selectedTags, rating, taste, description,caffeine: caffeineValue, taurine: taurineValue});
+        const success = await addToFirestore({ name, imageData, tags: selectedTags, rating, taste, description, caffeine: caffeineValue, taurine: taurineValue });
         if (success) {
             addModal.classList.remove('active');
             addDrinkForm.reset();
@@ -762,7 +731,7 @@
             const existing = energyDrinks.find(d => d.id === id);
             if (existing) imageData = existing.imageData;
         }
-        const success = await updateInFirestore(id, { name, imageData, tags: selectedTags, rating, taste, description,caffeine: caffeineValue,taurine: taurineValue});
+        const success = await updateInFirestore(id, { name, imageData, tags: selectedTags, rating, taste, description, caffeine: caffeineValue, taurine: taurineValue });
         if (success) {
             editModal.classList.remove('active');
             detailModal.classList.remove('active');
@@ -790,47 +759,31 @@
     }
     function sortDrinks(drinks) {
         const sorted = [...drinks];
-        
         switch(currentSort) {
-            case 'rating-desc':
-                sorted.sort((a, b) => b.rating - a.rating);
-                break;
-            case 'rating-asc':
-                sorted.sort((a, b) => a.rating - b.rating);
-                break;
-            case 'name-asc':
-                sorted.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-                break;
-            case 'name-desc':
-                sorted.sort((a, b) => b.name.localeCompare(a.name, 'ru'));
-                break;
-            default:
-                sorted.sort((a, b) => b.rating - a.rating);
+            case 'rating-desc': sorted.sort((a, b) => b.rating - a.rating); break;
+            case 'rating-asc': sorted.sort((a, b) => a.rating - b.rating); break;
+            case 'name-asc': sorted.sort((a, b) => a.name.localeCompare(b.name, 'ru')); break;
+            case 'name-desc': sorted.sort((a, b) => b.name.localeCompare(a.name, 'ru')); break;
+            default: sorted.sort((a, b) => b.rating - a.rating);
         }
-        
         return sorted;
     }
-function applyFiltersAndRender() {
-    const filtered = filterDrinks(energyDrinks);
-    const sorted = sortDrinks(filtered);
-    renderCards(sorted);
-    
-    // ===== СЧЁТЧИК =====
-    const total = energyDrinks.length;
-    const shown = filtered.length;
-    const counter = document.getElementById('energyCounter');
-    if (counter) {
-        if (shown === total) {
-            counter.innerHTML = ` Всего энергетиков: ${total}`;
-        } else {
-            counter.innerHTML = ` Показано: ${shown} из ${total}`;
+    function applyFiltersAndRender() {
+        const filtered = filterDrinks(energyDrinks);
+        const sorted = sortDrinks(filtered);
+        renderCards(sorted);
+        const total = energyDrinks.length;
+        const shown = filtered.length;
+        const counter = document.getElementById('energyCounter');
+        if (counter) {
+            if (shown === total) counter.innerHTML = ` Всего энергетиков: ${total}`;
+            else counter.innerHTML = ` Показано: ${shown} из ${total}`;
         }
     }
-}
 
     function renderCards(drinksArray) {
         if (!drinksArray.length) {
-            cardsContainer.innerHTML = `<div class="empty-message"> Добавьте первый энергетик через кнопку «+». Данные будут в облаке и на всех устройствах.</div>`;
+            cardsContainer.innerHTML = `<div class="empty-message">🍹 Добавьте первый энергетик через кнопку «Добавить». Данные будут в облаке и на всех устройствах.</div>`;
             return;
         }
         cardsContainer.innerHTML = drinksArray.map(drink => `
@@ -871,13 +824,12 @@ function applyFiltersAndRender() {
                 <div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280?text=Ошибка'"></div>
                 <div class="detail-info">
                     <h2>${escapeHtml(drink.name)}</h2>
-                    <div class="detail-tags">${tagSpans}</div>
+                    <div class="detail-tags" style="margin: 10px 0;">${tagSpans}</div>
                     <div style="font-size:1.5rem; font-weight:600;">⭐ ${drink.rating.toFixed(1)} / 5</div>
                     <div class="taste-block"> Вкус: ${escapeHtml(drink.taste)}</div>
                     ${drink.caffeine ? `<div class="taste-block" style="background: #e8f0fe; border-left-color: #3182ce;"> Кофеин: ${drink.caffeine} мг</div>` : ''}
-                    ${drink.taurine ? `<div class="taste-block" style="background: #e8f0fe; border-left-color: #3182ce;">⚡ Таурин: ${drink.taurine} мг</div>` : ''}
-                    <div class="detail-description"> ${escapeHtml(drink.description)}</div>
-                    <div class="detail-description"> ${escapeHtml(drink.description)}</div>
+                    ${drink.taurine ? `<div class="taste-block" style="background: #e8f0fe; border-left-color: #3182ce;"> Таурин: ${drink.taurine} мг</div>` : ''}
+                    <div class="detail-description">📄 ${escapeHtml(drink.description)}</div>
                     <div class="action-buttons">
                         <button class="edit-button" id="editDrinkBtn">✏️ Изменить</button>
                         <button class="delete-button" id="deleteDrinkBtn">🗑️ Удалить</button>
@@ -911,37 +863,34 @@ function applyFiltersAndRender() {
     }
 
     function resetFiltersAndSort() {
-        currentSort = "name-asc";
+        currentSort = "rating-desc";
         selectedFilterTags = [];
         searchQuery = "";
         searchInput.value = "";
-        updateActiveSortButton();      // ← обновляем активную кнопку
+        updateActiveSortButton();
         renderFilterTags();
         applyFiltersAndRender();
     }
 
-    // Предпросмотр фото
-    let selectedImageBase64 = null;
-    let editSelectedImageBase64 = null;
-    const drinkImageFile = document.getElementById('drinkImageFile');
-    const imagePreviewDiv = document.getElementById('imagePreview');
-    const editImageFile = document.getElementById('editImageFile');
-    const editImagePreviewDiv = document.getElementById('editImagePreview');
+    // Сортировка
+    const sortButtons = document.querySelectorAll('.sort-btn');
+    function updateActiveSortButton() {
+        sortButtons.forEach(btn => {
+            const sortValue = btn.getAttribute('data-sort');
+            if (sortValue === currentSort) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+    sortButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentSort = btn.getAttribute('data-sort');
+            updateActiveSortButton();
+            applyFiltersAndRender();
+        });
+    });
+    resetFiltersBtn.onclick = resetFiltersAndSort;
+    searchInput.oninput = (e) => { searchQuery = e.target.value; applyFiltersAndRender(); };
 
-    drinkImageFile.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) { selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; return; }
-        const reader = new FileReader();
-        reader.onload = (ev) => { selectedImageBase64 = ev.target.result; imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
-        reader.readAsDataURL(file);
-    });
-    editImageFile.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) { editSelectedImageBase64 = null; editImagePreviewDiv.innerHTML = ''; return; }
-        const reader = new FileReader();
-        reader.onload = (ev) => { editSelectedImageBase64 = ev.target.result; editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px; border-radius:16px;">`; };
-        reader.readAsDataURL(file);
-    });
     // Закрытие модалок
     const addModal = document.getElementById('addModal');
     const detailModalEl = document.getElementById('detailModal');
@@ -957,39 +906,7 @@ function applyFiltersAndRender() {
     window.onclick = (e) => { if (e.target === addModal || e.target === editModalEl || e.target === detailModalEl) closeModals(); };
     document.getElementById('openAddModalBtn').onclick = () => addModal.classList.add('active');
 
-    // Сортировка и сброс
-    // Получаем все кнопки сортировки
-    const sortButtons = document.querySelectorAll('.sort-btn');
-    
-    // Функция обновления активной кнопки
-    function updateActiveSortButton() {
-        sortButtons.forEach(btn => {
-            const sortValue = btn.getAttribute('data-sort');
-            if (sortValue === currentSort) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-    }
-    
-    // Обработчики для каждой кнопки
-    sortButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentSort = btn.getAttribute('data-sort');
-            updateActiveSortButton();
-            applyFiltersAndRender();
-        });
-    });
-    resetFiltersBtn.onclick = resetFiltersAndSort;
-    searchInput.oninput = (e) => { searchQuery = e.target.value; applyFiltersAndRender(); };
-
     // Инициализация
-    const tagsCheckboxesDiv = document.getElementById('tagsCheckboxes');
-    const editTagsCheckboxesDiv = document.getElementById('editTagsCheckboxes');
-    const addDrinkForm = document.getElementById('addDrinkForm');
-    const editDrinkForm = document.getElementById('editDrinkForm');
-
     renderTagCheckboxes(tagsCheckboxesDiv, []);
     renderTagCheckboxes(editTagsCheckboxesDiv, []);
     renderFilterTags();
@@ -999,32 +916,24 @@ function applyFiltersAndRender() {
     addDrinkForm.addEventListener('submit', addNewDrink);
     editDrinkForm.addEventListener('submit', saveEdit);
 
-    // ========== ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ (без сохранения в localStorage) ==========
-    const themeToggle = document.getElementById('themeToggle');
-    
+    // Тёмная тема
+    const themeToggleBtn = document.getElementById('themeToggle');
     const toggleTheme = () => {
         const isDark = document.body.classList.contains('dark-mode');
         const logo = document.getElementById('logoImage');
-        
         if (isDark) {
             document.body.classList.remove('dark-mode');
-            themeToggle.textContent = '🌙';
-            if (logo) logo.src = 'logo-light.png';  // Меняем на светлый лого
+            themeToggleBtn.textContent = '🌙';
+            if (logo) logo.src = 'logo-light.png';
         } else {
             document.body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️';
-            if (logo) logo.src = 'logo-dark.png';   // Меняем на тёмный лого
+            themeToggleBtn.textContent = '☀️';
+            if (logo) logo.src = 'logo-dark.png';
         }
     };
-    
-    // Начальное состояние: светлая тема
     document.body.classList.remove('dark-mode');
-    themeToggle.textContent = '🌙';
-    
-    // Вешаем обработчик
-    if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-    }
+    themeToggleBtn.textContent = '🌙';
+    if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
 </script>
 </body>
 </html>
