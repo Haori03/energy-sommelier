@@ -101,6 +101,56 @@
         body.dark-mode .modal-close:hover { color: #ef4444; }
         .theme-toggle { background: #f1f5f9; border: none; width: 52px; height: 52px; border-radius: 30px; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         body.dark-mode .theme-toggle { background: #334155; color: #e2e8f0; }
+        /* Дополнительные адаптивные стили для мобильных устройств */
+        @media (max-width: 600px) {
+            body { padding: 12px 10px; }
+            .header { padding: 12px 16px; }
+            .filters-panel { padding: 12px 16px; }
+            .sort-section { flex-direction: column; align-items: stretch; gap: 10px; }
+            .sort-buttons { flex-wrap: wrap; justify-content: center; }
+            .tags-filter { flex-direction: column; align-items: stretch; gap: 12px; }
+            .filter-tags-group { justify-content: center; }
+            .reset-filters { margin-left: 0; align-self: center; }
+            .drink-card { flex-direction: column; align-items: center; text-align: center; }
+            .card-img { width: 120px; height: 120px; }
+            
+            /* Модальные окна — занимают почти весь экран */
+            .modal-content { width: 95%; padding: 20px 16px; max-width: 450; }
+            .auth-buttons button { font-size: 0.9rem; padding: 10px; }
+            .form-group input, .form-group textarea, .form-group select { font-size: 0.9rem; padding: 10px 12px; }
+            
+            /* Детальный режим — колонка вместо строки */
+            .detail-layout { flex-direction: column; align-items: center; gap: 16px; }
+            .detail-img { width: 150px; margin: 0 auto; }
+            .action-buttons { flex-direction: column; gap: 10px; }
+            .edit-button, .delete-button, .review-button { width: 100%; }
+            
+            /* Кнопки в хедере */
+            .header-buttons { gap: 8px; }
+            .btn-plus, .btn-logout, .btn-login { padding: 0 12px; height: 44px; font-size: 14px; }
+            .theme-toggle { width: 44px; height: 44px; font-size: 24px; }
+            .user-status { font-size: 0.8rem; padding: 4px 12px; }
+            
+            /* Отзывы */
+            .review-card { flex-direction: column; align-items: flex-start; }
+            .review-rating { align-self: flex-start; }
+            
+            /* Форма добавления отзыва */
+            .add-review-form textarea { font-size: 0.9rem; }
+            
+            /* Теги в карточке */
+            .tags-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .rating-value { align-self: flex-start; }
+        }
+        @media (max-width: 400px) {
+            .header { flex-direction: column; text-align: center; }
+            .logo img { height: 50px; }
+            .header-buttons { justify-content: center; }
+            .sort-buttons button { padding: 4px 10px; font-size: 0.8rem; }
+            .filter-tag { font-size: 0.7rem; padding: 4px 8px; }
+            .card-title { font-size: 1rem; }
+            .tag-badge { font-size: 0.6rem; }
+        }
     </style>
 </head>
 <body>
