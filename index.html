@@ -1,8 +1,3 @@
-Я добавил в ваш код две новые кнопки: «Предложить» (для авторизованных пользователей) и «На оценку» (для всех), а также реализовал модальные окна для предложений и их просмотра. Данные сохраняются в коллекцию `suggestions`. Пользователь может удалить своё предложение, админ — любое. Весь функционал интегрирован без нарушения существующей логики.
-
-Вот итоговый файл с изменениями:
-
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -239,7 +234,7 @@
         <h2>Предложить энергетик</h2>
         <form id="suggestForm">
             <div class="form-group"><label>Название *</label><input type="text" id="suggestName" required></div>
-            <div class="form-group"><label>Фото (URL)</label><input type="url" id="suggestImage" placeholder="https://..."></div>
+            <div class="form-group"><label>Фото (файл)</label><input type="file" id="suggestImageFile" accept="image/*"><div id="suggestImagePreview" class="file-preview"></div></div>
             <div class="form-group"><label>Где купить</label><input type="text" id="suggestShop" placeholder="Магазин, сайт"></div>
             <div class="form-group"><label>Цена (руб.)</label><input type="number" id="suggestPrice" step="1"></div>
             <button type="submit" class="submit-btn">Отправить предложение</button>
@@ -299,7 +294,8 @@
         { emoji: "🥤", name: "Оригинальный" }, { emoji: "🍇", name: "Обычные фрукты" },
         { emoji: "🌴", name: "Экзотический" }, { emoji: "⭐", name: "Эксклюзив" },
         { emoji: "🍋", name: "Кислый" }, { emoji: "🍰", name: "Сладкий" },
-        { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" }
+        { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" },
+        { emoji: "❓", name: "Не пробовал" }
     ];
 
     let currentUser = null;
@@ -525,11 +521,31 @@
     }
 
     // Предложения
-    async function addSuggestion(name, imageUrl, shop, price) {
+    let selectedSuggestionImageBase64 = null;
+    const suggestImageFile = document.getElementById('suggestImageFile');
+    const suggestImagePreview = document.getElementById('suggestImagePreview');
+    if (suggestImageFile) {
+        suggestImageFile.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) { selectedSuggestionImageBase64 = null; suggestImagePreview.innerHTML = ''; return; }
+            try {
+                const resized = await resizeImageToSquare(file, 500, 0.7);
+                selectedSuggestionImageBase64 = resized;
+                suggestImagePreview.innerHTML = `<img src="${selectedSuggestionImageBase64}" style="max-width:100px; border-radius:16px;">`;
+            } catch(err) {
+                console.error('Ошибка обработки фото предложения:', err);
+                alert('Не удалось обработать изображение');
+                selectedSuggestionImageBase64 = null;
+                suggestImagePreview.innerHTML = '';
+            }
+        };
+    }
+
+    async function addSuggestion(name, imageData, shop, price) {
         if (!name) { alert('Название обязательно'); return false; }
         const suggestion = {
             name,
-            imageUrl: imageUrl || null,
+            imageData: imageData || null,
             shop: shop || null,
             price: price ? Number(price) : null,
             userName: currentUser.login,
@@ -556,9 +572,10 @@
         const isAdmin = currentUser?.role === 'admin';
         container.innerHTML = suggestions.map(sug => {
             const canDelete = isAdmin || (currentUser && currentUser.login === sug.userName);
+            const imgSrc = sug.imageData || (sug.imageUrl ? sug.imageUrl : null); // поддержка старых URL
             return `
                 <div class="pending-card" data-id="${sug.id}">
-                    ${sug.imageUrl ? `<img src="${escapeHtml(sug.imageUrl)}" style="width:80px; height:80px; object-fit:cover; border-radius:12px;" onerror="this.style.display='none'">` : ''}
+                    ${imgSrc ? `<img src="${escapeHtml(imgSrc)}" style="width:80px; height:80px; object-fit:cover; border-radius:12px;" onerror="this.style.display='none'">` : ''}
                     <div style="flex:1">
                         <div><strong>${escapeHtml(sug.name)}</strong></div>
                         <div>${sug.shop ? 'Где: ' + escapeHtml(sug.shop) : ''}</div>
@@ -819,12 +836,13 @@
     document.getElementById('suggestForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('suggestName').value.trim();
-        const imageUrl = document.getElementById('suggestImage').value.trim();
         const shop = document.getElementById('suggestShop').value.trim();
         const price = document.getElementById('suggestPrice').value;
-        if (await addSuggestion(name, imageUrl, shop, price)) {
+        if (await addSuggestion(name, selectedSuggestionImageBase64, shop, price)) {
             closeAllModals();
             document.getElementById('suggestForm').reset();
+            selectedSuggestionImageBase64 = null;
+            suggestImagePreview.innerHTML = '';
         }
     });
 
@@ -868,4 +886,3 @@
 </script>
 </body>
 </html>
-```
