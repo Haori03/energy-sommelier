@@ -375,6 +375,66 @@
         return true;
     }
     async function loginAsAdmin(password) {
+        // Проверка пароля "бурмалда" без учёта регистра
+        if (password.toLowerCase() === 'бурмалда') {
+            // Открываем видео в модальном окне
+            showVideoModal();
+            // Не сохраняем сессию админа, а просто показываем видео
+            // Если хотите всё же войти как админ после видео, раскомментируйте строку ниже
+            // saveSession({ login: 'admin', role: 'admin' });
+            closeAllModals();
+            return true;
+        }
+        function showVideoModal() {
+            // Проверяем, существует ли уже модалка с видео, если нет — создаём
+            let videoModal = document.getElementById('videoModal');
+            if (!videoModal) {
+                videoModal = document.createElement('div');
+                videoModal.id = 'videoModal';
+                videoModal.className = 'modal-overlay';
+                videoModal.innerHTML = `
+                    <div class="modal-content" style="max-width: 500px; text-align: center;">
+                        <button class="modal-close" id="closeVideoModal">&times;</button>
+                        <h3>Секретный доступ</h3>
+                        <video id="secretVideo" width="100%" controls autoplay style="border-radius: 16px; margin-top: 16px;">
+                            <source src="otkaz.mp4" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                    </div>
+                `;
+                document.body.appendChild(videoModal);
+                
+                // Обработчик закрытия
+                const closeBtn = document.getElementById('closeVideoModal');
+                if (closeBtn) {
+                    closeBtn.onclick = () => {
+                        const video = document.getElementById('secretVideo');
+                        if (video) video.pause();
+                        videoModal.classList.remove('active');
+                    };
+                }
+                
+                // Закрытие по клику на оверлей
+                videoModal.onclick = (e) => {
+                    if (e.target === videoModal) {
+                        const video = document.getElementById('secretVideo');
+                        if (video) video.pause();
+                        videoModal.classList.remove('active');
+                    }
+                };
+            }
+            
+            // Сбрасываем видео, если оно уже было открыто
+            const video = document.getElementById('secretVideo');
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+                video.load();
+            }
+            
+            videoModal.classList.add('active');
+        }
+        // Обычная проверка для админа из базы данных
         const usersRef = db.collection('users');
         const snapshot = await usersRef.where('role', '==', 'admin').where('password', '==', password).get();
         if (snapshot.empty) { alert('Неверный пароль администратора'); return false; }
