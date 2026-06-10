@@ -264,7 +264,7 @@
 <div id="addModal" class="modal-overlay"><div class="modal-content" style="max-width: 900px;"><button class="modal-close" id="closeAddModal">&times;</button><h2>Добавить энергетик</h2>
 <form id="addDrinkForm"><div class="form-group"><label>Название *</label><input type="text" id="drinkName" required></div>
 <div class="form-group"><label>Фото</label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
-<div class="form-group"><label>Оценка админа *</label><select id="drinkRating"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select><small>Учитывается с весом 3</small></div>
+<div class="form-group"><label>Оценка админа *</label><select id="drinkRating"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select><small>Учитывается в общей средней</small></div>
 <div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required></div>
 <div class="form-group"><label>Кофеин (мг)</label><input type="number" id="drinkCaffeine" step="1"></div>
 <div class="form-group"><label>Таурин (мг)</label><input type="number" id="drinkTaurine" step="1"></div>
@@ -419,6 +419,7 @@
     async function updateInFirestore(id, drink) { try { await db.collection('energydrinks').doc(id).update(drink); return true; } catch(e) { alert(e.message); return false; } }
     async function deleteFromFirestore(id) { try { await db.collection('energydrinks').doc(id).delete(); return true; } catch(e) { alert(e.message); return false; } }
 
+    // Добавление отзыва с пересчётом общей средней (админ + все пользователи, каждый с весом 1)
     async function addReview(drinkId, userId, userName, rating, text) {
         const review = { drinkId, userId, userName, rating: Number(rating), text, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
         await db.collection('reviews').add(review);
@@ -426,13 +427,14 @@
         const drink = drinkSnap.data();
         const adminRating = drink.adminRating;
         const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
-        let sum = adminRating * 3;
-        let count = 3;
+        let sum = adminRating;
+        let count = 1;
         reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
         const newAvg = sum / count;
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
     }
 
+    // Удаление отзыва с пересчётом
     async function deleteReview(reviewId, drinkId) {
         if (!confirm('Удалить этот отзыв?')) return;
         await db.collection('reviews').doc(reviewId).delete();
@@ -440,8 +442,8 @@
         const drink = drinkSnap.data();
         const adminRating = drink.adminRating;
         const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
-        let sum = adminRating * 3;
-        let count = 3;
+        let sum = adminRating;
+        let count = 1;
         reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
         const newAvg = sum / count;
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
@@ -449,6 +451,7 @@
         if (updatedDrink) openDetailModal(updatedDrink);
         else detailModal.classList.remove('active');
     }   
+
     async function fetchReviews(drinkId) {
         const snap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
         return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -540,6 +543,12 @@
         const tagSpans = drink.tags.map(t => { const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${tagObj ? tagObj.emoji : ''} ${escapeHtml(t)}</span>`; }).join('');
         const isAdmin = currentUser?.role === 'admin';
         const showReviewForm = currentUser && (currentUser.role === 'user' || currentUser.role === 'admin');
+        
+        // Вычисляем среднюю оценку пользователей (без админа)
+        let userSum = 0, userCount = 0;
+        reviews.forEach(r => { userSum += r.rating; userCount++; });
+        const userAvgRating = userCount ? (userSum / userCount).toFixed(1) : '—';
+        
         document.getElementById('detailContent').innerHTML = `
             <div class="detail-layout">
                 <div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280'"></div>
@@ -547,6 +556,8 @@
                     <h2>${escapeHtml(drink.name)}</h2>
                     <div class="detail-tags">${tagSpans}</div>
                     <div style="font-size:1.5rem; font-weight:600;">${drink.rating ? drink.rating.toFixed(1) : '?'} / 5</div>
+                    <div class="taste-block">Оценка админа: ${drink.adminRating} / 5</div>
+                    <div class="taste-block">Оценка пользователей: ${userAvgRating} / 5</div>
                     <div class="taste-block">Вкус: ${escapeHtml(drink.taste)}</div>
                     ${drink.caffeine ? `<div class="taste-block">Кофеин: ${drink.caffeine} мг</div>` : ''}
                     ${drink.taurine ? `<div class="taste-block">Таурин: ${drink.taurine} мг</div>` : ''}
@@ -649,7 +660,8 @@
         let imageData = editSelectedImageBase64;
         if (!imageData) { const old = energyDrinks.find(d => d.id === id); if (old) imageData = old.imageData; }
         const reviewsSnap = await db.collection('reviews').where('drinkId', '==', id).get();
-        let sum = adminRating * 3; let count = 3;
+        let sum = adminRating;
+        let count = 1;
         reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
         const newAvg = sum / count;
         await updateInFirestore(id, { name, imageData, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: newAvg });
