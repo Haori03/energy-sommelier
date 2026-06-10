@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -15,18 +14,20 @@
         .logo img { height: 60px; width: auto; object-fit: contain; }
         .filters-panel { background: white; border-radius: 28px; padding: 18px 24px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .energy-counter { background: #eef2ff; display: inline-block; padding: 6px 16px; border-radius: 40px; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
-        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile { background: #2b7a4b; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .btn-announce { background: #2b7a4b; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-logout { background: #6c757d; }
         .btn-login { background: #0d6efd; }
         .btn-suggest { background: #4a6d8c; }
         .btn-pending { background: #6c757d; }
         .btn-profile { background: #198754; }
-        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .btn-profile:hover { transform: scale(0.96); background: #1f5f3a; }
+        .btn-announce { background: #fd7e14; }
+        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .btn-profile:hover, .btn-announce:hover { transform: scale(0.96); background: #1f5f3a; }
         .btn-logout:hover { background: #5a6268; }
         .btn-login:hover { background: #0b5ed7; }
         .btn-suggest:hover { background: #2b4f6e; }
         .btn-pending:hover { background: #5a6268; }
         .btn-profile:hover { background: #146c43; }
+        .btn-announce:hover { background: #e06c00; }
         .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid #cbd5e1; font-size: 1rem; margin-bottom: 16px; }
         .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
         .sort-buttons { display: flex; gap: 12px; }
@@ -47,7 +48,7 @@
         .tags-list { display: flex; flex-wrap: wrap; gap: 8px; }
         .tag-badge { background: #eef2ff; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; }
         .rating-value { background: #fef9e3; padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; color: #b45309; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 1002 !important;; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s; }
         .modal-overlay.active { visibility: visible; opacity: 1; }
         .modal-content { background: white; width: 90%; max-width: 450px; border-radius: 36px; overflow-y: auto; padding: 28px 24px; position: relative; }
         .modal-close { position: absolute; top: 18px; right: 24px; font-size: 28px; background: none; border: none; cursor: pointer; }
@@ -112,6 +113,7 @@
         body.dark-mode .btn-login { background: #0d6efd; }
         body.dark-mode .btn-suggest { background: #4a6d8c; }
         body.dark-mode .btn-profile { background: #198754; }
+        body.dark-mode .btn-announce { background: #fd7e14; }
         body.dark-mode .modal-close { color: #e2e8f0; }
         body.dark-mode .modal-close:hover { color: #ef4444; }
         body.dark-mode .review-rating { background: #5681ba; color: #fbbf24; }
@@ -132,11 +134,11 @@
             .reset-filters { margin-left: 0; align-self: center; }
             .drink-card { flex-direction: column; align-items: center; text-align: center; }
             .card-img { width: 120px; height: 120px; }
-            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile { padding: 0 12px; height: 44px; font-size: 14px; }
+            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .btn-announce { padding: 0 12px; height: 44px; font-size: 14px; }
             .theme-toggle { width: 44px; height: 44px; font-size: 24px; }
             .user-status { font-size: 0.8rem; padding: 4px 12px; }
             .modal-content { width: 95% !important; padding: 20px 16px !important; max-width: 95% !important; }
-            #addModal .modal-content, #editModal .modal-content, #detailModal .modal-content, #suggestModal .modal-content, #pendingModal .modal-content, #profileModal .modal-content {
+            #addModal .modal-content, #editModal .modal-content, #detailModal .modal-content, #suggestModal .modal-content, #pendingModal .modal-content, #profileModal .modal-content, #announceModal .modal-content {
                 max-width: 95% !important;
                 width: 95%;
             }
@@ -186,6 +188,7 @@
             <button class="btn-suggest" id="suggestBtn" style="display: none;">Предложить</button>
             <button class="btn-pending" id="pendingBtn">На оценку</button>
             <button class="btn-profile" id="profileBtn" style="display: none;">Профиль</button>
+            <button class="btn-announce" id="announceBtn" style="display: none;">📢 Сделать объявление</button>
             <button class="btn-logout" id="logoutBtn" style="display: none;">Выйти</button>
             <button class="btn-login" id="loginBtn" style="display: none;">Войти</button>
         </div>
@@ -279,6 +282,28 @@
     </div>
 </div>
 
+<!-- Модальное окно для объявлений (админ) -->
+<div id="announceModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" id="closeAnnounceModal">&times;</button>
+        <h2>Сделать объявление</h2>
+        <div class="form-group"><label>Текст объявления</label><textarea id="announceText" rows="4" placeholder="Текст объявления..."></textarea></div>
+        <div class="auth-buttons">
+            <button id="publishAnnounceBtn" class="btn-primary">Опубликовать</button>
+            <button id="deleteAnnounceBtn" class="btn-secondary">Удалить текущее</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для показа объявления пользователям -->
+<div id="announceDisplayModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" id="closeAnnounceDisplayModal">&times;</button>
+        <h2> Объявление</h2>
+        <p id="announceDisplayText" style="font-size:1.1rem; margin: 20px 0; white-space: pre-wrap;"></p>
+    </div>
+</div>
+
 <!-- Остальные модалки -->
 <div id="addModal" class="modal-overlay"><div class="modal-content" style="max-width: 900px;"><button class="modal-close" id="closeAddModal">&times;</button><h2>Добавить энергетик</h2>
 <form id="addDrinkForm"><div class="form-group"><label>Название *</label><input type="text" id="drinkName" required></div>
@@ -323,14 +348,16 @@
         { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" }
     ];
 
-    let currentUser = null, energyDrinks = [], currentSort = "name-asc", selectedFilterTags = [], searchQuery = "", unsubscribe = null, unsubscribeSuggestions = null;
-    const registerModal = document.getElementById('registerModal'), authModal = document.getElementById('authModal'), adminModal = document.getElementById('adminModal'), addModal = document.getElementById('addModal'), editModal = document.getElementById('editModal'), detailModal = document.getElementById('detailModal'), suggestModal = document.getElementById('suggestModal'), pendingModal = document.getElementById('pendingModal'), profileModal = document.getElementById('profileModal'), editReviewModal = document.getElementById('editReviewModal'), cardsContainer = document.getElementById('cardsContainer'), filterTagsContainer = document.getElementById('filterTagsContainer'), resetFiltersBtn = document.getElementById('resetFiltersBtn'), searchInput = document.getElementById('searchInput'), syncStatus = document.getElementById('syncStatus');
+    let currentUser = null, energyDrinks = [], currentSort = "name-asc", selectedFilterTags = [], searchQuery = "", unsubscribe = null, unsubscribeSuggestions = null, unsubscribeAnnounce = null;
+    const registerModal = document.getElementById('registerModal'), authModal = document.getElementById('authModal'), adminModal = document.getElementById('adminModal'), addModal = document.getElementById('addModal'), editModal = document.getElementById('editModal'), detailModal = document.getElementById('detailModal'), suggestModal = document.getElementById('suggestModal'), pendingModal = document.getElementById('pendingModal'), profileModal = document.getElementById('profileModal'), editReviewModal = document.getElementById('editReviewModal'), announceModal = document.getElementById('announceModal'), announceDisplayModal = document.getElementById('announceDisplayModal'), announceDisplayText = document.getElementById('announceDisplayText');
+    const cardsContainer = document.getElementById('cardsContainer'), filterTagsContainer = document.getElementById('filterTagsContainer'), resetFiltersBtn = document.getElementById('resetFiltersBtn'), searchInput = document.getElementById('searchInput'), syncStatus = document.getElementById('syncStatus');
 
     function updateUIByRole() {
         const isAdmin = currentUser?.role === 'admin', isUser = currentUser?.role === 'user', isGuest = !currentUser;
         document.getElementById('openAddModalBtn').style.display = isAdmin ? 'flex' : 'none';
         document.getElementById('suggestBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
         document.getElementById('profileBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
+        document.getElementById('announceBtn').style.display = isAdmin ? 'flex' : 'none';
         document.getElementById('logoutBtn').style.display = (isAdmin || isUser) ? 'flex' : 'none';
         document.getElementById('loginBtn').style.display = isGuest ? 'flex' : 'none';
         document.getElementById('userStatus').innerHTML = currentUser ? `${currentUser.login} (${currentUser.role === 'admin' ? 'Админ' : 'Пользователь'})` : 'Гость';
@@ -341,7 +368,7 @@
     function showRegisterModal() { registerModal.classList.add('active'); }
     function showAuthModal() { authModal.classList.add('active'); }
     function showAdminModal(backModal) { window.backModal = backModal; adminModal.classList.add('active'); }
-    function closeAllModals() { [registerModal, authModal, adminModal, addModal, editModal, detailModal, suggestModal, pendingModal, profileModal, editReviewModal].forEach(m => m?.classList.remove('active')); }
+    function closeAllModals() { [registerModal, authModal, adminModal, addModal, editModal, detailModal, suggestModal, pendingModal, profileModal, editReviewModal, announceModal, announceDisplayModal].forEach(m => m?.classList.remove('active')); }
 
     async function registerUser(login, password) {
         if (!login || !password) return alert('Заполните логин и пароль');
@@ -396,6 +423,59 @@
         let likes = doc.data().likes || [];
         likes = likes.includes(userId) ? likes.filter(id => id !== userId) : [...likes, userId];
         await doc.ref.update({ likes });
+    }
+
+    // Announcements
+    async function publishAnnouncement(text) {
+        if (!text.trim()) return alert('Введите текст объявления');
+        // Удаляем старое объявление и создаём новое с новым id (чтобы старые закрытия не влияли)
+        const oldSnap = await db.collection('announcements').get();
+        const batch = db.batch();
+        oldSnap.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+        await db.collection('announcements').add({ text: text.trim(), createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        alert('Объявление опубликовано!');
+        closeAllModals();
+    }
+    async function deleteCurrentAnnouncement() {
+        const snap = await db.collection('announcements').get();
+        if (snap.empty) return alert('Нет активного объявления');
+        const batch = db.batch();
+        snap.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+        alert('Объявление удалено');
+        closeAllModals();
+    }
+    function subscribeToAnnouncements() {
+        if (unsubscribeAnnounce) unsubscribeAnnounce();
+        unsubscribeAnnounce = db.collection('announcements').onSnapshot(snapshot => {
+            if (snapshot.empty) return;
+            const announceDoc = snapshot.docs[0];
+            const announceId = announceDoc.id;
+            const announceText = announceDoc.data().text;
+            // Проверяем, закрывал ли пользователь это объявление
+            const closedAnnounceId = localStorage.getItem('closedAnnounceId');
+            if (closedAnnounceId === announceId) return; // уже закрыто
+            announceDisplayText.innerText = announceText;
+            announceDisplayModal.classList.add('active');
+            // При закрытии запоминаем id объявления
+            const closeHandler = () => {
+                localStorage.setItem('closedAnnounceId', announceId);
+                announceDisplayModal.classList.remove('active');
+                document.getElementById('closeAnnounceDisplayModal').removeEventListener('click', closeHandler);
+                window.removeEventListener('click', outsideHandler);
+            };
+            const outsideHandler = (e) => {
+                if (e.target === announceDisplayModal) {
+                    localStorage.setItem('closedAnnounceId', announceId);
+                    announceDisplayModal.classList.remove('active');
+                    window.removeEventListener('click', outsideHandler);
+                    document.getElementById('closeAnnounceDisplayModal').removeEventListener('click', closeHandler);
+                }
+            };
+            document.getElementById('closeAnnounceDisplayModal').addEventListener('click', closeHandler);
+            window.addEventListener('click', outsideHandler);
+        }, error => console.error('Ошибка получения объявления:', error));
     }
 
     function checkAuthForAdd() { if (currentUser?.role !== 'admin') { alert('Недостаточно прав! Только администратор может добавлять энергетики.'); return false; } return true; }
@@ -557,7 +637,6 @@
         detailModal.classList.add('active');
     }
 
-    // --- Существующие функции добавления/редактирования энергетиков ---
     let selectedImageBase64 = null, editSelectedImageBase64 = null;
     const tagsCheckboxesDiv = document.getElementById('tagsCheckboxes'), editTagsCheckboxesDiv = document.getElementById('editTagsCheckboxes');
     const drinkImageFile = document.getElementById('drinkImageFile'), editImageFile = document.getElementById('editImageFile');
@@ -581,6 +660,7 @@
     document.getElementById('suggestBtn').onclick = () => { if (checkAuthForReview()) suggestModal.classList.add('active'); };
     document.getElementById('pendingBtn').onclick = () => pendingModal.classList.add('active');
     document.getElementById('profileBtn').onclick = () => profileModal.classList.add('active');
+    document.getElementById('announceBtn').onclick = () => announceModal.classList.add('active');
     document.getElementById('logoutBtn').onclick = clearSession;
     document.getElementById('loginBtn').onclick = showRegisterModal;
     document.getElementById('closeRegisterModal').onclick = closeAllModals;
@@ -593,10 +673,14 @@
     document.getElementById('closePendingModal').onclick = closeAllModals;
     document.getElementById('closeProfileModal').onclick = closeAllModals;
     document.getElementById('closeEditReviewModal').onclick = closeAllModals;
+    document.getElementById('closeAnnounceModal').onclick = closeAllModals;
+    document.getElementById('closeAnnounceDisplayModal').onclick = () => {}; // будет переопределено
     window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeAllModals(); };
     document.getElementById('suggestForm').addEventListener('submit', async (e) => { e.preventDefault(); const name = document.getElementById('suggestName').value.trim(), shop = document.getElementById('suggestShop').value.trim(), price = document.getElementById('suggestPrice').value; if (await addSuggestion(name, selectedSuggestionImageBase64, shop, price)) { closeAllModals(); document.getElementById('suggestForm').reset(); selectedSuggestionImageBase64 = null; document.getElementById('suggestImagePreview').innerHTML = ''; } });
     document.getElementById('changePasswordBtn').onclick = async () => { const cur = document.getElementById('currentPassword').value, newp = document.getElementById('newPassword').value, conf = document.getElementById('confirmPassword').value; if (await changePassword(cur, newp, conf)) { closeAllModals(); ['currentPassword','newPassword','confirmPassword'].forEach(id => document.getElementById(id).value = ''); } };
     document.getElementById('saveReviewEditBtn').onclick = async () => { const reviewId = document.getElementById('editReviewId').value, drinkId = document.getElementById('editReviewDrinkId').value, newText = document.getElementById('editReviewText').value.trim(), newRating = document.getElementById('editReviewRating').value; if (!newText) { alert('Введите текст отзыва'); return; } await updateReview(reviewId, drinkId, newText, newRating); closeAllModals(); };
+    document.getElementById('publishAnnounceBtn').onclick = async () => { const text = document.getElementById('announceText').value; await publishAnnouncement(text); document.getElementById('announceText').value = ''; };
+    document.getElementById('deleteAnnounceBtn').onclick = async () => { await deleteCurrentAnnouncement(); document.getElementById('announceText').value = ''; };
 
     document.getElementById('registerBtn').onclick = async () => { const login = document.getElementById('regLogin').value, pass = document.getElementById('regPassword').value; if (await registerUser(login, pass)) { registerModal.classList.remove('active'); authModal.classList.add('active'); } };
     document.getElementById('showAuthFromRegBtn').onclick = () => { registerModal.classList.remove('active'); authModal.classList.add('active'); };
@@ -611,7 +695,7 @@
 
     const saved = localStorage.getItem('energyUser');
     if (saved) { currentUser = JSON.parse(saved); updateUIByRole(); } else { showRegisterModal(); }
-    renderTagCheckboxes(tagsCheckboxesDiv, []); renderTagCheckboxes(editTagsCheckboxesDiv, []); renderFilterTags(); connectToFirestore(); connectToSuggestions(); updateActiveSortButton();
+    renderTagCheckboxes(tagsCheckboxesDiv, []); renderTagCheckboxes(editTagsCheckboxesDiv, []); renderFilterTags(); connectToFirestore(); connectToSuggestions(); subscribeToAnnouncements(); updateActiveSortButton();
     document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
     document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
     const logoImage = document.getElementById('logoImage');
