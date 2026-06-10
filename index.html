@@ -14,16 +14,18 @@
         .logo img { height: 60px; width: auto; object-fit: contain; }
         .filters-panel { background: white; border-radius: 28px; padding: 18px 24px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .energy-counter { background: #eef2ff; display: inline-block; padding: 6px 16px; border-radius: 40px; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
-        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending { background: #2b7a4b; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile { background: #2b7a4b; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-logout { background: #6c757d; }
         .btn-login { background: #0d6efd; }
         .btn-suggest { background: #4a6d8c; }
         .btn-pending { background: #6c757d; }
-        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover { transform: scale(0.96); background: #1f5f3a; }
+        .btn-profile { background: #198754; }
+        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .btn-profile:hover { transform: scale(0.96); background: #1f5f3a; }
         .btn-logout:hover { background: #5a6268; }
         .btn-login:hover { background: #0b5ed7; }
         .btn-suggest:hover { background: #2b4f6e; }
         .btn-pending:hover { background: #5a6268; }
+        .btn-profile:hover { background: #146c43; }
         .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid #cbd5e1; font-size: 1rem; margin-bottom: 16px; }
         .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
         .sort-buttons { display: flex; gap: 12px; }
@@ -85,6 +87,9 @@
         .pending-card { display: flex; gap: 12px; background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
         .delete-suggestion-btn { background: #e53e3e; border: none; border-radius: 30px; padding: 6px 12px; color: white; cursor: pointer; }
         .delete-suggestion-btn:hover { background: #c2410c !important; }
+        .like-button { background: none; border: none; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 30px; transition: 0.2s; }
+        .like-button:hover { background: rgba(0,0,0,0.05); transform: scale(1.05); }
+        .likes-count { font-size: 0.9rem; font-weight: bold; }
         @media (max-width: 600px) { .drink-card { flex-direction: column; align-items: center; text-align: center; } .detail-layout { flex-wrap: wrap; justify-content: center; } .detail-img { width: 180px; margin: 0 auto; } }
         
         /* Тёмная тема */
@@ -105,10 +110,12 @@
         body.dark-mode .btn-primary, body.dark-mode .btn-plus { background: #2b7a4b; }
         body.dark-mode .btn-login { background: #0d6efd; }
         body.dark-mode .btn-suggest { background: #4a6d8c; }
+        body.dark-mode .btn-profile { background: #198754; }
         body.dark-mode .modal-close { color: #e2e8f0; }
         body.dark-mode .modal-close:hover { color: #ef4444; }
         body.dark-mode .review-rating { background: #5681ba; color: #fbbf24; }
         body.dark-mode .delete-suggestion-btn { background: #c2410c; }
+        body.dark-mode .like-button:hover { background: rgba(255,255,255,0.1); }
         .theme-toggle { background: #f1f5f9; border: none; width: 52px; height: 52px; border-radius: 30px; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         body.dark-mode .theme-toggle { background: #334155; color: #60a5fa; }
         @media (max-width: 600px) {
@@ -124,11 +131,11 @@
             .reset-filters { margin-left: 0; align-self: center; }
             .drink-card { flex-direction: column; align-items: center; text-align: center; }
             .card-img { width: 120px; height: 120px; }
-            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending { padding: 0 12px; height: 44px; font-size: 14px; }
+            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile { padding: 0 12px; height: 44px; font-size: 14px; }
             .theme-toggle { width: 44px; height: 44px; font-size: 24px; }
             .user-status { font-size: 0.8rem; padding: 4px 12px; }
             .modal-content { width: 95% !important; padding: 20px 16px !important; max-width: 95% !important; }
-            #addModal .modal-content, #editModal .modal-content, #detailModal .modal-content, #suggestModal .modal-content, #pendingModal .modal-content {
+            #addModal .modal-content, #editModal .modal-content, #detailModal .modal-content, #suggestModal .modal-content, #pendingModal .modal-content, #profileModal .modal-content {
                 max-width: 95% !important;
                 width: 95%;
             }
@@ -177,6 +184,7 @@
             <button class="btn-plus" id="openAddModalBtn" style="display: none;">Добавить</button>
             <button class="btn-suggest" id="suggestBtn" style="display: none;">Предложить</button>
             <button class="btn-pending" id="pendingBtn">На оценку</button>
+            <button class="btn-profile" id="profileBtn" style="display: none;">Профиль</button>
             <button class="btn-logout" id="logoutBtn" style="display: none;">Выйти</button>
             <button class="btn-login" id="loginBtn" style="display: none;">Войти</button>
         </div>
@@ -194,7 +202,7 @@
     <div id="cardsContainer" class="cards-grid"></div>
 </div>
 
-<!-- Модальное окно регистрации (первичное) -->
+<!-- Модальные окна -->
 <div id="registerModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeRegisterModal">&times;</button><h2>Регистрация</h2>
 <div class="form-group"><label>Логин</label><input type="text" id="regLogin" placeholder="Логин"></div>
 <div class="form-group"><label>Пароль</label><input type="password" id="regPassword" placeholder="Пароль"></div>
@@ -206,7 +214,6 @@
 </div>
 </div></div>
 
-<!-- Модальное окно авторизации (вторичное) -->
 <div id="authModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeAuthModal">&times;</button><h2>Авторизация</h2>
 <div class="form-group"><label>Логин</label><input type="text" id="authLogin" placeholder="Логин"></div>
 <div class="form-group"><label>Пароль</label><input type="password" id="authPassword" placeholder="Пароль"></div>
@@ -218,7 +225,6 @@
 </div>
 </div></div>
 
-<!-- Модальное окно входа администратора (общее) -->
 <div id="adminModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeAdminModal">&times;</button><h2>Докажи</h2>
 <div class="form-group"><label>Пароль</label><input type="password" id="adminPassword" placeholder="Пароль не БУРМАЛДА"></div>
 <div class="auth-buttons">
@@ -227,7 +233,6 @@
 </div>
 </div></div>
 
-<!-- Модальное окно предложения энергетика -->
 <div id="suggestModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 500px;">
         <button class="modal-close" id="closeSuggestModal">&times;</button>
@@ -242,12 +247,34 @@
     </div>
 </div>
 
-<!-- Модальное окно списка предложений -->
 <div id="pendingModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 600px;">
         <button class="modal-close" id="closePendingModal">&times;</button>
         <h2>Энергетики на оценку</h2>
         <div id="pendingList" style="max-height: 60vh; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<div id="profileModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px;">
+        <button class="modal-close" id="closeProfileModal">&times;</button>
+        <h2>Смена пароля</h2>
+        <div class="form-group"><label>Текущий пароль</label><input type="password" id="currentPassword" placeholder="Текущий пароль"></div>
+        <div class="form-group"><label>Новый пароль</label><input type="password" id="newPassword" placeholder="Новый пароль"></div>
+        <div class="form-group"><label>Подтверждение пароля</label><input type="password" id="confirmPassword" placeholder="Подтверждение"></div>
+        <button id="changePasswordBtn" class="submit-btn">Сменить пароль</button>
+    </div>
+</div>
+
+<div id="editReviewModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px;">
+        <button class="modal-close" id="closeEditReviewModal">&times;</button>
+        <h2>Редактировать отзыв</h2>
+        <input type="hidden" id="editReviewId">
+        <input type="hidden" id="editReviewDrinkId">
+        <div class="form-group"><label>Оценка</label><select id="editReviewRating"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+        <div class="form-group"><label>Комментарий</label><textarea id="editReviewText" rows="3" placeholder="Ваш комментарий"></textarea></div>
+        <button id="saveReviewEditBtn" class="submit-btn">Сохранить</button>
     </div>
 </div>
 
@@ -294,7 +321,7 @@
         { emoji: "🥤", name: "Оригинальный" }, { emoji: "🍇", name: "Обычные фрукты" },
         { emoji: "🌴", name: "Экзотический" }, { emoji: "⭐", name: "Эксклюзив" },
         { emoji: "🍋", name: "Кислый" }, { emoji: "🍰", name: "Сладкий" },
-        { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" }
+        { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" },
     ];
 
     let currentUser = null;
@@ -305,7 +332,7 @@
     let unsubscribe = null;
     let unsubscribeSuggestions = null;
 
-    // DOM элементы модалок
+    // DOM элементы
     const registerModal = document.getElementById('registerModal');
     const authModal = document.getElementById('authModal');
     const adminModal = document.getElementById('adminModal');
@@ -314,19 +341,21 @@
     const detailModal = document.getElementById('detailModal');
     const suggestModal = document.getElementById('suggestModal');
     const pendingModal = document.getElementById('pendingModal');
+    const profileModal = document.getElementById('profileModal');
+    const editReviewModal = document.getElementById('editReviewModal');
     const cardsContainer = document.getElementById('cardsContainer');
     const filterTagsContainer = document.getElementById('filterTagsContainer');
     const resetFiltersBtn = document.getElementById('resetFiltersBtn');
     const searchInput = document.getElementById('searchInput');
     const syncStatus = document.getElementById('syncStatus');
 
-    // Функции авторизации
     function updateUIByRole() {
         const isAdmin = currentUser?.role === 'admin';
         const isUser = currentUser?.role === 'user';
         const isGuest = !currentUser;
         document.getElementById('openAddModalBtn').style.display = isAdmin ? 'flex' : 'none';
         document.getElementById('suggestBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
+        document.getElementById('profileBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
         document.getElementById('logoutBtn').style.display = (isAdmin || isUser) ? 'flex' : 'none';
         document.getElementById('loginBtn').style.display = isGuest ? 'flex' : 'none';
         document.getElementById('userStatus').innerHTML = currentUser ? `${currentUser.login} (${currentUser.role === 'admin' ? 'Админ' : 'Пользователь'})` : 'Гость';
@@ -336,19 +365,14 @@
     function clearSession() { localStorage.removeItem('energyUser'); currentUser = null; updateUIByRole(); showRegisterModal(); }
     function showRegisterModal() { registerModal.classList.add('active'); }
     function showAuthModal() { authModal.classList.add('active'); }
-    function showAdminModal(backModal) { 
-        window.backModal = backModal;
-        adminModal.classList.add('active'); 
-    }
+    function showAdminModal(backModal) { window.backModal = backModal; adminModal.classList.add('active'); }
     function closeAllModals() { 
-        registerModal.classList.remove('active'); 
-        authModal.classList.remove('active'); 
-        adminModal.classList.remove('active'); 
-        addModal.classList.remove('active'); 
-        editModal.classList.remove('active'); 
-        detailModal.classList.remove('active'); 
+        registerModal.classList.remove('active'); authModal.classList.remove('active'); adminModal.classList.remove('active'); 
+        addModal.classList.remove('active'); editModal.classList.remove('active'); detailModal.classList.remove('active'); 
         if (suggestModal) suggestModal.classList.remove('active');
         if (pendingModal) pendingModal.classList.remove('active');
+        if (profileModal) profileModal.classList.remove('active');
+        if (editReviewModal) editReviewModal.classList.remove('active');
     }
 
     async function registerUser(login, password) {
@@ -370,11 +394,7 @@
         return true;
     }
     async function loginAsAdmin(password) {
-        if (password.toLowerCase() === 'бурмалда') {
-            showVideoModal();
-            closeAllModals();
-            return true;
-        }
+        if (password.toLowerCase() === 'бурмалда') { showVideoModal(); closeAllModals(); return true; }
         const usersRef = db.collection('users');
         const snapshot = await usersRef.where('role', '==', 'admin').where('password', '==', password).get();
         if (snapshot.empty) { alert('Неверный пароль администратора'); return false; }
@@ -383,51 +403,60 @@
         closeAllModals();
         return true;
     }
+    function showVideoModal() { /* существующая функция */ let videoModal = document.getElementById('videoModal'); if(!videoModal){ videoModal = document.createElement('div'); videoModal.id='videoModal'; videoModal.className='modal-overlay'; videoModal.innerHTML=`<div class="modal-content" style="max-width:500px;text-align:center"><button class="modal-close" id="closeVideoModal">&times;</button><h3>Секретный доступ</h3><video id="secretVideo" width="100%" controls autoplay style="border-radius:16px;margin-top:16px"><source src="otkaz.mp4" type="video/mp4"></video></div>`; document.body.appendChild(videoModal); document.getElementById('closeVideoModal').onclick=()=>{const v=document.getElementById('secretVideo');if(v)v.pause();videoModal.classList.remove('active');}; videoModal.onclick=(e)=>{if(e.target===videoModal){const v=document.getElementById('secretVideo');if(v)v.pause();videoModal.classList.remove('active');}}; } const v=document.getElementById('secretVideo'); if(v){v.pause();v.currentTime=0;v.load();} videoModal.classList.add('active'); }
 
-    function showVideoModal() {
-        let videoModal = document.getElementById('videoModal');
-        if (!videoModal) {
-            videoModal = document.createElement('div');
-            videoModal.id = 'videoModal';
-            videoModal.className = 'modal-overlay';
-            videoModal.innerHTML = `
-                <div class="modal-content" style="max-width: 500px; text-align: center;">
-                    <button class="modal-close" id="closeVideoModal">&times;</button>
-                    <h3>Секретный доступ</h3>
-                    <video id="secretVideo" width="100%" controls autoplay style="border-radius: 16px; margin-top: 16px;">
-                        <source src="otkaz.mp4" type="video/mp4">
-                    </video>
-                </div>
-            `;
-            document.body.appendChild(videoModal);
-            document.getElementById('closeVideoModal').onclick = () => {
-                const video = document.getElementById('secretVideo');
-                if (video) video.pause();
-                videoModal.classList.remove('active');
-            };
-            videoModal.onclick = (e) => {
-                if (e.target === videoModal) {
-                    const video = document.getElementById('secretVideo');
-                    if (video) video.pause();
-                    videoModal.classList.remove('active');
-                }
-            };
+    // Смена пароля
+    async function changePassword(current, newPass, confirm) {
+        if (!currentUser) { alert('Вы не авторизованы'); return false; }
+        if (!newPass || newPass !== confirm) { alert('Новый пароль и подтверждение не совпадают'); return false; }
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.where('login', '==', currentUser.login).where('password', '==', current).get();
+        if (snapshot.empty) { alert('Неверный текущий пароль'); return false; }
+        const docId = snapshot.docs[0].id;
+        await usersRef.doc(docId).update({ password: newPass });
+        alert('Пароль успешно изменён! Пожалуйста, войдите заново.');
+        clearSession();
+        return true;
+    }
+
+    // Редактирование отзыва
+    async function updateReview(reviewId, drinkId, newText, newRating) {
+        await db.collection('reviews').doc(reviewId).update({ text: newText, rating: Number(newRating) });
+        // пересчёт средней оценки пользователей и общей
+        const drinkSnap = await db.collection('energydrinks').doc(drinkId).get();
+        const drink = drinkSnap.data();
+        const adminRating = drink.adminRating;
+        const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
+        let userSum = 0, userCount = 0;
+        reviewsSnap.forEach(doc => { userSum += doc.data().rating; userCount++; });
+        const newAvg = (adminRating + userSum) / (1 + userCount);
+        await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
+        // обновить открытое окно
+        const updatedDrink = energyDrinks.find(d => d.id === drinkId);
+        if (updatedDrink) openDetailModal(updatedDrink);
+        else detailModal.classList.remove('active');
+    }
+
+    // Лайки для предложений
+    async function toggleLike(suggestionId, userId) {
+        const suggestionRef = db.collection('suggestions').doc(suggestionId);
+        const doc = await suggestionRef.get();
+        if (!doc.exists) return;
+        const data = doc.data();
+        let likes = data.likes || [];
+        if (likes.includes(userId)) {
+            likes = likes.filter(id => id !== userId);
+        } else {
+            likes.push(userId);
         }
-        const video = document.getElementById('secretVideo');
-        if (video) {
-            video.pause();
-            video.currentTime = 0;
-            video.load();
-        }
-        videoModal.classList.add('active');
+        await suggestionRef.update({ likes });
     }
 
     function checkAuthForAdd() { if (currentUser?.role !== 'admin') { alert('Недостаточно прав! Только администратор может добавлять энергетики.'); return false; } return true; }
     function checkAuthForEditDelete() { if (currentUser?.role !== 'admin') { alert('Недостаточно прав! Только администратор может изменять/удалять.'); return false; } return true; }
     function checkAuthForReview() { if (!currentUser) { alert('Необходимо войти, чтобы оставить отзыв.'); return false; } return true; }
 
-    // Ресайз изображения
-    async function resizeImageToSquare(file, targetSize = 800, quality = 0.85) {
+    async function resizeImageToSquare(file, targetSize = 500, quality = 0.7) {
         return new Promise((resolve, reject) => {
             if (!file || !file.type.match('image.*')) resolve(null);
             const reader = new FileReader();
@@ -443,7 +472,7 @@
                     if (ratio > 1) { dw = targetSize; dh = targetSize / ratio; dx = 0; dy = (targetSize - dh) / 2; }
                     else { dh = targetSize; dw = targetSize * ratio; dx = (targetSize - dw) / 2; dy = 0; }
                     ctx.drawImage(img, dx, dy, dw, dh);
-                    resolve(canvas.toDataURL('image/jpeg', quality));
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
                 };
                 img.onerror = () => reject();
                 img.src = e.target.result;
@@ -453,7 +482,6 @@
         });
     }
 
-    // Работа с Firestore
     async function addToFirestore(drink) { try { await db.collection('energydrinks').add({ ...drink, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); return true; } catch(e) { alert(e.message); return false; } }
     async function updateInFirestore(id, drink) { try { await db.collection('energydrinks').doc(id).update(drink); return true; } catch(e) { alert(e.message); return false; } }
     async function deleteFromFirestore(id) { try { await db.collection('energydrinks').doc(id).delete(); return true; } catch(e) { alert(e.message); return false; } }
@@ -465,10 +493,9 @@
         const drink = drinkSnap.data();
         const adminRating = drink.adminRating;
         const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
-        let sum = adminRating;
-        let count = 1;
-        reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
-        const newAvg = sum / count;
+        let userSum = 0, userCount = 0;
+        reviewsSnap.forEach(doc => { userSum += doc.data().rating; userCount++; });
+        const newAvg = (adminRating + userSum) / (1 + userCount);
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
     }
 
@@ -479,47 +506,18 @@
         const drink = drinkSnap.data();
         const adminRating = drink.adminRating;
         const reviewsSnap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
-        let sum = adminRating;
-        let count = 1;
-        reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
-        const newAvg = sum / count;
+        let userSum = 0, userCount = 0;
+        reviewsSnap.forEach(doc => { userSum += doc.data().rating; userCount++; });
+        const newAvg = (adminRating + userSum) / (1 + userCount);
         await db.collection('energydrinks').doc(drinkId).update({ averageRating: newAvg });
         const updatedDrink = energyDrinks.find(d => d.id === drinkId);
         if (updatedDrink) openDetailModal(updatedDrink);
         else detailModal.classList.remove('active');
     }   
 
-    async function fetchReviews(drinkId) {
-        const snap = await db.collection('reviews').where('drinkId', '==', drinkId).get();
-        return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    }
+    async function fetchReviews(drinkId) { const snap = await db.collection('reviews').where('drinkId', '==', drinkId).get(); return snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); }
+    function connectToFirestore() { if (unsubscribe) unsubscribe(); unsubscribe = db.collection('energydrinks').onSnapshot(snapshot => { energyDrinks = []; snapshot.forEach(doc => { const data = doc.data(); energyDrinks.push({ id: doc.id, name: data.name, imageData: data.imageData || null, tags: data.tags || [], rating: data.averageRating !== undefined ? data.averageRating : (data.adminRating || 3), taste: data.taste || "", description: data.description || "", caffeine: data.caffeine ?? null, taurine: data.taurine ?? null, adminRating: data.adminRating }); }); applyFiltersAndRender(); syncStatus.innerHTML = 'Синхронизировано'; setTimeout(() => { syncStatus.innerHTML = 'Данные в облаке'; }, 2000); }, error => { syncStatus.innerHTML = 'Ошибка подключения'; }); }
 
-    function connectToFirestore() {
-        if (unsubscribe) unsubscribe();
-        unsubscribe = db.collection('energydrinks').onSnapshot(snapshot => {
-            energyDrinks = [];
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                energyDrinks.push({ 
-                    id: doc.id, 
-                    name: data.name, 
-                    imageData: data.imageData || null, 
-                    tags: data.tags || [], 
-                    rating: data.averageRating !== undefined ? data.averageRating : (data.adminRating || 3), 
-                    taste: data.taste || "", 
-                    description: data.description || "", 
-                    caffeine: data.caffeine ?? null, 
-                    taurine: data.taurine ?? null, 
-                    adminRating: data.adminRating 
-                });
-            });
-            applyFiltersAndRender();
-            syncStatus.innerHTML = 'Синхронизировано';
-            setTimeout(() => { syncStatus.innerHTML = 'Данные в облаке'; }, 2000);
-        }, error => { syncStatus.innerHTML = 'Ошибка подключения'; });
-    }
-
-    // Предложения
     let selectedSuggestionImageBase64 = null;
     const suggestImageFile = document.getElementById('suggestImageFile');
     const suggestImagePreview = document.getElementById('suggestImagePreview');
@@ -527,51 +525,26 @@
         suggestImageFile.onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) { selectedSuggestionImageBase64 = null; suggestImagePreview.innerHTML = ''; return; }
-            try {
-                const resized = await resizeImageToSquare(file, 500, 0.7);
-                selectedSuggestionImageBase64 = resized;
-                suggestImagePreview.innerHTML = `<img src="${selectedSuggestionImageBase64}" style="max-width:100px; border-radius:16px;">`;
-            } catch(err) {
-                console.error('Ошибка обработки фото предложения:', err);
-                alert('Не удалось обработать изображение');
-                selectedSuggestionImageBase64 = null;
-                suggestImagePreview.innerHTML = '';
-            }
+            try { const resized = await resizeImageToSquare(file, 500, 0.7); selectedSuggestionImageBase64 = resized; suggestImagePreview.innerHTML = `<img src="${selectedSuggestionImageBase64}" style="max-width:100px; border-radius:16px;">`; } catch(err) { console.error(err); alert('Ошибка обработки фото'); selectedSuggestionImageBase64 = null; suggestImagePreview.innerHTML = ''; }
         };
     }
-
     async function addSuggestion(name, imageData, shop, price) {
         if (!name) { alert('Название обязательно'); return false; }
-        const suggestion = {
-            name,
-            imageData: imageData || null,
-            shop: shop || null,
-            price: price ? Number(price) : null,
-            userName: currentUser.login,
-            userId: currentUser.login,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        try {
-            await db.collection('suggestions').add(suggestion);
-            alert('Предложение отправлено!');
-            return true;
-        } catch(e) {
-            alert('Ошибка: ' + e.message);
-            return false;
-        }
+        const suggestion = { name, imageData: imageData || null, shop: shop || null, price: price ? Number(price) : null, userName: currentUser.login, userId: currentUser.login, createdAt: firebase.firestore.FieldValue.serverTimestamp(), likes: [] };
+        try { await db.collection('suggestions').add(suggestion); alert('Предложение отправлено!'); return true; } catch(e) { alert('Ошибка: ' + e.message); return false; }
     }
-
     function renderPendingList(suggestions) {
         const container = document.getElementById('pendingList');
         if (!container) return;
-        if (!suggestions.length) {
-            container.innerHTML = '<p style="text-align:center">Пока нет предложений.</p>';
-            return;
-        }
+        if (!suggestions.length) { container.innerHTML = '<p style="text-align:center">Пока нет предложений.</p>'; return; }
         const isAdmin = currentUser?.role === 'admin';
+        const userId = currentUser?.login;
         container.innerHTML = suggestions.map(sug => {
-            const canDelete = isAdmin || (currentUser && currentUser.login === sug.userName);
-            const imgSrc = sug.imageData || (sug.imageUrl ? sug.imageUrl : null); // поддержка старых URL
+            const canDelete = isAdmin || (userId && userId === sug.userName);
+            const likes = sug.likes || [];
+            const liked = userId && likes.includes(userId);
+            const likeCount = likes.length;
+            const imgSrc = sug.imageData || (sug.imageUrl ? sug.imageUrl : null);
             return `
                 <div class="pending-card" data-id="${sug.id}">
                     ${imgSrc ? `<img src="${escapeHtml(imgSrc)}" style="width:80px; height:80px; object-fit:cover; border-radius:12px;" onerror="this.style.display='none'">` : ''}
@@ -581,87 +554,26 @@
                         <div>${sug.price ? 'Цена: ' + sug.price + ' руб.' : ''}</div>
                         <div><small>Предложил: ${escapeHtml(sug.userName)}</small></div>
                     </div>
-                    ${canDelete ? `<button class="delete-suggestion-btn" data-id="${sug.id}">Удалить</button>` : ''}
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        ${userId ? `<button class="like-button" data-id="${sug.id}" data-liked="${liked}" style="color: ${liked ? '#e53e3e' : '#6c757d'};">❤️ <span class="likes-count">${likeCount}</span></button>` : `<span style="color: #6c757d;">❤️ ${likeCount}</span>`}
+                        ${canDelete ? `<button class="delete-suggestion-btn" data-id="${sug.id}">Удалить</button>` : ''}
+                    </div>
                 </div>
             `;
         }).join('');
-        document.querySelectorAll('.delete-suggestion-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                const id = btn.getAttribute('data-id');
-                if (confirm('Удалить предложение?')) {
-                    await db.collection('suggestions').doc(id).delete();
-                }
-            });
-        });
+        document.querySelectorAll('.delete-suggestion-btn').forEach(btn => { btn.addEventListener('click', async (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); if (confirm('Удалить предложение?')) await db.collection('suggestions').doc(id).delete(); }); });
+        document.querySelectorAll('.like-button').forEach(btn => { btn.addEventListener('click', async (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); if (!currentUser) { alert('Войдите, чтобы ставить лайки'); return; } await toggleLike(id, currentUser.login); }); });
     }
+    function connectToSuggestions() { if (unsubscribeSuggestions) unsubscribeSuggestions(); unsubscribeSuggestions = db.collection('suggestions').orderBy('createdAt', 'desc').onSnapshot(snapshot => { const suggestions = []; snapshot.forEach(doc => { suggestions.push({ id: doc.id, ...doc.data() }); }); renderPendingList(suggestions); }, error => console.error(error)); }
 
-    function connectToSuggestions() {
-        if (unsubscribeSuggestions) unsubscribeSuggestions();
-        unsubscribeSuggestions = db.collection('suggestions').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-            const suggestions = [];
-            snapshot.forEach(doc => {
-                suggestions.push({ id: doc.id, ...doc.data() });
-            });
-            renderPendingList(suggestions);
-        }, error => console.error(error));
-    }
-
-    function renderTagCheckboxes(container, selected = []) {
-        container.innerHTML = '';
-        AVAILABLE_TAGS.forEach(tag => {
-            const label = document.createElement('label'); label.className = 'tag-check';
-            const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag.name; if (selected.includes(tag.name)) cb.checked = true;
-            const span = document.createElement('span'); span.innerText = `${tag.emoji} ${tag.name}`;
-            label.appendChild(cb); label.appendChild(span); container.appendChild(label);
-        });
-    }
+    function renderTagCheckboxes(container, selected = []) { container.innerHTML = ''; AVAILABLE_TAGS.forEach(tag => { const label = document.createElement('label'); label.className = 'tag-check'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag.name; if (selected.includes(tag.name)) cb.checked = true; const span = document.createElement('span'); span.innerText = `${tag.emoji} ${tag.name}`; label.appendChild(cb); label.appendChild(span); container.appendChild(label); }); }
     function getSelectedTags(container) { return Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value); }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
     function getImageSrc(drink) { return drink.imageData || "https://via.placeholder.com/200?text=Нет+фото"; }
-
-    function filterDrinks(arr) {
-        let res = [...arr];
-        if (searchQuery.trim()) res = res.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()));
-        if (selectedFilterTags.length) res = res.filter(d => selectedFilterTags.every(t => d.tags.includes(t)));
-        return res;
-    }
-    function sortDrinks(arr) {
-        const sorted = [...arr];
-        if (currentSort === 'name-asc') sorted.sort((a,b) => a.name.localeCompare(b.name));
-        else if (currentSort === 'name-desc') sorted.sort((a,b) => b.name.localeCompare(a.name));
-        else if (currentSort === 'rating-asc') sorted.sort((a,b) => a.rating - b.rating);
-        else sorted.sort((a,b) => b.rating - a.rating);
-        return sorted;
-    }
-    function applyFiltersAndRender() {
-        const filtered = filterDrinks(energyDrinks);
-        const sorted = sortDrinks(filtered);
-        renderCards(sorted);
-        const counter = document.getElementById('energyCounter');
-        if (counter) counter.innerHTML = `Энергетиков: ${energyDrinks.length}${filtered.length !== energyDrinks.length ? ` (показано ${filtered.length})` : ''}`;
-    }
-    function renderCards(drinks) {
-        if (!drinks.length) { cardsContainer.innerHTML = '<div class="empty-message">Добавьте первый энергетик</div>'; return; }
-        cardsContainer.innerHTML = drinks.map(drink => `
-            <div class="drink-card" data-id="${drink.id}">
-                <img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/100'">
-                <div class="card-info">
-                    <div class="card-title">${escapeHtml(drink.name)}</div>
-                    <div class="tags-row"><div class="tags-list">${drink.tags.map(t => { const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${tagObj ? tagObj.emoji : ''} ${escapeHtml(t)}</span>`; }).join('')}</div>
-                    <div class="rating-value">${drink.rating ? drink.rating.toFixed(1) : '?'}</div></div>
-                </div>
-            </div>`).join('');
-        document.querySelectorAll('.drink-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = card.getAttribute('data-id');
-                const drink = energyDrinks.find(d => d.id === id);
-                if (drink) openDetailModal(drink);
-                else console.warn('Drink not found', id);
-            });
-        });
-    }
+    function filterDrinks(arr) { let res = [...arr]; if (searchQuery.trim()) res = res.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())); if (selectedFilterTags.length) res = res.filter(d => selectedFilterTags.every(t => d.tags.includes(t))); return res; }
+    function sortDrinks(arr) { const sorted = [...arr]; if (currentSort === 'name-asc') sorted.sort((a,b) => a.name.localeCompare(b.name)); else if (currentSort === 'name-desc') sorted.sort((a,b) => b.name.localeCompare(a.name)); else if (currentSort === 'rating-asc') sorted.sort((a,b) => a.rating - b.rating); else sorted.sort((a,b) => b.rating - a.rating); return sorted; }
+    function applyFiltersAndRender() { const filtered = filterDrinks(energyDrinks); const sorted = sortDrinks(filtered); renderCards(sorted); const counter = document.getElementById('energyCounter'); if (counter) counter.innerHTML = `Энергетиков: ${energyDrinks.length}${filtered.length !== energyDrinks.length ? ` (показано ${filtered.length})` : ''}`; }
+    function renderCards(drinks) { if (!drinks.length) { cardsContainer.innerHTML = '<div class="empty-message">Добавьте первый энергетик</div>'; return; } cardsContainer.innerHTML = drinks.map(drink => `<div class="drink-card" data-id="${drink.id}"><img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/100'"><div class="card-info"><div class="card-title">${escapeHtml(drink.name)}</div><div class="tags-row"><div class="tags-list">${drink.tags.map(t => { const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${tagObj ? tagObj.emoji : ''} ${escapeHtml(t)}</span>`; }).join('')}</div><div class="rating-value">${drink.rating ? drink.rating.toFixed(1) : '?'}</div></div></div></div>`).join(''); document.querySelectorAll('.drink-card').forEach(card => { card.addEventListener('click', (e) => { e.stopPropagation(); const id = card.getAttribute('data-id'); const drink = energyDrinks.find(d => d.id === id); if (drink) openDetailModal(drink); else console.warn('Drink not found', id); }); }); }
 
     async function openDetailModal(drink) {
         const reviews = await fetchReviews(drink.id);
@@ -671,49 +583,14 @@
         let userSum = 0, userCount = 0;
         reviews.forEach(r => { userSum += r.rating; userCount++; });
         const userAvgRating = userCount ? (userSum / userCount).toFixed(1) : '—';
-        document.getElementById('detailContent').innerHTML = `
-            <div class="detail-layout">
-                <div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280'"></div>
-                <div class="detail-info">
-                    <h2>${escapeHtml(drink.name)}</h2>
-                    <div class="detail-tags">${tagSpans}</div>
-                    <div style="font-size:1.5rem; font-weight:600;">${drink.rating ? drink.rating.toFixed(1) : '?'} / 5</div>
-                    <div class="taste-block">Оценка админа: ${drink.adminRating} / 5</div>
-                    <div class="taste-block">Оценка пользователей: ${userAvgRating} / 5</div>
-                    <div class="taste-block">Вкус: ${escapeHtml(drink.taste)}</div>
-                    ${drink.caffeine ? `<div class="taste-block">Кофеин: ${drink.caffeine} мг</div>` : ''}
-                    ${drink.taurine ? `<div class="taste-block">Таурин: ${drink.taurine} мг</div>` : ''}
-                    <div class="detail-description">${escapeHtml(drink.description)}</div>
-                    <div class="action-buttons">
-                        ${isAdmin ? `<button class="edit-button" id="editDrinkBtn">Изменить</button><button class="delete-button" id="deleteDrinkBtn">Удалить</button>` : ''}
-                        ${showReviewForm ? `<button class="review-button" id="showReviewFormBtn">Оставить отзыв</button>` : ''}
-                    </div>
-                    <div class="reviews-section"><h3>Отзывы</h3><div id="reviewsList"></div></div>
-                </div>
-            </div>`;
+        document.getElementById('detailContent').innerHTML = `<div class="detail-layout"><div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280'"></div><div class="detail-info"><h2>${escapeHtml(drink.name)}</h2><div class="detail-tags">${tagSpans}</div><div style="font-size:1.5rem; font-weight:600;">${drink.rating ? drink.rating.toFixed(1) : '?'} / 5</div><div class="taste-block">Оценка админа: ${drink.adminRating} / 5</div><div class="taste-block">Оценка пользователей: ${userAvgRating} / 5</div><div class="taste-block">Вкус: ${escapeHtml(drink.taste)}</div>${drink.caffeine ? `<div class="taste-block">Кофеин: ${drink.caffeine} мг</div>` : ''}${drink.taurine ? `<div class="taste-block">Таурин: ${drink.taurine} мг</div>` : ''}<div class="detail-description">${escapeHtml(drink.description)}</div><div class="action-buttons">${isAdmin ? `<button class="edit-button" id="editDrinkBtn">Изменить</button><button class="delete-button" id="deleteDrinkBtn">Удалить</button>` : ''}${showReviewForm ? `<button class="review-button" id="showReviewFormBtn">Оставить отзыв</button>` : ''}</div><div class="reviews-section"><h3>Отзывы</h3><div id="reviewsList"></div></div></div></div>`;
         const reviewsDiv = document.getElementById('reviewsList');
         reviewsDiv.innerHTML = reviews.length ? reviews.map(review => {
-            const canDelete = (currentUser?.role === 'admin') || (currentUser?.login === review.userName);
-            return `
-                <div class="review-card" data-review-id="${review.id}">
-                    <div class="review-info">
-                        <div class="review-user">${escapeHtml(review.userName)}</div>
-                        <div class="review-text">${escapeHtml(review.text)}</div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="review-rating">${review.rating}</div>
-                        ${canDelete ? `<button class="delete-review-btn" data-review-id="${review.id}" style="background:none; border:none; cursor:pointer; font-size:1.3rem;">🗑️</button>` : ''}
-                    </div>
-                </div>
-            `;
+            const canEditDelete = (currentUser?.role === 'admin') || (currentUser?.login === review.userName);
+            return `<div class="review-card" data-review-id="${review.id}"><div class="review-info"><div class="review-user">${escapeHtml(review.userName)}</div><div class="review-text">${escapeHtml(review.text)}</div></div><div style="display: flex; align-items: center; gap: 12px;"><div class="review-rating">${review.rating}</div>${canEditDelete ? `<button class="edit-review-btn" data-id="${review.id}" data-text="${escapeHtml(review.text)}" data-rating="${review.rating}" style="background:none; border:none; cursor:pointer; font-size:1.3rem;">✏️</button><button class="delete-review-btn" data-review-id="${review.id}" style="background:none; border:none; cursor:pointer; font-size:1.3rem;">🗑️</button>` : ''}</div></div>`;
         }).join('') : '<p>Пока нет отзывов.</p>';
-        document.querySelectorAll('.delete-review-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                const reviewId = btn.getAttribute('data-review-id');
-                if (reviewId) await deleteReview(reviewId, drink.id);
-            });
-        });
+        document.querySelectorAll('.delete-review-btn').forEach(btn => { btn.addEventListener('click', async (e) => { e.stopPropagation(); const reviewId = btn.getAttribute('data-review-id'); if (reviewId) await deleteReview(reviewId, drink.id); }); });
+        document.querySelectorAll('.edit-review-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); const reviewId = btn.getAttribute('data-id'); const text = btn.getAttribute('data-text'); const rating = btn.getAttribute('data-rating'); document.getElementById('editReviewId').value = reviewId; document.getElementById('editReviewDrinkId').value = drink.id; document.getElementById('editReviewText').value = text; document.getElementById('editReviewRating').value = rating; editReviewModal.classList.add('active'); }); });
         if (showReviewForm) {
             const reviewBtn = document.getElementById('showReviewFormBtn');
             if (reviewBtn) reviewBtn.onclick = () => {
@@ -738,77 +615,18 @@
         detailModal.classList.add('active');
     }
 
+    // --- Существующие функции добавления/редактирования энергетиков ---
     let selectedImageBase64 = null, editSelectedImageBase64 = null;
     const tagsCheckboxesDiv = document.getElementById('tagsCheckboxes'), editTagsCheckboxesDiv = document.getElementById('editTagsCheckboxes');
     const drinkImageFile = document.getElementById('drinkImageFile'), editImageFile = document.getElementById('editImageFile');
     const imagePreviewDiv = document.getElementById('imagePreview'), editImagePreviewDiv = document.getElementById('editImagePreview');
     if (drinkImageFile) drinkImageFile.onchange = async (e) => { const file = e.target.files[0]; if (!file) return; selectedImageBase64 = await resizeImageToSquare(file, 500, 0.7); imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px;">`; };
     if (editImageFile) editImageFile.onchange = async (e) => { const file = e.target.files[0]; if (!file) return; editSelectedImageBase64 = await resizeImageToSquare(file, 500, 0.7); editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px;">`; };
-    async function addNewDrink(e) {
-        e.preventDefault(); if (!checkAuthForAdd()) return;
-        const name = document.getElementById('drinkName').value.trim();
-        const adminRating = parseFloat(document.getElementById('drinkRating').value);
-        const taste = document.getElementById('drinkTaste').value.trim();
-        const caffeine = document.getElementById('drinkCaffeine').value; const taurine = document.getElementById('drinkTaurine').value;
-        const description = document.getElementById('drinkDescription').value.trim() || "Нет описания";
-        const tags = getSelectedTags(tagsCheckboxesDiv);
-        if (!name || !taste || !tags.length) { alert('Заполните все поля'); return; }
-        const drink = { name, imageData: selectedImageBase64, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: adminRating };
-        if (await addToFirestore(drink)) { closeAllModals(); document.getElementById('addDrinkForm').reset(); selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; renderTagCheckboxes(tagsCheckboxesDiv, []); }
-    }
-    function openEditModal(drink) {
-        document.getElementById('editDrinkId').value = drink.id;
-        document.getElementById('editName').value = drink.name;
-        document.getElementById('editRating').value = drink.adminRating || 3;
-        document.getElementById('editTaste').value = drink.taste;
-        document.getElementById('editDescription').value = drink.description;
-        document.getElementById('editCaffeine').value = drink.caffeine ?? '';
-        document.getElementById('editTaurine').value = drink.taurine ?? '';
-        renderTagCheckboxes(editTagsCheckboxesDiv, drink.tags);
-        editImagePreviewDiv.innerHTML = drink.imageData ? `<img src="${drink.imageData}" style="max-width:100px;">` : '';
-        editSelectedImageBase64 = null;
-        editModal.classList.add('active');
-    }
-    async function saveEdit(e) {
-        e.preventDefault(); if (!checkAuthForEditDelete()) return;
-        const id = document.getElementById('editDrinkId').value;
-        const name = document.getElementById('editName').value.trim();
-        const adminRating = parseFloat(document.getElementById('editRating').value);
-        const taste = document.getElementById('editTaste').value.trim();
-        const description = document.getElementById('editDescription').value.trim();
-        const tags = getSelectedTags(editTagsCheckboxesDiv);
-        const caffeine = document.getElementById('editCaffeine').value; const taurine = document.getElementById('editTaurine').value;
-        if (!name || !taste || !tags.length) { alert('Заполните поля'); return; }
-        let imageData = editSelectedImageBase64;
-        if (!imageData) { const old = energyDrinks.find(d => d.id === id); if (old) imageData = old.imageData; }
-        const reviewsSnap = await db.collection('reviews').where('drinkId', '==', id).get();
-        let sum = adminRating;
-        let count = 1;
-        reviewsSnap.forEach(doc => { sum += doc.data().rating; count++; });
-        const newAvg = sum / count;
-        await updateInFirestore(id, { name, imageData, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: newAvg });
-        closeAllModals();
-    }
+    async function addNewDrink(e) { e.preventDefault(); if (!checkAuthForAdd()) return; const name = document.getElementById('drinkName').value.trim(); const adminRating = parseFloat(document.getElementById('drinkRating').value); const taste = document.getElementById('drinkTaste').value.trim(); const caffeine = document.getElementById('drinkCaffeine').value; const taurine = document.getElementById('drinkTaurine').value; const description = document.getElementById('drinkDescription').value.trim() || "Нет описания"; const tags = getSelectedTags(tagsCheckboxesDiv); if (!name || !taste || !tags.length) { alert('Заполните все поля'); return; } const drink = { name, imageData: selectedImageBase64, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: adminRating }; if (await addToFirestore(drink)) { closeAllModals(); document.getElementById('addDrinkForm').reset(); selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; renderTagCheckboxes(tagsCheckboxesDiv, []); } }
+    function openEditModal(drink) { document.getElementById('editDrinkId').value = drink.id; document.getElementById('editName').value = drink.name; document.getElementById('editRating').value = drink.adminRating || 3; document.getElementById('editTaste').value = drink.taste; document.getElementById('editDescription').value = drink.description; document.getElementById('editCaffeine').value = drink.caffeine ?? ''; document.getElementById('editTaurine').value = drink.taurine ?? ''; renderTagCheckboxes(editTagsCheckboxesDiv, drink.tags); editImagePreviewDiv.innerHTML = drink.imageData ? `<img src="${drink.imageData}" style="max-width:100px;">` : ''; editSelectedImageBase64 = null; editModal.classList.add('active'); }
+    async function saveEdit(e) { e.preventDefault(); if (!checkAuthForEditDelete()) return; const id = document.getElementById('editDrinkId').value; const name = document.getElementById('editName').value.trim(); const adminRating = parseFloat(document.getElementById('editRating').value); const taste = document.getElementById('editTaste').value.trim(); const description = document.getElementById('editDescription').value.trim(); const tags = getSelectedTags(editTagsCheckboxesDiv); const caffeine = document.getElementById('editCaffeine').value; const taurine = document.getElementById('editTaurine').value; if (!name || !taste || !tags.length) { alert('Заполните поля'); return; } let imageData = editSelectedImageBase64; if (!imageData) { const old = energyDrinks.find(d => d.id === id); if (old) imageData = old.imageData; } const reviewsSnap = await db.collection('reviews').where('drinkId', '==', id).get(); let userSum = 0, userCount = 0; reviewsSnap.forEach(doc => { userSum += doc.data().rating; userCount++; }); const newAvg = (adminRating + userSum) / (1 + userCount); await updateInFirestore(id, { name, imageData, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: newAvg }); closeAllModals(); }
 
-    function renderFilterTags() {
-        filterTagsContainer.innerHTML = '';
-        const sugarTags = ["Без сахара", "С сахаром", "50/50 на сахаре"];
-        AVAILABLE_TAGS.forEach(tag => {
-            const span = document.createElement('span'); span.className = 'filter-tag'; if (selectedFilterTags.includes(tag.name)) span.classList.add('selected');
-            span.innerText = `${tag.emoji} ${tag.name}`;
-            span.onclick = () => {
-                if (sugarTags.includes(tag.name)) {
-                    if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
-                    else { selectedFilterTags = selectedFilterTags.filter(t => !sugarTags.includes(t)); selectedFilterTags.push(tag.name); }
-                } else {
-                    if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name);
-                    else selectedFilterTags.push(tag.name);
-                }
-                renderFilterTags(); applyFiltersAndRender();
-            };
-            filterTagsContainer.appendChild(span);
-        });
-    }
+    function renderFilterTags() { filterTagsContainer.innerHTML = ''; const sugarTags = ["Без сахара", "С сахаром", "50/50 на сахаре"]; AVAILABLE_TAGS.forEach(tag => { const span = document.createElement('span'); span.className = 'filter-tag'; if (selectedFilterTags.includes(tag.name)) span.classList.add('selected'); span.innerText = `${tag.emoji} ${tag.name}`; span.onclick = () => { if (sugarTags.includes(tag.name)) { if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name); else { selectedFilterTags = selectedFilterTags.filter(t => !sugarTags.includes(t)); selectedFilterTags.push(tag.name); } } else { if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name); else selectedFilterTags.push(tag.name); } renderFilterTags(); applyFiltersAndRender(); }; filterTagsContainer.appendChild(span); }); }
     function resetFiltersAndSort() { currentSort = "name-asc"; selectedFilterTags = []; searchQuery = ""; searchInput.value = ""; updateActiveSortButton(); renderFilterTags(); applyFiltersAndRender(); }
     const sortButtons = document.querySelectorAll('.sort-btn');
     function updateActiveSortButton() { sortButtons.forEach(btn => { if (btn.dataset.sort === currentSort) btn.classList.add('active'); else btn.classList.remove('active'); }); }
@@ -816,10 +634,11 @@
     resetFiltersBtn.onclick = resetFiltersAndSort;
     searchInput.oninput = (e) => { searchQuery = e.target.value; applyFiltersAndRender(); };
 
-    // Навигация между окнами
+    // Навигация
     document.getElementById('openAddModalBtn').onclick = () => { if (checkAuthForAdd()) addModal.classList.add('active'); };
     document.getElementById('suggestBtn').onclick = () => { if (checkAuthForReview()) suggestModal.classList.add('active'); };
     document.getElementById('pendingBtn').onclick = () => { pendingModal.classList.add('active'); };
+    document.getElementById('profileBtn').onclick = () => { profileModal.classList.add('active'); };
     document.getElementById('logoutBtn').onclick = () => { clearSession(); };
     document.getElementById('loginBtn').onclick = () => { showRegisterModal(); };
     document.getElementById('closeRegisterModal').onclick = closeAllModals;
@@ -830,38 +649,25 @@
     document.getElementById('closeDetailModal').onclick = closeAllModals;
     document.getElementById('closeSuggestModal').onclick = closeAllModals;
     document.getElementById('closePendingModal').onclick = closeAllModals;
+    document.getElementById('closeProfileModal').onclick = closeAllModals;
+    document.getElementById('closeEditReviewModal').onclick = closeAllModals;
     window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeAllModals(); };
+    document.getElementById('suggestForm').addEventListener('submit', async (e) => { e.preventDefault(); const name = document.getElementById('suggestName').value.trim(); const shop = document.getElementById('suggestShop').value.trim(); const price = document.getElementById('suggestPrice').value; if (await addSuggestion(name, selectedSuggestionImageBase64, shop, price)) { closeAllModals(); document.getElementById('suggestForm').reset(); selectedSuggestionImageBase64 = null; suggestImagePreview.innerHTML = ''; } });
+    document.getElementById('changePasswordBtn').onclick = async () => { const cur = document.getElementById('currentPassword').value; const newp = document.getElementById('newPassword').value; const conf = document.getElementById('confirmPassword').value; if (await changePassword(cur, newp, conf)) { closeAllModals(); document.getElementById('currentPassword').value = ''; document.getElementById('newPassword').value = ''; document.getElementById('confirmPassword').value = ''; } };
+    document.getElementById('saveReviewEditBtn').onclick = async () => { const reviewId = document.getElementById('editReviewId').value; const drinkId = document.getElementById('editReviewDrinkId').value; const newText = document.getElementById('editReviewText').value.trim(); const newRating = document.getElementById('editReviewRating').value; if (!newText) { alert('Введите текст отзыва'); return; } await updateReview(reviewId, drinkId, newText, newRating); closeAllModals(); };
 
-    document.getElementById('suggestForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('suggestName').value.trim();
-        const shop = document.getElementById('suggestShop').value.trim();
-        const price = document.getElementById('suggestPrice').value;
-        if (await addSuggestion(name, selectedSuggestionImageBase64, shop, price)) {
-            closeAllModals();
-            document.getElementById('suggestForm').reset();
-            selectedSuggestionImageBase64 = null;
-            suggestImagePreview.innerHTML = '';
-        }
-    });
-
-    // Кнопки из окна регистрации
+    // Кнопки регистрации и авторизации
     document.getElementById('registerBtn').onclick = async () => { const login = document.getElementById('regLogin').value, pass = document.getElementById('regPassword').value; if (await registerUser(login, pass)) { registerModal.classList.remove('active'); authModal.classList.add('active'); } };
     document.getElementById('showAuthFromRegBtn').onclick = () => { registerModal.classList.remove('active'); authModal.classList.add('active'); };
     document.getElementById('showAdminFromRegBtn').onclick = () => { registerModal.classList.remove('active'); showAdminModal('register'); };
     document.getElementById('guestFromRegBtn').onclick = () => { clearSession(); closeAllModals(); };
-
-    // Кнопки из окна авторизации
     document.getElementById('authLoginBtn').onclick = async () => { const login = document.getElementById('authLogin').value, pass = document.getElementById('authPassword').value; await loginUser(login, pass); };
     document.getElementById('showRegisterFromAuthBtn').onclick = () => { authModal.classList.remove('active'); registerModal.classList.add('active'); };
     document.getElementById('showAdminFromAuthBtn').onclick = () => { authModal.classList.remove('active'); showAdminModal('auth'); };
     document.getElementById('guestFromAuthBtn').onclick = () => { clearSession(); closeAllModals(); };
-
-    // Кнопки окна админа
     document.getElementById('adminLoginBtn').onclick = async () => { const pass = document.getElementById('adminPassword').value; await loginAsAdmin(pass); };
     document.getElementById('backToPreviousModalBtn').onclick = () => { adminModal.classList.remove('active'); if (window.backModal === 'register') registerModal.classList.add('active'); else if (window.backModal === 'auth') authModal.classList.add('active'); else registerModal.classList.add('active'); };
 
-    // Восстановление сессии
     const saved = localStorage.getItem('energyUser');
     if (saved) { currentUser = JSON.parse(saved); updateUIByRole(); } else { showRegisterModal(); }
 
@@ -869,19 +675,11 @@
     document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
     document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
     
-    // Смена логотипа и темы
     const logoImage = document.getElementById('logoImage');
-    function updateLogo() {
-        if (document.body.classList.contains('dark-mode')) logoImage.src = 'logo-dark.png';
-        else logoImage.src = 'logo-light.png';
-    }
+    function updateLogo() { if (document.body.classList.contains('dark-mode')) logoImage.src = 'logo-dark.png'; else logoImage.src = 'logo-light.png'; }
     updateLogo();
     const themeToggle = document.getElementById('themeToggle');
-    themeToggle.onclick = () => {
-        document.body.classList.toggle('dark-mode');
-        themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-        updateLogo();
-    };
+    themeToggle.onclick = () => { document.body.classList.toggle('dark-mode'); themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; updateLogo(); };
 </script>
 </body>
 </html>
