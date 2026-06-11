@@ -270,18 +270,6 @@
     </div>
 </div>
 
-<div id="editReviewModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 450px;">
-        <button class="modal-close" id="closeEditReviewModal">&times;</button>
-        <h2>Редактировать отзыв</h2>
-        <input type="hidden" id="editReviewId">
-        <input type="hidden" id="editReviewDrinkId">
-        <div class="form-group"><label>Оценка</label><select id="editReviewRating"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
-        <div class="form-group"><label>Комментарий</label><textarea id="editReviewText" rows="3" placeholder="Ваш комментарий"></textarea></div>
-        <button id="saveReviewEditBtn" class="submit-btn">Сохранить</button>
-    </div>
-</div>
-
 <!-- Модальное окно для объявлений (админ) -->
 <div id="announceModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 500px;">
@@ -328,7 +316,17 @@
 <button type="submit" class="submit-btn">Сохранить</button></form></div></div>
 
 <div id="detailModal" class="modal-overlay"><div class="modal-content" style="max-width: 900px;"><button class="modal-close" id="closeDetailModal">&times;</button><div id="detailContent"></div></div></div>
-
+<div id="editReviewModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 450px;">
+        <button class="modal-close" id="closeEditReviewModal">&times;</button>
+        <h2>Редактировать отзыв</h2>
+        <input type="hidden" id="editReviewId">
+        <input type="hidden" id="editReviewDrinkId">
+        <div class="form-group"><label>Оценка</label><select id="editReviewRating"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+        <div class="form-group"><label>Комментарий</label><textarea id="editReviewText" rows="3" placeholder="Ваш комментарий"></textarea></div>
+        <button id="saveReviewEditBtn" class="submit-btn">Сохранить</button>
+    </div>
+</div>
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyDQGjVUA8w66eGudNSK0s6PMOSjEYQbpWY",
