@@ -14,20 +14,35 @@
         .logo img { height: 60px; width: auto; object-fit: contain; }
         .filters-panel { background: white; border-radius: 28px; padding: 18px 24px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .energy-counter { background: #eef2ff; display: inline-block; padding: 6px 16px; border-radius: 40px; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
-        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile { background: #2b7a4b; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .patch-notes-btn {
+            border: none;
+            padding: 0 20px;
+            height: 52px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .btn-plus { background: #2b7a4b; }
         .btn-logout { background: #6c757d; }
         .btn-login { background: #0d6efd; }
         .btn-suggest { background: #4a6d8c; }
         .btn-pending { background: #6c757d; }
         .btn-profile { background: #198754; }
-         { background: #fd7e14; }
-        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .btn-profile:hover,:hover { transform: scale(0.96); background: #1f5f3a; }
+        .patch-notes-btn { background: #4a6d8c; gap: 10px; }
+        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .btn-profile:hover, .patch-notes-btn:hover { transform: scale(0.96); }
+        .btn-plus:hover { background: #1f5f3a; }
         .btn-logout:hover { background: #5a6268; }
         .btn-login:hover { background: #0b5ed7; }
         .btn-suggest:hover { background: #2b4f6e; }
         .btn-pending:hover { background: #5a6268; }
         .btn-profile:hover { background: #146c43; }
-        :hover { background: #e06c00; }
+        .patch-notes-btn:hover { background: #2b4f6e; }
         .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid #cbd5e1; font-size: 1rem; margin-bottom: 16px; }
         .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
         .sort-buttons { display: flex; gap: 12px; }
@@ -125,8 +140,6 @@
         body.dark-mode .favorite-detail-btn { background: #db2777; }
         body.dark-mode .favorite-detail-btn.active { background: #9d174d; }
 
-        .patch-notes-btn { position: fixed; left: 18px; bottom: 18px; z-index: 1003; background: #4a6d8c; color: white; border: none; border-radius: 999px; padding: 14px 18px; font-weight: 800; box-shadow: 0 12px 26px rgba(0,0,0,0.16); display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
-        .patch-notes-btn:hover { transform: translateY(-2px); }
         .patch-notes-badge { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #ef4444; color: white; font-size: 14px; line-height: 1; box-shadow: 0 4px 10px rgba(239,68,68,0.35); }
         .patch-notes-badge.hidden { display: none; }
         .patch-notes-modal { max-width: 760px !important; }
@@ -148,7 +161,6 @@
         .patch-admin-actions button { flex: 1; min-width: 160px; }
         .stat-value { color: #0f172a; font-weight: 900; font-size: 1.7rem; margin: 8px 0 2px; }
         .stat-sub { color: #64748b; font-size: 0.85rem; }
-        body.dark-mode .patch-notes-btn { background: #334155; color: #f8fafc; }
         body.dark-mode .patch-item { background: #1e293b; border-color: #334155; }
         body.dark-mode .patch-version { color: #f8fafc; }
         body.dark-mode .patch-meta { color: #cbd5e1; }
@@ -179,7 +191,6 @@
         body.dark-mode .btn-login { background: #0d6efd; }
         body.dark-mode .btn-suggest { background: #4a6d8c; }
         body.dark-mode .btn-profile { background: #198754; }
-        body.dark-mode  { background: #fd7e14; }
         body.dark-mode .modal-close { color: #e2e8f0; }
         body.dark-mode .modal-close:hover { color: #ef4444; }
         body.dark-mode .review-rating { background: #5681ba; color: #fbbf24; }
@@ -200,7 +211,7 @@
             .reset-filters { margin-left: 0; align-self: center; }
             .drink-card { flex-direction: column; align-items: center; text-align: center; }
             .card-img { width: 120px; height: 120px; }
-            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, { padding: 0 12px; height: 44px; font-size: 14px; }
+            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .patch-notes-btn { padding: 0 12px; height: 44px; font-size: 14px; }
             .theme-toggle { width: 44px; height: 44px; font-size: 24px; }
             .user-status { font-size: 0.8rem; padding: 4px 12px; }
             .modal-content { width: 95% !important; padding: 20px 16px !important; max-width: 95% !important; }
@@ -256,6 +267,7 @@
             <button class="btn-profile" id="profileBtn" style="display: none;">Профиль</button>
             <button class="btn-logout" id="logoutBtn" style="display: none;">Выйти</button>
             <button class="btn-login" id="loginBtn" style="display: none;">Войти</button>
+            <button id="patchNotesBtn" class="patch-notes-btn" type="button">📜 История обновлений <span id="patchNotesBadge" class="patch-notes-badge hidden">!</span></button>
         </div>
     </div>
     <div class="filters-panel">
@@ -275,13 +287,10 @@
             <div class="tags-filter"><span>Фильтр по тегам:</span><div class="filter-tags-group" id="filterTagsContainer"></div><button class="reset-filters" id="resetFiltersBtn">Сбросить</button></div>
         </div>
         <div class="sync-status" id="syncStatus">Синхронизация...</div>
-        <div class="energy-counter" id="energyCounter">Энергетиков: 0</div>
         <div id="statsPanel" class="stats-panel"></div>
     </div>
     <div id="cardsContainer" class="cards-grid"></div>
 </div>
-
-<button id="patchNotesBtn" class="patch-notes-btn" type="button">📜 История обновлений <span id="patchNotesBadge" class="patch-notes-badge hidden">!</span></button>
 
 <!-- Модальные окна -->
 <div id="registerModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeRegisterModal">&times;</button><h2>Регистрация</h2>
@@ -861,7 +870,6 @@
         const filtered = filterDrinks(energyDrinks);
         const sorted = sortDrinks(filtered);
         renderCards(sorted);
-        document.getElementById('energyCounter').innerHTML = `Энергетиков: ${energyDrinks.length}${filtered.length !== energyDrinks.length ? ` (показано ${filtered.length})` : ''}${showOnlyFavorites ? ' • избранное' : ''}`;
         renderStatistics(filtered);
         updateBrandControls();
     }
