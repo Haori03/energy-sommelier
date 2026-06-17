@@ -144,7 +144,19 @@
         .likes-count { font-size: 0.9rem; font-weight: bold; }
         @media (max-width: 600px) { .drink-card { flex-direction: column; align-items: center; text-align: center; } .detail-layout { flex-wrap: wrap; justify-content: center; } .detail-img { width: 180px; margin: 0 auto; } }
         
-
+        .patch-item-actions{
+            display:flex;
+            gap:8px;
+        }
+        
+        body:not(.admin-mode) .patch-item-actions{
+            display:none !important;
+        }
+        
+        body:not(.admin-mode) .patch-edit-btn,
+        body:not(.admin-mode) .patch-delete-btn{
+            display:none !important;
+        }
         .filters-row { display: flex; flex-direction: column; gap: 14px; }
         .brand-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .brand-filter-select { min-width: 220px; padding: 12px 16px; border-radius: 48px; border: 1px solid #cbd5e1; background: white; font-size: 1rem; }
@@ -491,6 +503,11 @@
         if (favoritesFilterBtn) favoritesFilterBtn.classList.toggle('active', showOnlyFavorites);
         document.getElementById('userStatus').innerHTML = currentUser ? `${currentUser.login} (${currentUser.role === 'admin' ? 'Админ' : 'Пользователь'})` : 'Гость';
         if (!isAdmin && addModal.classList.contains('active')) addModal.classList.remove('active');
+        if (currentUser?.role === 'admin') {
+            document.body.classList.add('admin-mode');
+        } else {
+            document.body.classList.remove('admin-mode');
+        }
     }
     function saveSession(user) { localStorage.setItem('energyUser', JSON.stringify(user)); currentUser = user; loadFavorites(); updateUIByRole(); }
     function clearSession() { localStorage.removeItem('energyUser'); currentUser = null; loadFavorites(); updateUIByRole(); showRegisterModal(); }
@@ -686,58 +703,128 @@
 
     function renderPatchList() {
         if (!patchNotesList) return;
+    
         if (!patchNotesDocs.length) {
-            patchNotesList.innerHTML = '<div class="patch-item"><div class="patch-version">Пока нет обновлений</div><div class="patch-section-text">Админ ещё не публиковал патчи.</div></div>';
+            patchNotesList.innerHTML =
+                '<div class="patch-item"><div class="patch-version">Пока нет обновлений</div><div class="patch-section-text">Админ ещё не публиковал патчи.</div></div>';
             return;
         }
-        const isAdmin = currentUser?.role === 'admin';
+    
+        const isAdmin = currentUser && currentUser.role === 'admin';
+    
         patchNotesList.innerHTML = patchNotesDocs.map(doc => {
             const added = doc.added || '';
             const fixed = doc.fixed || '';
+    
             return `
                 <div class="patch-item" data-patch-id="${doc.id}">
                     <div class="patch-item-header">
+    
                         <div>
-                            <div class="patch-version">Patch ${escapeHtml(doc.version || '—')}</div>
-                            <div class="patch-meta">${formatPatchDate(doc.createdAt)}${doc.updatedAt ? ` • обновлено ${formatPatchDate(doc.updatedAt)}` : ''}</div>
+                            <div class="patch-version">
+                                Patch ${escapeHtml(doc.version || '—')}
+                            </div>
+    
+                            <div class="patch-meta">
+                                ${formatPatchDate(doc.createdAt)}
+                                ${doc.updatedAt
+                                    ? ` • обновлено ${formatPatchDate(doc.updatedAt)}`
+                                    : ''}
+                            </div>
                         </div>
-                        ${isAdmin ? `
-                        <div class="patch-item-actions">
-                            <button class="patch-edit-btn" data-edit-patch="${doc.id}" type="button">Редактировать</button>
-                            <button class="patch-delete-btn" data-delete-patch="${doc.id}" type="button">Удалить</button>
-                        </div>` : ''}
+    
+                        ${
+                            isAdmin
+                            ? `
+                            <div class="patch-item-actions">
+                                <button class="patch-edit-btn"
+                                        data-edit-patch="${doc.id}"
+                                        type="button">
+                                    Редактировать
+                                </button>
+    
+                                <button class="patch-delete-btn"
+                                        data-delete-patch="${doc.id}"
+                                        type="button">
+                                    Удалить
+                                </button>
+                            </div>
+                            `
+                            : ''
+                        }
+    
                     </div>
+    
                     <div class="patch-section">
-                        <div class="patch-section-title">Что добавлено</div>
-                        <div class="patch-section-text">${escapeHtml(added) || '—'}</div>
+                        <div class="patch-section-title">
+                            Что добавлено
+                        </div>
+    
+                        <div class="patch-section-text">
+                            ${escapeHtml(added) || '—'}
+                        </div>
                     </div>
-                    ${fixed ? `
-                    <div class="patch-section">
-                        <div class="patch-section-title">Что исправлено</div>
-                        <div class="patch-section-text">${escapeHtml(fixed)}</div>
-                    </div>` : ''}
+    
+                    ${
+                        fixed
+                        ? `
+                        <div class="patch-section">
+                            <div class="patch-section-title">
+                                Что исправлено
+                            </div>
+    
+                            <div class="patch-section-text">
+                                ${escapeHtml(fixed)}
+                            </div>
+                        </div>
+                        `
+                        : ''
+                    }
+    
                 </div>
             `;
         }).join('');
-
-        if (isAdmin) {
-            document.querySelectorAll('[data-edit-patch]').forEach(btn => btn.addEventListener('click', () => {
-                const doc = patchNotesDocs.find(p => p.id === btn.dataset.editPatch);
+    
+        if (!isAdmin) return;
+    
+        document.querySelectorAll('[data-edit-patch]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const doc = patchNotesDocs.find(
+                    p => p.id === btn.dataset.editPatch
+                );
+    
                 if (!doc) return;
+    
                 currentPatchEditId = doc.id;
-                document.getElementById('patchVersion').value = doc.version || '';
-                document.getElementById('patchAdded').value = doc.added || '';
-                document.getElementById('patchFixed').value = doc.fixed || '';
-                document.getElementById('savePatchBtn').textContent = 'Обновить пост';
-                document.getElementById('deletePatchBtn').disabled = false;
-            }));
-            document.querySelectorAll('[data-delete-patch]').forEach(btn => btn.addEventListener('click', async () => {
-                const id = btn.dataset.deletePatch;
-                if (!confirm('Удалить этот пост обновления?')) return;
-                await db.collection('patchnotes').doc(id).delete();
-                if (currentPatchEditId === id) resetPatchForm();
-            }));
-        }
+    
+                document.getElementById('patchVersion').value =
+                    doc.version || '';
+    
+                document.getElementById('patchAdded').value =
+                    doc.added || '';
+    
+                document.getElementById('patchFixed').value =
+                    doc.fixed || '';
+    
+                document.getElementById('savePatchBtn').textContent =
+                    'Обновить пост';
+    
+                document.getElementById('deletePatchBtn').disabled =
+                    false;
+            });
+        });
+    
+        document.querySelectorAll('[data-delete-patch]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+    
+                if (!confirm('Удалить пост обновления?'))
+                    return;
+    
+                await db.collection('patchnotes')
+                    .doc(btn.dataset.deletePatch)
+                    .delete();
+            });
+        });
     }
 
     function resetPatchForm() {
