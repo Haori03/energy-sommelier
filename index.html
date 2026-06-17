@@ -171,7 +171,41 @@
         body.dark-mode .stat-sub { color: #cbd5e1; }
         body.dark-mode .stat-card { border: 1px solid #334155; }
         .card-headline { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 40px; }
-
+        .video-modal{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.85);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:99999;
+        }
+        
+        .video-modal.hidden{
+            display:none;
+        }
+        
+        .video-modal-content{
+            position:relative;
+            width:min(90vw,900px);
+        }
+        
+        .video-modal video{
+            width:100%;
+            border-radius:12px;
+        }
+        
+        .video-close{
+            position:absolute;
+            top:-45px;
+            right:0;
+            width:40px;
+            height:40px;
+            border:none;
+            border-radius:50%;
+            cursor:pointer;
+            font-size:22px;
+        }
         /* Тёмная тема */
         body.dark-mode { background: #0f172a; color: #e2e8f0; }
         body.dark-mode .header, body.dark-mode .filters-panel, body.dark-mode .drink-card, body.dark-mode .modal-content, body.dark-mode .empty-message, body.dark-mode .review-card, body.dark-mode .add-review-form, body.dark-mode .pending-card { background: #1e293b; color: #e2e8f0; }
@@ -563,8 +597,36 @@
         saveSession({ login: snapshot.docs[0].data().login, role: 'admin' });
         closeAllModals();
     }
-    function showVideoModal() { /* ... existing video modal ... */ }
-
+    function showVideoModal() {
+    
+        const modal = document.getElementById('videoModal');
+        const video = document.getElementById('otkazVideo');
+    
+        modal.classList.remove('hidden');
+    
+        video.currentTime = 0;
+    
+        const playPromise = video.play();
+    
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {});
+        }
+    
+        video.onended = () => {
+            closeVideoModal();
+            loginAsGuest();
+        };
+    }
+    function closeVideoModal() {
+    
+        const modal = document.getElementById('videoModal');
+        const video = document.getElementById('otkazVideo');
+    
+        video.pause();
+        modal.classList.add('hidden');
+    
+        loginAsGuest();
+    }
     async function changePassword(current, newPass, confirm) {
         if (!currentUser) return alert('Вы не авторизованы');
         if (!newPass || newPass !== confirm) return alert('Новый пароль и подтверждение не совпадают');
@@ -1015,7 +1077,15 @@
     document.getElementById('guestFromAuthBtn').onclick = () => { clearSession(); closeAllModals(); };
     document.getElementById('adminLoginBtn').onclick = async () => { const pass = document.getElementById('adminPassword').value; await loginAsAdmin(pass); };
     document.getElementById('backToPreviousModalBtn').onclick = () => { adminModal.classList.remove('active'); if (window.backModal === 'register') registerModal.classList.add('active'); else if (window.backModal === 'auth') authModal.classList.add('active'); else registerModal.classList.add('active'); };
-
+    <div id="videoModal" class="video-modal hidden">
+        <div class="video-modal-content">
+            <button class="video-close" onclick="closeVideoModal()">✕</button>
+    
+            <video id="otkazVideo" autoplay controls>
+                <source src="otkaz.mp4" type="video/mp4">
+            </video>
+        </div>
+    </div>
     const saved = localStorage.getItem('energyUser');
     if (saved) { currentUser = JSON.parse(saved); } else { showRegisterModal(); }
     loadFavorites();
