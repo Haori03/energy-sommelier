@@ -14,70 +14,20 @@
         .logo img { height: 60px; width: auto; object-fit: contain; }
         .filters-panel { background: white; border-radius: 28px; padding: 18px 24px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .energy-counter { background: #eef2ff; display: inline-block; padding: 6px 16px; border-radius: 40px; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
-        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .patch-notes-btn {
-            border: none;
-            padding: 0 20px;
-            height: 52px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .video-modal{
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,.85);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            z-index:99999;
-        }
-        
-        .video-modal.hidden{
-            display:none;
-        }
-        
-        .video-modal-content{
-            position:relative;
-            width:min(90vw,900px);
-        }
-        
-        .video-modal video{
-            width:100%;
-            border-radius:12px;
-        }
-        
-        .video-close{
-            position:absolute;
-            top:-45px;
-            right:0;
-            width:40px;
-            height:40px;
-            border:none;
-            border-radius:50%;
-            cursor:pointer;
-            font-size:22px;
-        }
-        .btn-plus { background: #2b7a4b; }
+        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .btn-announce { background: #2b7a4b; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-logout { background: #6c757d; }
         .btn-login { background: #0d6efd; }
         .btn-suggest { background: #4a6d8c; }
         .btn-pending { background: #6c757d; }
         .btn-profile { background: #198754; }
-        .patch-notes-btn { background: #4a6d8c; gap: 10px; }
-        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .btn-profile:hover, .patch-notes-btn:hover { transform: scale(0.96); }
-        .btn-plus:hover { background: #1f5f3a; }
+        .btn-announce { background: #fd7e14; }
+        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .btn-profile:hover, .btn-announce:hover { transform: scale(0.96); background: #1f5f3a; }
         .btn-logout:hover { background: #5a6268; }
         .btn-login:hover { background: #0b5ed7; }
         .btn-suggest:hover { background: #2b4f6e; }
         .btn-pending:hover { background: #5a6268; }
         .btn-profile:hover { background: #146c43; }
-        .patch-notes-btn:hover { background: #2b4f6e; }
+        .btn-announce:hover { background: #e06c00; }
         .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid #cbd5e1; font-size: 1rem; margin-bottom: 16px; }
         .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
         .sort-buttons { display: flex; gap: 12px; }
@@ -142,83 +92,43 @@
         .like-button { background: none; border: none; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 30px; transition: 0.2s; }
         .like-button:hover { background: rgba(0,0,0,0.05); transform: scale(1.05); }
         .likes-count { font-size: 0.9rem; font-weight: bold; }
+        .video-modal{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.85);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:99999;
+        }
+        
+        .video-modal.hidden{
+            display:none;
+        }
+        
+        .video-modal-content{
+            position:relative;
+            width:min(90vw,900px);
+        }
+        
+        .video-modal video{
+            width:100%;
+            border-radius:12px;
+        }
+        
+        .video-close{
+            position:absolute;
+            top:-45px;
+            right:0;
+            width:40px;
+            height:40px;
+            border:none;
+            border-radius:50%;
+            cursor:pointer;
+            font-size:22px;
+        }
         @media (max-width: 600px) { .drink-card { flex-direction: column; align-items: center; text-align: center; } .detail-layout { flex-wrap: wrap; justify-content: center; } .detail-img { width: 180px; margin: 0 auto; } }
         
-        .patch-item-actions{
-            display:flex;
-            gap:8px;
-        }
-        
-        body:not(.admin-mode) .patch-item-actions{
-            display:none !important;
-        }
-        
-        body:not(.admin-mode) .patch-edit-btn,
-        body:not(.admin-mode) .patch-delete-btn{
-            display:none !important;
-        }
-        .filters-row { display: flex; flex-direction: column; gap: 14px; }
-        .brand-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .brand-filter-select { min-width: 220px; padding: 12px 16px; border-radius: 48px; border: 1px solid #cbd5e1; background: white; font-size: 1rem; }
-        .favorite-filter-btn { background: #7c3aed; border: none; color: white; padding: 12px 18px; border-radius: 40px; cursor: pointer; font-weight: 700; transition: transform 0.2s, opacity 0.2s; }
-        .favorite-filter-btn.active { background: #c026d3; }
-        .favorite-filter-btn:hover { transform: scale(0.98); }
-        .stats-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 18px; }
-        .stat-card { background: #ffffff; border-radius: 24px; padding: 14px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .stat-label { font-size: 0.8rem; color: #64748b; margin-bottom: 6px; }
-        .stat-value { font-size: 1.35rem; font-weight: 800; color: #1e2a3e; }
-        .stat-sub { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
-        body.dark-mode .brand-filter-select { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        body.dark-mode .stat-card, body.dark-mode .empty-message { background: #1e293b; color: #e2e8f0; }
-        body.dark-mode .stat-label, body.dark-mode .stat-sub { color: #94a3b8; }
-        .drink-card { position: relative; }
-        .favorite-toggle-btn { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border: none; border-radius: 999px; background: rgba(15, 23, 42, 0.08); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.2s, background 0.2s; }
-        .favorite-toggle-btn:hover { transform: scale(1.05); background: rgba(15, 23, 42, 0.14); }
-        .favorite-toggle-btn.active { background: rgba(244, 63, 94, 0.18); }
-        body.dark-mode .favorite-toggle-btn { background: rgba(255,255,255,0.1); }
-        body.dark-mode .favorite-toggle-btn:hover { background: rgba(255,255,255,0.16); }
-        .brand-badge { display: inline-flex; align-items: center; gap: 6px; background: #e0f2fe; color: #075985; padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; margin-bottom: 8px; }
-        body.dark-mode .brand-badge { background: #1e293b; color: #7dd3fc; }
-        .detail-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 8px; }
-        .detail-meta .brand-badge { margin-bottom: 0; }
-        .detail-actions-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
-        .favorite-detail-btn { background: #ec4899; color: white; border: none; border-radius: 40px; padding: 12px 16px; font-weight: 800; cursor: pointer; }
-        .favorite-detail-btn.active { background: #be185d; }
-        body.dark-mode .favorite-detail-btn { background: #db2777; }
-        body.dark-mode .favorite-detail-btn.active { background: #9d174d; }
-
-        .patch-notes-badge { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #ef4444; color: white; font-size: 14px; line-height: 1; box-shadow: 0 4px 10px rgba(239,68,68,0.35); }
-        .patch-notes-badge.hidden { display: none; }
-        .patch-notes-modal { max-width: 760px !important; }
-        .patch-notes-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; max-height: 48vh; overflow-y: auto; padding-right: 4px; }
-        .patch-item { background: #f8fafc; border-radius: 22px; padding: 16px; border: 1px solid #e2e8f0; }
-        .patch-item-header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 10px; }
-        .patch-version { font-weight: 900; font-size: 1.05rem; color: #0f172a; }
-        .patch-meta { font-size: 0.85rem; color: #64748b; }
-        .patch-section { margin-top: 10px; }
-        .patch-section-title { font-weight: 800; margin-bottom: 4px; }
-        .patch-section-text { white-space: pre-wrap; line-height: 1.5; color: #1e293b; }
-        .patch-item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .patch-item-actions button { border: none; border-radius: 999px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
-        .patch-edit-btn { background: #2563eb; color: white; }
-        .patch-delete-btn { background: #dc2626; color: white; }
-        .patch-admin-panel { margin-top: 18px; padding: 16px; border-radius: 24px; background: #eef2ff; border: 1px solid #dbeafe; }
-        .patch-admin-title { font-weight: 900; margin-bottom: 12px; }
-        .patch-admin-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-        .patch-admin-actions button { flex: 1; min-width: 160px; }
-        .stat-value { color: #0f172a; font-weight: 900; font-size: 1.7rem; margin: 8px 0 2px; }
-        .stat-sub { color: #64748b; font-size: 0.85rem; }
-        body.dark-mode .patch-item { background: #1e293b; border-color: #334155; }
-        body.dark-mode .patch-version { color: #f8fafc; }
-        body.dark-mode .patch-meta { color: #cbd5e1; }
-        body.dark-mode .patch-section-title, body.dark-mode .patch-section-text { color: #e2e8f0; }
-        body.dark-mode .patch-admin-panel { background: #172554; border-color: #1d4ed8; }
-        body.dark-mode .patch-notes-badge { background: #fb7185; color: #0f172a; box-shadow: 0 4px 10px rgba(251,113,133,0.32); }
-        body.dark-mode .stat-value { color: #f8fafc; }
-        body.dark-mode .stat-sub { color: #cbd5e1; }
-        body.dark-mode .stat-card { border: 1px solid #334155; }
-        .card-headline { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 40px; }
-
         /* Тёмная тема */
         body.dark-mode { background: #0f172a; color: #e2e8f0; }
         body.dark-mode .header, body.dark-mode .filters-panel, body.dark-mode .drink-card, body.dark-mode .modal-content, body.dark-mode .empty-message, body.dark-mode .review-card, body.dark-mode .add-review-form, body.dark-mode .pending-card { background: #1e293b; color: #e2e8f0; }
@@ -238,6 +148,7 @@
         body.dark-mode .btn-login { background: #0d6efd; }
         body.dark-mode .btn-suggest { background: #4a6d8c; }
         body.dark-mode .btn-profile { background: #198754; }
+        body.dark-mode .btn-announce { background: #fd7e14; }
         body.dark-mode .modal-close { color: #e2e8f0; }
         body.dark-mode .modal-close:hover { color: #ef4444; }
         body.dark-mode .review-rating { background: #5681ba; color: #fbbf24; }
@@ -258,11 +169,11 @@
             .reset-filters { margin-left: 0; align-self: center; }
             .drink-card { flex-direction: column; align-items: center; text-align: center; }
             .card-img { width: 120px; height: 120px; }
-            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .patch-notes-btn { padding: 0 12px; height: 44px; font-size: 14px; }
+            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .btn-announce { padding: 0 12px; height: 44px; font-size: 14px; }
             .theme-toggle { width: 44px; height: 44px; font-size: 24px; }
             .user-status { font-size: 0.8rem; padding: 4px 12px; }
             .modal-content { width: 95% !important; padding: 20px 16px !important; max-width: 95% !important; }
-            #addModal .modal-content, #editModal .modal-content, #detailModal .modal-content, #suggestModal .modal-content, #pendingModal .modal-content, #profileModal .modal-content, #patchNotesModal .modal-content {
+            #addModal .modal-content, #editModal .modal-content, #detailModal .modal-content, #suggestModal .modal-content, #pendingModal .modal-content, #profileModal .modal-content, #announceModal .modal-content {
                 max-width: 95% !important;
                 width: 95%;
             }
@@ -321,29 +232,20 @@
             <button class="btn-suggest" id="suggestBtn" style="display: none;">Предложить</button>
             <button class="btn-pending" id="pendingBtn">На оценку</button>
             <button class="btn-profile" id="profileBtn" style="display: none;">Профиль</button>
+            <button class="btn-announce" id="announceBtn" style="display: none;">📢 Сделать объявление</button>
             <button class="btn-logout" id="logoutBtn" style="display: none;">Выйти</button>
             <button class="btn-login" id="loginBtn" style="display: none;">Войти</button>
-            <button id="patchNotesBtn" class="patch-notes-btn" type="button">📜 История обновлений <span id="patchNotesBadge" class="patch-notes-badge hidden">!</span></button>
         </div>
     </div>
     <div class="filters-panel">
-        <div class="filters-row">
-            <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, вкусу, бренду, тегам или описанию...">
-            <div class="brand-filter-row">
-                <span>Фильтр по бренду:</span>
-                <select id="brandFilter" class="brand-filter-select">
-                    <option value="">Все бренды</option>
-                </select>
-                <button class="favorite-filter-btn" id="favoritesFilterBtn" type="button">Только избранное</button>
-            </div>
-            <div class="sort-section"><span>Сортировка:</span><div class="sort-buttons">
-                <button data-sort="name-asc" class="sort-btn">А→Я</button><button data-sort="name-desc" class="sort-btn">Я→А</button>
-                <button data-sort="rating-desc" class="sort-btn">По рейтингу ↓</button><button data-sort="rating-asc" class="sort-btn">По рейтингу ↑</button>
-            </div></div>
-            <div class="tags-filter"><span>Фильтр по тегам:</span><div class="filter-tags-group" id="filterTagsContainer"></div><button class="reset-filters" id="resetFiltersBtn">Сбросить</button></div>
-        </div>
+        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию...">
+        <div class="sort-section"><span>Сортировка:</span><div class="sort-buttons">
+            <button data-sort="name-asc" class="sort-btn">А→Я</button><button data-sort="name-desc" class="sort-btn">Я→А</button>
+            <button data-sort="rating-desc" class="sort-btn">По рейтингу ↓</button><button data-sort="rating-asc" class="sort-btn">По рейтингу ↑</button>
+        </div></div>
+        <div class="tags-filter"><span>Фильтр по тегам:</span><div class="filter-tags-group" id="filterTagsContainer"></div><button class="reset-filters" id="resetFiltersBtn">Сбросить</button></div>
         <div class="sync-status" id="syncStatus">Синхронизация...</div>
-        <div id="statsPanel" class="stats-panel"></div>
+        <div class="energy-counter" id="energyCounter">Энергетиков: 0</div>
     </div>
     <div id="cardsContainer" class="cards-grid"></div>
 </div>
@@ -412,31 +314,31 @@
     </div>
 </div>
 
-<!-- Модальное окно истории обновлений -->
-<div id="patchNotesModal" class="modal-overlay">
-    <div class="modal-content patch-notes-modal">
-        <button class="modal-close" id="closePatchNotesModal">&times;</button>
-        <h2>История обновлений</h2>
-        <p style="margin-top: 8px; color: #64748b;">Последние патчи и изменения проекта.</p>
-        <div id="patchNotesList" class="patch-notes-list"></div>
-        <div id="patchAdminPanel" class="patch-admin-panel" style="display:none;">
-            <div class="patch-admin-title">Для админа</div>
-            <div class="form-group"><label>Patch #</label><input type="text" id="patchVersion" placeholder="1.4"></div>
-            <div class="form-group"><label>Что добавлено</label><textarea id="patchAdded" rows="4" placeholder="Добавлено..."></textarea></div>
-            <div class="form-group"><label>Что исправлено</label><textarea id="patchFixed" rows="3" placeholder="Исправлено..."></textarea></div>
-            <div class="patch-admin-actions">
-                <button id="savePatchBtn" class="btn-primary" type="button">Опубликовать</button>
-                <button id="newPatchBtn" class="btn-secondary" type="button">Новый пост</button>
-                <button id="deletePatchBtn" class="btn-secondary" type="button">Удалить пост</button>
-            </div>
+<!-- Модальное окно для объявлений (админ) -->
+<div id="announceModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" id="closeAnnounceModal">&times;</button>
+        <h2>Сделать объявление</h2>
+        <div class="form-group"><label>Текст объявления</label><textarea id="announceText" rows="4" placeholder="Текст объявления..."></textarea></div>
+        <div class="auth-buttons">
+            <button id="publishAnnounceBtn" class="btn-primary">Опубликовать</button>
+            <button id="deleteAnnounceBtn" class="btn-secondary">Удалить текущее</button>
         </div>
+    </div>
+</div>
+
+<!-- Модальное окно для показа объявления пользователям -->
+<div id="announceDisplayModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" id="closeAnnounceDisplayModal">&times;</button>
+        <h2> Объявление</h2>
+        <p id="announceDisplayText" style="font-size:1.1rem; margin: 20px 0; white-space: pre-wrap;"></p>
     </div>
 </div>
 
 <!-- Остальные модалки -->
 <div id="addModal" class="modal-overlay"><div class="modal-content" style="max-width: 900px;"><button class="modal-close" id="closeAddModal">&times;</button><h2>Добавить энергетик</h2>
 <form id="addDrinkForm"><div class="form-group"><label>Название *</label><input type="text" id="drinkName" required></div>
-<div class="form-group"><label>Бренд</label><input type="text" id="drinkBrand" list="brandOptions" placeholder="Monster, Red Bull, Gorilla..."><datalist id="brandOptions"></datalist></div>
 <div class="form-group"><label>Фото</label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
 <div class="form-group"><label>Оценка админа *</label><select id="drinkRating"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select><small>Учитывается в общей средней</small></div>
 <div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required></div>
@@ -448,7 +350,6 @@
 
 <div id="editModal" class="modal-overlay"><div class="modal-content" style="max-width: 900px;"><button class="modal-close" id="closeEditModal">&times;</button><h2>Редактировать</h2>
 <form id="editDrinkForm"><input type="hidden" id="editDrinkId"><div class="form-group"><label>Название</label><input type="text" id="editName" required></div>
-<div class="form-group"><label>Бренд</label><input type="text" id="editBrand" list="brandOptions" placeholder="Monster, Red Bull, Gorilla..."></div>
 <div class="form-group"><label>Фото</label><input type="file" id="editImageFile" accept="image/*"><div id="editImagePreview" class="file-preview"></div></div>
 <div class="form-group"><label>Оценка админа</label><select id="editRating"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
 <div class="form-group"><label>Вкус</label><input type="text" id="editTaste" required></div>
@@ -489,119 +390,27 @@
         { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" }
     ];
 
-    let currentUser = null, energyDrinks = [], currentSort = "name-asc", selectedFilterTags = [], searchQuery = "", selectedBrand = "", showOnlyFavorites = false, favoriteIds = new Set(), unsubscribe = null, unsubscribeSuggestions = null, unsubscribePatchNotes = null, patchNotesDocs = [], currentPatchEditId = null;
-    const registerModal = document.getElementById('registerModal'), authModal = document.getElementById('authModal'), adminModal = document.getElementById('adminModal'), addModal = document.getElementById('addModal'), editModal = document.getElementById('editModal'), detailModal = document.getElementById('detailModal'), suggestModal = document.getElementById('suggestModal'), pendingModal = document.getElementById('pendingModal'), profileModal = document.getElementById('profileModal'), editReviewModal = document.getElementById('editReviewModal'), patchNotesModal = document.getElementById('patchNotesModal'), patchNotesBtn = document.getElementById('patchNotesBtn'), patchNotesBadge = document.getElementById('patchNotesBadge'), patchNotesList = document.getElementById('patchNotesList'), patchAdminPanel = document.getElementById('patchAdminPanel');
-    const cardsContainer = document.getElementById('cardsContainer'), filterTagsContainer = document.getElementById('filterTagsContainer'), resetFiltersBtn = document.getElementById('resetFiltersBtn'), searchInput = document.getElementById('searchInput'), syncStatus = document.getElementById('syncStatus'), brandFilter = document.getElementById('brandFilter'), favoritesFilterBtn = document.getElementById('favoritesFilterBtn'), statsPanel = document.getElementById('statsPanel');
+    let currentUser = null, energyDrinks = [], currentSort = "name-asc", selectedFilterTags = [], searchQuery = "", unsubscribe = null, unsubscribeSuggestions = null, unsubscribeAnnounce = null;
+    const registerModal = document.getElementById('registerModal'), authModal = document.getElementById('authModal'), adminModal = document.getElementById('adminModal'), addModal = document.getElementById('addModal'), editModal = document.getElementById('editModal'), detailModal = document.getElementById('detailModal'), suggestModal = document.getElementById('suggestModal'), pendingModal = document.getElementById('pendingModal'), profileModal = document.getElementById('profileModal'), editReviewModal = document.getElementById('editReviewModal'), announceModal = document.getElementById('announceModal'), announceDisplayModal = document.getElementById('announceDisplayModal'), announceDisplayText = document.getElementById('announceDisplayText');
+    const cardsContainer = document.getElementById('cardsContainer'), filterTagsContainer = document.getElementById('filterTagsContainer'), resetFiltersBtn = document.getElementById('resetFiltersBtn'), searchInput = document.getElementById('searchInput'), syncStatus = document.getElementById('syncStatus');
 
     function updateUIByRole() {
         const isAdmin = currentUser?.role === 'admin', isUser = currentUser?.role === 'user', isGuest = !currentUser;
         document.getElementById('openAddModalBtn').style.display = isAdmin ? 'flex' : 'none';
         document.getElementById('suggestBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
-        document.getElementById('profileBtn').style.display = isUser ? 'flex' : 'none';
+        document.getElementById('profileBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
+        document.getElementById('announceBtn').style.display = isAdmin ? 'flex' : 'none';
         document.getElementById('logoutBtn').style.display = (isAdmin || isUser) ? 'flex' : 'none';
         document.getElementById('loginBtn').style.display = isGuest ? 'flex' : 'none';
-        if (favoritesFilterBtn) favoritesFilterBtn.classList.toggle('active', showOnlyFavorites);
         document.getElementById('userStatus').innerHTML = currentUser ? `${currentUser.login} (${currentUser.role === 'admin' ? 'Админ' : 'Пользователь'})` : 'Гость';
         if (!isAdmin && addModal.classList.contains('active')) addModal.classList.remove('active');
-        if (currentUser?.role === 'admin') {
-            document.body.classList.add('admin-mode');
-        } else {
-            document.body.classList.remove('admin-mode');
-        }
     }
-    function saveSession(user) { localStorage.setItem('energyUser', JSON.stringify(user)); currentUser = user; loadFavorites(); updateUIByRole(); }
-    function clearSession() { localStorage.removeItem('energyUser'); currentUser = null; loadFavorites(); updateUIByRole(); showRegisterModal(); }
+    function saveSession(user) { localStorage.setItem('energyUser', JSON.stringify(user)); currentUser = user; updateUIByRole(); }
+    function clearSession() { localStorage.removeItem('energyUser'); currentUser = null; updateUIByRole(); showRegisterModal(); }
     function showRegisterModal() { registerModal.classList.add('active'); }
     function showAuthModal() { authModal.classList.add('active'); }
     function showAdminModal(backModal) { window.backModal = backModal; adminModal.classList.add('active'); }
-    function closeAllModals() { [registerModal, authModal, adminModal, addModal, editModal, detailModal, suggestModal, pendingModal, profileModal, editReviewModal, patchNotesModal].forEach(m => m?.classList.remove('active')); }
-
-
-    const FAVORITES_PREFIX = 'energyFavorites_';
-    const BRAND_LABEL = 'Без бренда';
-
-    function getFavoritesStorageKey() {
-        return FAVORITES_PREFIX + (currentUser?.login || 'guest');
-    }
-
-    function loadFavorites() {
-        try {
-            const raw = localStorage.getItem(getFavoritesStorageKey());
-            const parsed = raw ? JSON.parse(raw) : [];
-            favoriteIds = new Set(Array.isArray(parsed) ? parsed : []);
-        } catch {
-            favoriteIds = new Set();
-        }
-    }
-
-    function saveFavorites() {
-        localStorage.setItem(getFavoritesStorageKey(), JSON.stringify(Array.from(favoriteIds)));
-    }
-
-    function isFavorite(drinkId) {
-        return favoriteIds.has(drinkId);
-    }
-
-    async function toggleFavorite(drinkId) {
-        loadFavorites();
-        if (favoriteIds.has(drinkId)) favoriteIds.delete(drinkId);
-        else favoriteIds.add(drinkId);
-        saveFavorites();
-        applyFiltersAndRender();
-        const openDrink = energyDrinks.find(d => d.id === drinkId);
-        if (detailModal.classList.contains('active') && openDrink) {
-            openDetailModal(openDrink);
-        }
-    }
-
-    function normalizeBrand(brand) {
-        return (brand || '').trim() || BRAND_LABEL;
-    }
-
-    function getDrinkSearchText(drink) {
-        return [
-            drink.name,
-            drink.brand,
-            drink.taste,
-            drink.description,
-            ...(drink.tags || [])
-        ].filter(Boolean).join(' ').toLowerCase();
-    }
-
-    function updateBrandControls() {
-        const brands = Array.from(new Set(energyDrinks.map(d => normalizeBrand(d.brand)))).sort((a, b) => a.localeCompare(b, 'ru'));
-        if (brandFilter) {
-            const current = brandFilter.value;
-            brandFilter.innerHTML = '<option value="">Все бренды</option>' + brands.map(b => `<option value="${escapeAttr(b)}">${escapeHtml(b)}</option>`).join('');
-            if (brands.includes(current) || current === '') brandFilter.value = current;
-        }
-        const dataList = document.getElementById('brandOptions');
-        if (dataList) {
-            dataList.innerHTML = brands.map(b => `<option value="${escapeAttr(b)}"></option>`).join('');
-        }
-    }
-
-    function renderStatistics(filteredDrinks) {
-        if (!statsPanel) return;
-        const total = energyDrinks.length;
-        const shown = filteredDrinks.length;
-        const favCount = energyDrinks.filter(d => isFavorite(d.id)).length;
-        const avgRating = total ? (energyDrinks.reduce((sum, d) => sum + (Number(d.rating) || 0), 0) / total).toFixed(1) : '—';
-        const brandCounts = {};
-        energyDrinks.forEach(d => {
-            const brand = normalizeBrand(d.brand);
-            if (brand && brand !== '—') brandCounts[brand] = (brandCounts[brand] || 0) + 1;
-        });
-        const brandsCount = Object.keys(brandCounts).length;
-        const topBrand = Object.entries(brandCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
-        statsPanel.innerHTML = `
-            <div class="stat-card"><div class="stat-label">Всего</div><div class="stat-value">${total}</div><div class="stat-sub">Показано: ${shown}</div></div>
-            <div class="stat-card"><div class="stat-label">Средний рейтинг</div><div class="stat-value">${avgRating}</div><div class="stat-sub">По всем карточкам</div></div>
-            <div class="stat-card"><div class="stat-label">Избранное</div><div class="stat-value">${favCount}</div><div class="stat-sub">Сохранено у тебя</div></div>
-            <div class="stat-card"><div class="stat-label">Брендов</div><div class="stat-value">${brandsCount}</div><div class="stat-sub">Уникальных названий</div></div>
-            <div class="stat-card"><div class="stat-label">Топ бренд</div><div class="stat-value" style="font-size:1.05rem">${escapeHtml(topBrand)}</div><div class="stat-sub">По количеству записей</div></div>
-        `;
-    }
+    function closeAllModals() { [registerModal, authModal, adminModal, addModal, editModal, detailModal, suggestModal, pendingModal, profileModal, editReviewModal, announceModal, announceDisplayModal].forEach(m => m?.classList.remove('active')); }
 
     async function registerUser(login, password) {
         if (!login || !password) return alert('Заполните логин и пароль');
@@ -654,6 +463,7 @@
     
         loginAsGuest();
     }
+
     async function changePassword(current, newPass, confirm) {
         if (!currentUser) return alert('Вы не авторизованы');
         if (!newPass || newPass !== confirm) return alert('Новый пароль и подтверждение не совпадают');
@@ -686,222 +496,57 @@
         await doc.ref.update({ likes });
     }
 
-    // Patch notes
-    function getPatchSeenKey() { return 'seenPatchNoteId'; }
-
-    function setPatchBadgeVisible(visible) {
-        if (!patchNotesBadge) return;
-        patchNotesBadge.classList.toggle('hidden', !visible);
+    // Announcements
+    async function publishAnnouncement(text) {
+        if (!text.trim()) return alert('Введите текст объявления');
+        // Удаляем старое объявление и создаём новое с новым id (чтобы старые закрытия не влияли)
+        const oldSnap = await db.collection('announcements').get();
+        const batch = db.batch();
+        oldSnap.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+        await db.collection('announcements').add({ text: text.trim(), createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        alert('Объявление опубликовано!');
+        closeAllModals();
     }
-
-    function formatPatchDate(value) {
-        if (!value) return 'Дата не указана';
-        const date = value?.toDate ? value.toDate() : new Date(value);
-        if (Number.isNaN(date.getTime())) return 'Дата не указана';
-        return date.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    async function deleteCurrentAnnouncement() {
+        const snap = await db.collection('announcements').get();
+        if (snap.empty) return alert('Нет активного объявления');
+        const batch = db.batch();
+        snap.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+        alert('Объявление удалено');
+        closeAllModals();
     }
-
-    function renderPatchList() {
-        if (!patchNotesList) return;
-    
-        if (!patchNotesDocs.length) {
-            patchNotesList.innerHTML =
-                '<div class="patch-item"><div class="patch-version">Пока нет обновлений</div><div class="patch-section-text">Админ ещё не публиковал патчи.</div></div>';
-            return;
-        }
-    
-        const isAdmin = currentUser && currentUser.role === 'admin';
-    
-        patchNotesList.innerHTML = patchNotesDocs.map(doc => {
-            const added = doc.added || '';
-            const fixed = doc.fixed || '';
-    
-            return `
-                <div class="patch-item" data-patch-id="${doc.id}">
-                    <div class="patch-item-header">
-    
-                        <div>
-                            <div class="patch-version">
-                                Patch ${escapeHtml(doc.version || '—')}
-                            </div>
-    
-                            <div class="patch-meta">
-                                ${formatPatchDate(doc.createdAt)}
-                                ${doc.updatedAt
-                                    ? ` • обновлено ${formatPatchDate(doc.updatedAt)}`
-                                    : ''}
-                            </div>
-                        </div>
-    
-                        ${
-                            isAdmin
-                            ? `
-                            <div class="patch-item-actions">
-                                <button class="patch-edit-btn"
-                                        data-edit-patch="${doc.id}"
-                                        type="button">
-                                    Редактировать
-                                </button>
-    
-                                <button class="patch-delete-btn"
-                                        data-delete-patch="${doc.id}"
-                                        type="button">
-                                    Удалить
-                                </button>
-                            </div>
-                            `
-                            : ''
-                        }
-    
-                    </div>
-    
-                    <div class="patch-section">
-                        <div class="patch-section-title">
-                            Что добавлено
-                        </div>
-    
-                        <div class="patch-section-text">
-                            ${escapeHtml(added) || '—'}
-                        </div>
-                    </div>
-    
-                    ${
-                        fixed
-                        ? `
-                        <div class="patch-section">
-                            <div class="patch-section-title">
-                                Что исправлено
-                            </div>
-    
-                            <div class="patch-section-text">
-                                ${escapeHtml(fixed)}
-                            </div>
-                        </div>
-                        `
-                        : ''
-                    }
-    
-                </div>
-            `;
-        }).join('');
-    
-        if (!isAdmin) return;
-    
-        document.querySelectorAll('[data-edit-patch]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const doc = patchNotesDocs.find(
-                    p => p.id === btn.dataset.editPatch
-                );
-    
-                if (!doc) return;
-    
-                currentPatchEditId = doc.id;
-    
-                document.getElementById('patchVersion').value =
-                    doc.version || '';
-    
-                document.getElementById('patchAdded').value =
-                    doc.added || '';
-    
-                document.getElementById('patchFixed').value =
-                    doc.fixed || '';
-    
-                document.getElementById('savePatchBtn').textContent =
-                    'Обновить пост';
-    
-                document.getElementById('deletePatchBtn').disabled =
-                    false;
-            });
-        });
-    
-        document.querySelectorAll('[data-delete-patch]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-    
-                if (!confirm('Удалить пост обновления?'))
-                    return;
-    
-                await db.collection('patchnotes')
-                    .doc(btn.dataset.deletePatch)
-                    .delete();
-            });
-        });
-    }
-
-    function resetPatchForm() {
-        currentPatchEditId = null;
-        document.getElementById('patchVersion').value = '';
-        document.getElementById('patchAdded').value = '';
-        document.getElementById('patchFixed').value = '';
-        document.getElementById('savePatchBtn').textContent = 'Опубликовать';
-        document.getElementById('deletePatchBtn').disabled = true;
-    }
-
-    function updatePatchBadge() {
-        const latest = patchNotesDocs[0];
-        if (!latest) { setPatchBadgeVisible(false); return; }
-        const seen = localStorage.getItem(getPatchSeenKey());
-        const shouldShow = seen !== latest.id && !patchNotesModal.classList.contains('active');
-        setPatchBadgeVisible(shouldShow);
-    }
-
-    function openPatchNotesModal() {
-        patchNotesModal.classList.add('active');
-        const latest = patchNotesDocs[0];
-        if (latest) {
-            localStorage.setItem(getPatchSeenKey(), latest.id);
-        }
-        setPatchBadgeVisible(false);
-        if (currentUser?.role === 'admin') {
-            patchAdminPanel.style.display = 'block';
-            document.getElementById('deletePatchBtn').disabled = !currentPatchEditId;
-        } else {
-            patchAdminPanel.style.display = 'none';
-        }
-    }
-
-    async function savePatchNote() {
-        if (currentUser?.role !== 'admin') return alert('Недостаточно прав');
-        const version = (document.getElementById('patchVersion').value || '').trim();
-        const added = (document.getElementById('patchAdded').value || '').trim();
-        const fixed = (document.getElementById('patchFixed').value || '').trim();
-        if (!version || !added) return alert('Заполни Patch # и Что добавлено');
-        const payload = {
-            version,
-            added,
-            fixed,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        };
-        if (currentPatchEditId) {
-            await db.collection('patchnotes').doc(currentPatchEditId).update(payload);
-            alert('Пост обновления сохранён');
-        } else {
-            await db.collection('patchnotes').add({
-                ...payload,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-            alert('Пост обновления опубликован');
-        }
-        resetPatchForm();
-    }
-
-    async function deleteCurrentPatchNote() {
-        if (currentUser?.role !== 'admin') return;
-        if (!currentPatchEditId) return alert('Сначала выбери пост для удаления');
-        if (!confirm('Удалить выбранный пост обновления?')) return;
-        await db.collection('patchnotes').doc(currentPatchEditId).delete();
-        resetPatchForm();
-    }
-
-    function subscribeToPatchNotes() {
-        if (unsubscribePatchNotes) unsubscribePatchNotes();
-        unsubscribePatchNotes = db.collection('patchnotes').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-            patchNotesDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderPatchList();
-            if (currentUser?.role === 'admin' && !patchNotesDocs.length) {
-                resetPatchForm();
-            }
-            updatePatchBadge();
-        }, error => console.error('Ошибка получения истории обновлений:', error));
+    function subscribeToAnnouncements() {
+        if (unsubscribeAnnounce) unsubscribeAnnounce();
+        unsubscribeAnnounce = db.collection('announcements').onSnapshot(snapshot => {
+            if (snapshot.empty) return;
+            const announceDoc = snapshot.docs[0];
+            const announceId = announceDoc.id;
+            const announceText = announceDoc.data().text;
+            // Проверяем, закрывал ли пользователь это объявление
+            const closedAnnounceId = localStorage.getItem('closedAnnounceId');
+            if (closedAnnounceId === announceId) return; // уже закрыто
+            announceDisplayText.innerText = announceText;
+            announceDisplayModal.classList.add('active');
+            // При закрытии запоминаем id объявления
+            const closeHandler = () => {
+                localStorage.setItem('closedAnnounceId', announceId);
+                announceDisplayModal.classList.remove('active');
+                document.getElementById('closeAnnounceDisplayModal').removeEventListener('click', closeHandler);
+                window.removeEventListener('click', outsideHandler);
+            };
+            const outsideHandler = (e) => {
+                if (e.target === announceDisplayModal) {
+                    localStorage.setItem('closedAnnounceId', announceId);
+                    announceDisplayModal.classList.remove('active');
+                    window.removeEventListener('click', outsideHandler);
+                    document.getElementById('closeAnnounceDisplayModal').removeEventListener('click', closeHandler);
+                }
+            };
+            document.getElementById('closeAnnounceDisplayModal').addEventListener('click', closeHandler);
+            window.addEventListener('click', outsideHandler);
+        }, error => console.error('Ошибка получения объявления:', error));
     }
 
     function checkAuthForAdd() { if (currentUser?.role !== 'admin') { alert('Недостаточно прав! Только администратор может добавлять энергетики.'); return false; } return true; }
@@ -961,7 +606,7 @@
         else detailModal.classList.remove('active');
     }
     async function fetchReviews(drinkId) { const snap = await db.collection('reviews').where('drinkId', '==', drinkId).get(); return snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); }
-    function connectToFirestore() { if (unsubscribe) unsubscribe(); unsubscribe = db.collection('energydrinks').onSnapshot(snapshot => { energyDrinks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), brand: doc.data().brand || null, rating: doc.data().averageRating ?? doc.data().adminRating ?? 3, caffeine: doc.data().caffeine ?? null, taurine: doc.data().taurine ?? null })); updateBrandControls(); applyFiltersAndRender(); syncStatus.innerHTML = 'Синхронизировано'; setTimeout(() => syncStatus.innerHTML = 'Данные в облаке', 2000); }, error => syncStatus.innerHTML = 'Ошибка подключения'); }
+    function connectToFirestore() { if (unsubscribe) unsubscribe(); unsubscribe = db.collection('energydrinks').onSnapshot(snapshot => { energyDrinks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), rating: doc.data().averageRating ?? doc.data().adminRating ?? 3, caffeine: doc.data().caffeine ?? null, taurine: doc.data().taurine ?? null })); applyFiltersAndRender(); syncStatus.innerHTML = 'Синхронизировано'; setTimeout(() => syncStatus.innerHTML = 'Данные в облаке', 2000); }, error => syncStatus.innerHTML = 'Ошибка подключения'); }
 
     let selectedSuggestionImageBase64 = null;
     document.getElementById('suggestImageFile').onchange = async (e) => {
@@ -1014,71 +659,18 @@
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
     function escapeAttr(str) { if (!str) return ''; return str.replace(/[&<>"]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' })[m]); }
     function getImageSrc(drink) { return drink.imageData || "https://via.placeholder.com/200?text=Нет+фото"; }
-    function filterDrinks(arr) {
-        let res = [...arr];
-        const q = searchQuery.trim().toLowerCase();
-        if (q) res = res.filter(d => getDrinkSearchText(d).includes(q));
-        if (selectedBrand) res = res.filter(d => normalizeBrand(d.brand) === selectedBrand);
-        if (selectedFilterTags.length) res = res.filter(d => selectedFilterTags.every(t => (d.tags || []).includes(t)));
-        if (showOnlyFavorites) res = res.filter(d => isFavorite(d.id));
-        return res;
-    }
+    function filterDrinks(arr) { let res = [...arr]; if (searchQuery.trim()) res = res.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())); if (selectedFilterTags.length) res = res.filter(d => selectedFilterTags.every(t => d.tags.includes(t))); return res; }
     function sortDrinks(arr) { const sorted = [...arr]; if (currentSort === 'name-asc') sorted.sort((a,b) => a.name.localeCompare(b.name)); else if (currentSort === 'name-desc') sorted.sort((a,b) => b.name.localeCompare(a.name)); else if (currentSort === 'rating-asc') sorted.sort((a,b) => a.rating - b.rating); else sorted.sort((a,b) => b.rating - a.rating); return sorted; }
-    function applyFiltersAndRender() {
-        loadFavorites();
-        const filtered = filterDrinks(energyDrinks);
-        const sorted = sortDrinks(filtered);
-        renderCards(sorted);
-        renderStatistics(filtered);
-        updateBrandControls();
-    }
-    function renderCards(drinks) {
-        if (!drinks.length) {
-            cardsContainer.innerHTML = '<div class="empty-message">Ничего не найдено. Попробуй сбросить фильтры или добавить новый энергетик.</div>';
-            return;
-        }
-        cardsContainer.innerHTML = drinks.map(drink => {
-            const brand = normalizeBrand(drink.brand);
-            const tagsHtml = (drink.tags || []).map(t => {
-                const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t);
-                return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`;
-            }).join('');
-            return `<div class="drink-card" data-id="${drink.id}">
-                <button class="favorite-toggle-btn ${isFavorite(drink.id) ? 'active' : ''}" data-favorite-id="${drink.id}" title="Избранное">${isFavorite(drink.id) ? '♥' : '♡'}</button>
-                <img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/100'">
-                <div class="card-info">
-                    <div class="card-headline">
-                        <div>
-                            <div class="card-title">${escapeHtml(drink.name)}</div>
-                            <div class="brand-badge">🏷️ ${escapeHtml(brand)}</div>
-                        </div>
-                        <div class="rating-value">${drink.rating ? drink.rating.toFixed(1) : '?'}</div>
-                    </div>
-                    <div class="tags-row">
-                        <div class="tags-list">${tagsHtml}</div>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
-        document.querySelectorAll('.drink-card').forEach(card => card.addEventListener('click', () => {
-            const drink = energyDrinks.find(d => d.id === card.dataset.id);
-            if (drink) openDetailModal(drink);
-            else console.warn('Drink not found', card.dataset.id);
-        }));
-        document.querySelectorAll('.favorite-toggle-btn').forEach(btn => btn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            await toggleFavorite(btn.dataset.favoriteId);
-        }));
-    }
+    function applyFiltersAndRender() { const filtered = filterDrinks(energyDrinks); const sorted = sortDrinks(filtered); renderCards(sorted); document.getElementById('energyCounter').innerHTML = `Энергетиков: ${energyDrinks.length}${filtered.length !== energyDrinks.length ? ` (показано ${filtered.length})` : ''}`; }
+    function renderCards(drinks) { if (!drinks.length) { cardsContainer.innerHTML = '<div class="empty-message">Добавьте первый энергетик</div>'; return; } cardsContainer.innerHTML = drinks.map(drink => `<div class="drink-card" data-id="${drink.id}"><img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/100'"><div class="card-info"><div class="card-title">${escapeHtml(drink.name)}</div><div class="tags-row"><div class="tags-list">${drink.tags.map(t => { const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`; }).join('')}</div><div class="rating-value">${drink.rating ? drink.rating.toFixed(1) : '?'}</div></div></div></div>`).join(''); document.querySelectorAll('.drink-card').forEach(card => card.addEventListener('click', () => { const drink = energyDrinks.find(d => d.id === card.dataset.id); if (drink) openDetailModal(drink); else console.warn('Drink not found', card.dataset.id); })); }
 
     async function openDetailModal(drink) {
         const reviews = await fetchReviews(drink.id);
-        const tagSpans = (drink.tags || []).map(t => { const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`; }).join('');
+        const tagSpans = drink.tags.map(t => { const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`; }).join('');
         const isAdmin = currentUser?.role === 'admin', showReviewForm = currentUser && (currentUser.role === 'user' || currentUser.role === 'admin');
         let userSum = 0, userCount = 0; reviews.forEach(r => { userSum += r.rating; userCount++; });
         const userAvgRating = userCount ? (userSum / userCount).toFixed(1) : '—';
-        const brand = normalizeBrand(drink.brand);
-        document.getElementById('detailContent').innerHTML = `<div class="detail-layout"><div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280'"></div><div class="detail-info"><h2>${escapeHtml(drink.name)}</h2><div class="detail-meta"><span class="brand-badge">🏷️ ${escapeHtml(brand)}</span><span class="brand-badge">${isFavorite(drink.id) ? '♥ В избранном' : '♡ Не в избранном'}</span></div><div class="detail-tags">${tagSpans}</div><div style="font-size:1.5rem;font-weight:600;">${drink.rating ? drink.rating.toFixed(1) : '?'} / 5</div><div class="taste-block">Оценка админа: ${drink.adminRating} / 5</div><div class="taste-block">Оценка пользователей: ${userAvgRating} / 5</div><div class="taste-block">Вкус: ${escapeHtml(drink.taste)}</div>${drink.caffeine ? `<div class="taste-block">Кофеин: ${drink.caffeine} мг</div>` : ''}${drink.taurine ? `<div class="taste-block">Таурин: ${drink.taurine} мг</div>` : ''}<div class="detail-description">${escapeHtml(drink.description)}</div><div class="detail-actions-row">${isAdmin ? `<button class="edit-button" id="editDrinkBtn">Изменить</button><button class="delete-button" id="deleteDrinkBtn">Удалить</button>` : ''}${showReviewForm ? `<button class="review-button" id="showReviewFormBtn">Оставить отзыв</button>` : ''}<button class="favorite-detail-btn ${isFavorite(drink.id) ? 'active' : ''}" id="favoriteDrinkBtn">${isFavorite(drink.id) ? 'Убрать из избранного' : 'В избранное'}</button></div><div class="reviews-section"><h3>Отзывы</h3><div id="reviewsList"></div></div></div></div>`;
+        document.getElementById('detailContent').innerHTML = `<div class="detail-layout"><div class="detail-img"><img src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/280'"></div><div class="detail-info"><h2>${escapeHtml(drink.name)}</h2><div class="detail-tags">${tagSpans}</div><div style="font-size:1.5rem;font-weight:600;">${drink.rating ? drink.rating.toFixed(1) : '?'} / 5</div><div class="taste-block">Оценка админа: ${drink.adminRating} / 5</div><div class="taste-block">Оценка пользователей: ${userAvgRating} / 5</div><div class="taste-block">Вкус: ${escapeHtml(drink.taste)}</div>${drink.caffeine ? `<div class="taste-block">Кофеин: ${drink.caffeine} мг</div>` : ''}${drink.taurine ? `<div class="taste-block">Таурин: ${drink.taurine} мг</div>` : ''}<div class="detail-description">${escapeHtml(drink.description)}</div><div class="action-buttons">${isAdmin ? `<button class="edit-button" id="editDrinkBtn">Изменить</button><button class="delete-button" id="deleteDrinkBtn">Удалить</button>` : ''}${showReviewForm ? `<button class="review-button" id="showReviewFormBtn">Оставить отзыв</button>` : ''}</div><div class="reviews-section"><h3>Отзывы</h3><div id="reviewsList"></div></div></div></div>`;
         const reviewsDiv = document.getElementById('reviewsList');
         reviewsDiv.innerHTML = reviews.length ? reviews.map(review => {
             const canEditDelete = (currentUser?.role === 'admin') || (currentUser?.login === review.userName);
@@ -1109,7 +701,6 @@
                 };
             };
         }
-        document.getElementById('favoriteDrinkBtn')?.addEventListener('click', async () => { await toggleFavorite(drink.id); });
         if (isAdmin) {
             document.getElementById('editDrinkBtn')?.addEventListener('click', () => { detailModal.classList.remove('active'); openEditModal(drink); });
             document.getElementById('deleteDrinkBtn')?.addEventListener('click', async () => { if (confirm('Удалить?')) await deleteFromFirestore(drink.id); detailModal.classList.remove('active'); });
@@ -1123,26 +714,24 @@
     const imagePreviewDiv = document.getElementById('imagePreview'), editImagePreviewDiv = document.getElementById('editImagePreview');
     drinkImageFile.onchange = async (e) => { const file = e.target.files[0]; if (!file) return; selectedImageBase64 = await resizeImageToSquare(file, 500, 0.7); imagePreviewDiv.innerHTML = `<img src="${selectedImageBase64}" style="max-width:100px;">`; };
     editImageFile.onchange = async (e) => { const file = e.target.files[0]; if (!file) return; editSelectedImageBase64 = await resizeImageToSquare(file, 500, 0.7); editImagePreviewDiv.innerHTML = `<img src="${editSelectedImageBase64}" style="max-width:100px;">`; };
-    async function addNewDrink(e) { e.preventDefault(); if (!checkAuthForAdd()) return; const name = document.getElementById('drinkName').value.trim(), brand = document.getElementById('drinkBrand').value.trim(), adminRating = parseFloat(document.getElementById('drinkRating').value), taste = document.getElementById('drinkTaste').value.trim(), caffeine = document.getElementById('drinkCaffeine').value, taurine = document.getElementById('drinkTaurine').value, description = document.getElementById('drinkDescription').value.trim() || "Нет описания", tags = getSelectedTags(tagsCheckboxesDiv); if (!name || !taste || !tags.length) { alert('Заполните все поля'); return; } const drink = { name, brand: brand || null, imageData: selectedImageBase64, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: adminRating }; if (await addToFirestore(drink)) { closeAllModals(); document.getElementById('addDrinkForm').reset(); selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; renderTagCheckboxes(tagsCheckboxesDiv, []); } }
-    function openEditModal(drink) { document.getElementById('editDrinkId').value = drink.id; document.getElementById('editName').value = drink.name; document.getElementById('editBrand').value = drink.brand || ''; document.getElementById('editRating').value = drink.adminRating || 3; document.getElementById('editTaste').value = drink.taste; document.getElementById('editDescription').value = drink.description; document.getElementById('editCaffeine').value = drink.caffeine ?? ''; document.getElementById('editTaurine').value = drink.taurine ?? ''; renderTagCheckboxes(editTagsCheckboxesDiv, drink.tags); editImagePreviewDiv.innerHTML = drink.imageData ? `<img src="${drink.imageData}" style="max-width:100px;">` : ''; editSelectedImageBase64 = null; editModal.classList.add('active'); }
-    async function saveEdit(e) { e.preventDefault(); if (!checkAuthForEditDelete()) return; const id = document.getElementById('editDrinkId').value, name = document.getElementById('editName').value.trim(), brand = document.getElementById('editBrand').value.trim(), adminRating = parseFloat(document.getElementById('editRating').value), taste = document.getElementById('editTaste').value.trim(), description = document.getElementById('editDescription').value.trim(), tags = getSelectedTags(editTagsCheckboxesDiv), caffeine = document.getElementById('editCaffeine').value, taurine = document.getElementById('editTaurine').value; if (!name || !taste || !tags.length) { alert('Заполните поля'); return; } let imageData = editSelectedImageBase64; if (!imageData) { const old = energyDrinks.find(d => d.id === id); if (old) imageData = old.imageData; } const reviewsSnap = await db.collection('reviews').where('drinkId', '==', id).get(); let userSum = 0, userCount = 0; reviewsSnap.forEach(doc => { userSum += doc.data().rating; userCount++; }); const newAvg = (adminRating + userSum) / (1 + userCount); await updateInFirestore(id, { name, brand: brand || null, imageData, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: newAvg }); closeAllModals(); }
+    async function addNewDrink(e) { e.preventDefault(); if (!checkAuthForAdd()) return; const name = document.getElementById('drinkName').value.trim(), adminRating = parseFloat(document.getElementById('drinkRating').value), taste = document.getElementById('drinkTaste').value.trim(), caffeine = document.getElementById('drinkCaffeine').value, taurine = document.getElementById('drinkTaurine').value, description = document.getElementById('drinkDescription').value.trim() || "Нет описания", tags = getSelectedTags(tagsCheckboxesDiv); if (!name || !taste || !tags.length) { alert('Заполните все поля'); return; } const drink = { name, imageData: selectedImageBase64, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: adminRating }; if (await addToFirestore(drink)) { closeAllModals(); document.getElementById('addDrinkForm').reset(); selectedImageBase64 = null; imagePreviewDiv.innerHTML = ''; renderTagCheckboxes(tagsCheckboxesDiv, []); } }
+    function openEditModal(drink) { document.getElementById('editDrinkId').value = drink.id; document.getElementById('editName').value = drink.name; document.getElementById('editRating').value = drink.adminRating || 3; document.getElementById('editTaste').value = drink.taste; document.getElementById('editDescription').value = drink.description; document.getElementById('editCaffeine').value = drink.caffeine ?? ''; document.getElementById('editTaurine').value = drink.taurine ?? ''; renderTagCheckboxes(editTagsCheckboxesDiv, drink.tags); editImagePreviewDiv.innerHTML = drink.imageData ? `<img src="${drink.imageData}" style="max-width:100px;">` : ''; editSelectedImageBase64 = null; editModal.classList.add('active'); }
+    async function saveEdit(e) { e.preventDefault(); if (!checkAuthForEditDelete()) return; const id = document.getElementById('editDrinkId').value, name = document.getElementById('editName').value.trim(), adminRating = parseFloat(document.getElementById('editRating').value), taste = document.getElementById('editTaste').value.trim(), description = document.getElementById('editDescription').value.trim(), tags = getSelectedTags(editTagsCheckboxesDiv), caffeine = document.getElementById('editCaffeine').value, taurine = document.getElementById('editTaurine').value; if (!name || !taste || !tags.length) { alert('Заполните поля'); return; } let imageData = editSelectedImageBase64; if (!imageData) { const old = energyDrinks.find(d => d.id === id); if (old) imageData = old.imageData; } const reviewsSnap = await db.collection('reviews').where('drinkId', '==', id).get(); let userSum = 0, userCount = 0; reviewsSnap.forEach(doc => { userSum += doc.data().rating; userCount++; }); const newAvg = (adminRating + userSum) / (1 + userCount); await updateInFirestore(id, { name, imageData, tags, adminRating, taste, description, caffeine: caffeine ? parseFloat(caffeine) : null, taurine: taurine ? parseFloat(taurine) : null, averageRating: newAvg }); closeAllModals(); }
 
     function renderFilterTags() { filterTagsContainer.innerHTML = ''; const sugarTags = ["Без сахара", "С сахаром", "50/50 на сахаре"]; AVAILABLE_TAGS.forEach(tag => { const span = document.createElement('span'); span.className = 'filter-tag'; if (selectedFilterTags.includes(tag.name)) span.classList.add('selected'); span.innerText = `${tag.emoji} ${tag.name}`; span.onclick = () => { if (sugarTags.includes(tag.name)) { if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name); else { selectedFilterTags = selectedFilterTags.filter(t => !sugarTags.includes(t)); selectedFilterTags.push(tag.name); } } else { if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name); else selectedFilterTags.push(tag.name); } renderFilterTags(); applyFiltersAndRender(); }; filterTagsContainer.appendChild(span); }); }
-    function resetFiltersAndSort() { currentSort = "name-asc"; selectedFilterTags = []; searchQuery = ""; selectedBrand = ""; showOnlyFavorites = false; searchInput.value = ""; if (brandFilter) brandFilter.value = ""; updateActiveSortButton(); renderFilterTags(); updateUIByRole(); applyFiltersAndRender(); }
+    function resetFiltersAndSort() { currentSort = "name-asc"; selectedFilterTags = []; searchQuery = ""; searchInput.value = ""; updateActiveSortButton(); renderFilterTags(); applyFiltersAndRender(); }
     const sortButtons = document.querySelectorAll('.sort-btn');
     function updateActiveSortButton() { sortButtons.forEach(btn => { if (btn.dataset.sort === currentSort) btn.classList.add('active'); else btn.classList.remove('active'); }); }
     sortButtons.forEach(btn => { btn.onclick = () => { currentSort = btn.dataset.sort; updateActiveSortButton(); applyFiltersAndRender(); }; });
     resetFiltersBtn.onclick = resetFiltersAndSort;
     searchInput.oninput = (e) => { searchQuery = e.target.value; applyFiltersAndRender(); };
-    brandFilter && (brandFilter.onchange = (e) => { selectedBrand = e.target.value; applyFiltersAndRender(); });
-    favoritesFilterBtn && (favoritesFilterBtn.onclick = () => { showOnlyFavorites = !showOnlyFavorites; favoritesFilterBtn.classList.toggle('active', showOnlyFavorites); favoritesFilterBtn.textContent = showOnlyFavorites ? 'Показываю избранное' : 'Только избранное'; applyFiltersAndRender(); });
 
     // Навигация
     document.getElementById('openAddModalBtn').onclick = () => { if (checkAuthForAdd()) addModal.classList.add('active'); };
     document.getElementById('suggestBtn').onclick = () => { if (checkAuthForReview()) suggestModal.classList.add('active'); };
     document.getElementById('pendingBtn').onclick = () => pendingModal.classList.add('active');
     document.getElementById('profileBtn').onclick = () => profileModal.classList.add('active');
-    patchNotesBtn.onclick = () => openPatchNotesModal();
+    document.getElementById('announceBtn').onclick = () => announceModal.classList.add('active');
     document.getElementById('logoutBtn').onclick = clearSession;
     document.getElementById('loginBtn').onclick = showRegisterModal;
     document.getElementById('closeRegisterModal').onclick = closeAllModals;
@@ -1155,14 +744,14 @@
     document.getElementById('closePendingModal').onclick = closeAllModals;
     document.getElementById('closeProfileModal').onclick = closeAllModals;
     document.getElementById('closeEditReviewModal').onclick = closeAllModals;
-    document.getElementById('closePatchNotesModal').onclick = closeAllModals;
+    document.getElementById('closeAnnounceModal').onclick = closeAllModals;
+    document.getElementById('closeAnnounceDisplayModal').onclick = () => {}; // будет переопределено
     window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeAllModals(); };
     document.getElementById('suggestForm').addEventListener('submit', async (e) => { e.preventDefault(); const name = document.getElementById('suggestName').value.trim(), shop = document.getElementById('suggestShop').value.trim(), price = document.getElementById('suggestPrice').value; if (await addSuggestion(name, selectedSuggestionImageBase64, shop, price)) { closeAllModals(); document.getElementById('suggestForm').reset(); selectedSuggestionImageBase64 = null; document.getElementById('suggestImagePreview').innerHTML = ''; } });
     document.getElementById('changePasswordBtn').onclick = async () => { const cur = document.getElementById('currentPassword').value, newp = document.getElementById('newPassword').value, conf = document.getElementById('confirmPassword').value; if (await changePassword(cur, newp, conf)) { closeAllModals(); ['currentPassword','newPassword','confirmPassword'].forEach(id => document.getElementById(id).value = ''); } };
     document.getElementById('saveReviewEditBtn').onclick = async () => { const reviewId = document.getElementById('editReviewId').value, drinkId = document.getElementById('editReviewDrinkId').value, newText = document.getElementById('editReviewText').value.trim(), newRating = document.getElementById('editReviewRating').value; if (!newText) { alert('Введите текст отзыва'); return; } await updateReview(reviewId, drinkId, newText, newRating); closeAllModals(); };
-    document.getElementById('savePatchBtn').onclick = async () => { await savePatchNote(); };
-    document.getElementById('newPatchBtn').onclick = () => resetPatchForm();
-    document.getElementById('deletePatchBtn').onclick = async () => { await deleteCurrentPatchNote(); };
+    document.getElementById('publishAnnounceBtn').onclick = async () => { const text = document.getElementById('announceText').value; await publishAnnouncement(text); document.getElementById('announceText').value = ''; };
+    document.getElementById('deleteAnnounceBtn').onclick = async () => { await deleteCurrentAnnouncement(); document.getElementById('announceText').value = ''; };
 
     document.getElementById('registerBtn').onclick = async () => { const login = document.getElementById('regLogin').value, pass = document.getElementById('regPassword').value; if (await registerUser(login, pass)) { registerModal.classList.remove('active'); authModal.classList.add('active'); } };
     document.getElementById('showAuthFromRegBtn').onclick = () => { registerModal.classList.remove('active'); authModal.classList.add('active'); };
@@ -1176,10 +765,8 @@
     document.getElementById('backToPreviousModalBtn').onclick = () => { adminModal.classList.remove('active'); if (window.backModal === 'register') registerModal.classList.add('active'); else if (window.backModal === 'auth') authModal.classList.add('active'); else registerModal.classList.add('active'); };
 
     const saved = localStorage.getItem('energyUser');
-    if (saved) { currentUser = JSON.parse(saved); } else { showRegisterModal(); }
-    loadFavorites();
-    updateUIByRole();
-    renderTagCheckboxes(tagsCheckboxesDiv, []); renderTagCheckboxes(editTagsCheckboxesDiv, []); renderFilterTags(); connectToFirestore(); connectToSuggestions(); subscribeToPatchNotes(); updateActiveSortButton(); updateBrandControls();
+    if (saved) { currentUser = JSON.parse(saved); updateUIByRole(); } else { showRegisterModal(); }
+    renderTagCheckboxes(tagsCheckboxesDiv, []); renderTagCheckboxes(editTagsCheckboxesDiv, []); renderFilterTags(); connectToFirestore(); connectToSuggestions(); subscribeToAnnouncements(); updateActiveSortButton();
     document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
     document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
     const logoImage = document.getElementById('logoImage');
