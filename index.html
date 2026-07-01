@@ -484,7 +484,16 @@
         const logoutHeader = document.getElementById('logoutBtn');
         if (logoutHeader) logoutHeader.style.display = 'none';
     }
-
+    loadFavorites();
+    updateUIByRole();
+    renderTagCheckboxes(tagsCheckboxesDiv, []);
+    renderTagCheckboxes(editTagsCheckboxesDiv, []);
+    renderFilterTags();
+    connectToFirestore();
+    connectToSuggestions();
+    subscribeToPatchNotes();
+    updateActiveSortButton();
+    updateBrandControls();
     // ===== АВТОРИЗАЦИЯ (без изменений) =====
     function saveSession(user) { localStorage.setItem('energyUser', JSON.stringify(user)); currentUser = user; loadFavorites(); updateUIByRole(); }
     function clearSession() { localStorage.removeItem('energyUser'); currentUser = null; loadFavorites(); updateUIByRole(); showRegisterModal(); showMainPage(); }
@@ -554,16 +563,7 @@
     }
 
     // ===== ИНИЦИАЛИЗАЦИЯ =====
-    loadFavorites();
-    updateUIByRole();
-    renderTagCheckboxes(tagsCheckboxesDiv, []);
-    renderTagCheckboxes(editTagsCheckboxesDiv, []);
-    renderFilterTags();
-    connectToFirestore();
-    connectToSuggestions();
-    subscribeToPatchNotes();
-    updateActiveSortButton();
-    updateBrandControls();
+
     document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
     document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
     const logoImage = document.getElementById('logoImage');
