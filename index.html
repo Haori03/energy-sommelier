@@ -861,7 +861,44 @@
         if (showOnlyFavorites) res = res.filter(d => isFavorite(d.id));
         return res;
     }
-    function sortDrinks(arr) { const sorted = [...arr]; if (currentSort === 'name-asc') sorted.sort((a,b) => a.name.localeCompare(b.name)); else if (currentSort === 'name-desc') sorted.sort((a,b) => b.name.localeCompare(a.name)); else if (currentSort === 'rating-asc') sorted.sort((a,b) => a.rating - b.rating); else sorted.sort((a,b) => b.rating - a.rating); return sorted; }
+    function sortDrinks(arr) {
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+        
+        // Разделяем на NEW и старые
+        const newDrinks = [];
+        const oldDrinks = [];
+        
+        arr.forEach(drink => {
+            let isNew = false;
+            if (drink.createdAt) {
+                const createdDate = drink.createdAt.toDate ? drink.createdAt.toDate() : new Date(drink.createdAt);
+                if (!isNaN(createdDate.getTime())) {
+                    isNew = (now - createdDate.getTime()) < ONE_DAY;
+                }
+            }
+            if (isNew) {
+                newDrinks.push(drink);
+            } else {
+                oldDrinks.push(drink);
+            }
+        });
+        
+        // Сортируем каждую группу отдельно
+        const sortFn = (a, b) => {
+            if (currentSort === 'name-asc') return a.name.localeCompare(b.name);
+            if (currentSort === 'name-desc') return b.name.localeCompare(a.name);
+            if (currentSort === 'rating-asc') return a.rating - b.rating;
+            if (currentSort === 'rating-desc') return b.rating - a.rating;
+            return 0;
+        };
+        
+        newDrinks.sort(sortFn);
+        oldDrinks.sort(sortFn);
+        
+        // NEW всегда сверху
+        return [...newDrinks, ...oldDrinks];
+    }
     function applyFiltersAndRender() {
         loadFavorites();
         const filtered = filterDrinks(energyDrinks);
