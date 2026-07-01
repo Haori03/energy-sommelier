@@ -494,6 +494,10 @@
     subscribeToPatchNotes();
     updateActiveSortButton();
     updateBrandControls();
+    // Заглушка, чтобы избежать ошибки до объявления функции
+    function loadFavorites() {}
+    function saveFavorites() {}
+    function isFavorite(drinkId) { return false; }
     // ===== АВТОРИЗАЦИЯ (без изменений) =====
     function saveSession(user) { localStorage.setItem('energyUser', JSON.stringify(user)); currentUser = user; loadFavorites(); updateUIByRole(); }
     function clearSession() { localStorage.removeItem('energyUser'); currentUser = null; loadFavorites(); updateUIByRole(); showRegisterModal(); showMainPage(); }
