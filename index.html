@@ -139,7 +139,27 @@
         .favorite-detail-btn.active { background: #be185d; }
         body.dark-mode .favorite-detail-btn { background: #db2777; }
         body.dark-mode .favorite-detail-btn.active { background: #9d174d; }
-
+        .new-drink{
+            position:relative;
+        }
+        
+        .new-badge{
+            position:absolute;
+            top:12px;
+            left:12px;
+            background:#ef4444;
+            color:white;
+            padding:5px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:900;
+            z-index:100;
+            box-shadow:0 2px 10px rgba(239,68,68,.35);
+        }
+        
+        body.dark-mode .new-badge{
+            background:#f43f5e;
+        }
         .patch-notes-badge { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #ef4444; color: white; font-size: 14px; line-height: 1; box-shadow: 0 4px 10px rgba(239,68,68,0.35); }
         .patch-notes-badge.hidden { display: none; }
         .patch-notes-modal { max-width: 760px !important; }
@@ -496,7 +516,20 @@
     function normalizeBrand(brand) {
         return (brand || '').trim() || BRAND_LABEL;
     }
-
+    function isNewDrink(drink) {
+        if (!drink.createdAt) return false;
+    
+        const created =
+            drink.createdAt?.toDate
+                ? drink.createdAt.toDate()
+                : new Date(drink.createdAt);
+    
+        if (Number.isNaN(created.getTime()))
+            return false;
+    
+        return Date.now() - created.getTime()
+            < 24 * 60 * 60 * 1000;
+    }
     function getDrinkSearchText(drink) {
         return [
             drink.name,
@@ -864,7 +897,34 @@
         if (showOnlyFavorites) res = res.filter(d => isFavorite(d.id));
         return res;
     }
-    function sortDrinks(arr) { const sorted = [...arr]; if (currentSort === 'name-asc') sorted.sort((a,b) => a.name.localeCompare(b.name)); else if (currentSort === 'name-desc') sorted.sort((a,b) => b.name.localeCompare(a.name)); else if (currentSort === 'rating-asc') sorted.sort((a,b) => a.rating - b.rating); else sorted.sort((a,b) => b.rating - a.rating); return sorted; }
+    function sortDrinks(arr) {
+    
+        const sorted = [...arr];
+    
+        sorted.sort((a, b) => {
+            const aNew = isNewDrink(a);
+            const bNew = isNewDrink(b);
+    
+            if (aNew && !bNew) return -1;
+            if (!aNew && bNew) return 1;
+    
+            return 0;
+        });
+    
+        if (currentSort === 'name-asc')
+            sorted.sort((a,b) => a.name.localeCompare(b.name));
+    
+        else if (currentSort === 'name-desc')
+            sorted.sort((a,b) => b.name.localeCompare(a.name));
+    
+        else if (currentSort === 'rating-asc')
+            sorted.sort((a,b) => a.rating - b.rating);
+    
+        else
+            sorted.sort((a,b) => b.rating - a.rating);
+    
+        return sorted;
+    }
     function applyFiltersAndRender() {
         loadFavorites();
         const filtered = filterDrinks(energyDrinks);
@@ -884,7 +944,22 @@
                 const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t);
                 return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`;
             }).join('');
-            return `<div class="drink-card" data-id="${drink.id}">
+            const isNew = isNewDrink(drink);   
+                return `
+                <div class="drink-card ${isNew ? 'new-drink' : ''}"
+                     data-id="${drink.id}">
+                
+                    ${isNew
+                        ? '<div class="new-badge">NEW</div>'
+                        : ''}
+                
+                    <button class="favorite-toggle-btn
+                        ${isFavorite(drink.id) ? 'active' : ''}"
+                        data-favorite-id="${drink.id}"
+                        title="Избранное">
+                        ${isFavorite(drink.id) ? '♥' : '♡'}
+                    </button>
+                `;
                 <button class="favorite-toggle-btn ${isFavorite(drink.id) ? 'active' : ''}" data-favorite-id="${drink.id}" title="Избранное">${isFavorite(drink.id) ? '♥' : '♡'}</button>
                 <img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/100'">
                 <div class="card-info">
