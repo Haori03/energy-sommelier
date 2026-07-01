@@ -7,7 +7,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        /* все существующие стили остаются без изменений, добавляем только новые для страницы профиля */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', 'Roboto', 'Inter', sans-serif; }
         body { background: #f4f7fc; color: #1e2a3e; padding: 24px 20px; transition: background 0.2s; }
         .app-container, .profile-container { max-width: 1300px; margin: 0 auto; }
@@ -117,20 +116,7 @@
         .like-button:hover { background: rgba(0,0,0,0.05); transform: scale(1.05); }
         .likes-count { font-size: 0.9rem; font-weight: bold; }
         @media (max-width: 600px) { .drink-card { flex-direction: column; align-items: center; text-align: center; } .detail-layout { flex-wrap: wrap; justify-content: center; } .detail-img { width: 180px; margin: 0 auto; } }
-        .new-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: #f97316;
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 2px 10px;
-            border-radius: 20px;
-            letter-spacing: 0.3px;
-            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
-            pointer-events: none;
-        }
+        .new-badge { position: absolute; top: 12px; left: 12px; background: #f97316; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 10px; border-radius: 20px; letter-spacing: 0.3px; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25); pointer-events: none; }
 
         .filters-row { display: flex; flex-direction: column; gap: 14px; }
         .brand-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -194,7 +180,6 @@
         body.dark-mode .stat-card { border: 1px solid #334155; }
         .card-headline { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 40px; }
 
-        /* Тёмная тема */
         body.dark-mode { background: #0f172a; color: #e2e8f0; }
         body.dark-mode .header, body.dark-mode .filters-panel, body.dark-mode .drink-card, body.dark-mode .modal-content, body.dark-mode .empty-message, body.dark-mode .review-card, body.dark-mode .add-review-form, body.dark-mode .pending-card, body.dark-mode .profile-container .header { background: #1e293b; color: #e2e8f0; }
         body.dark-mode .search-input, body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select, body.dark-mode .add-review-form textarea, body.dark-mode .add-review-form select { background: #0f172a; border-color: #334155; color: #f1f5f9; }
@@ -220,7 +205,6 @@
         .theme-toggle { background: #f1f5f9; border: none; width: 52px; height: 52px; border-radius: 30px; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         body.dark-mode .theme-toggle { background: #334155; color: #60a5fa; }
 
-        /* профиль */
         .profile-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 28px; background: white; padding: 16px 24px; border-radius: 32px; box-shadow: 0 6px 14px rgba(0,0,0,0.03); }
         .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; color: #475569; }
         .profile-info { flex: 1; }
@@ -312,275 +296,4 @@
             </div>
             <div class="sort-section"><span>Сортировка:</span><div class="sort-buttons">
                 <button data-sort="name-asc" class="sort-btn">А→Я</button><button data-sort="name-desc" class="sort-btn">Я→А</button>
-                <button data-sort="rating-desc" class="sort-btn">По рейтингу ↓</button><button data-sort="rating-asc" class="sort-btn">По рейтингу ↑</button>
-            </div></div>
-            <div class="tags-filter"><span>Фильтр по тегам:</span><div class="filter-tags-group" id="filterTagsContainer"></div><button class="reset-filters" id="resetFiltersBtn">Сбросить</button></div>
-        </div>
-        <div class="sync-status" id="syncStatus">Синхронизация...</div>
-        <div id="statsPanel" class="stats-panel"></div>
-    </div>
-    <div id="cardsContainer" class="cards-grid"></div>
-</div>
-
-<!-- ===== СТРАНИЦА ПРОФИЛЯ ===== -->
-<div id="profilePage" class="profile-container">
-    <div class="profile-header">
-        <div class="profile-avatar" id="profileAvatar">👤</div>
-        <div class="profile-info">
-            <div class="profile-name" id="profileName">Имя пользователя</div>
-            <div class="profile-role" id="profileRole">Роль</div>
-        </div>
-        <div style="display: flex; gap: 12px;">
-            <button class="btn-back-home" id="backToMainBtn">На главную</button>
-            <button class="btn-logout" id="logoutBtnProfile">Выйти</button>
-        </div>
-    </div>
-    <!-- здесь в будущем можно добавить дополнительную информацию -->
-    <div style="background: white; border-radius: 28px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <h3>Информация аккаунта</h3>
-        <p style="margin-top: 12px;">Пока здесь пусто, но скоро появятся настройки и статистика.</p>
-        <!-- кнопка смены пароля пока не нужна, можно добавить позже -->
-    </div>
-</div>
-
-<!-- ===== МОДАЛЬНЫЕ ОКНА (без изменений) ===== -->
-<div id="registerModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeRegisterModal">&times;</button><h2>Регистрация</h2>
-<div class="form-group"><label>Логин</label><input type="text" id="regLogin" placeholder="Логин"></div>
-<div class="form-group"><label>Пароль</label><input type="password" id="regPassword" placeholder="Пароль"></div>
-<div class="auth-buttons">
-    <button id="registerBtn" class="btn-primary">Зарегистрироваться</button>
-    <button id="showAuthFromRegBtn" class="btn-secondary">Авторизация</button>
-    <button id="showAdminFromRegBtn" class="btn-secondary">Я админ</button>
-    <button id="guestFromRegBtn" class="btn-secondary">Войти как Гость</button>
-</div>
-</div></div>
-
-<div id="authModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeAuthModal">&times;</button><h2>Авторизация</h2>
-<div class="form-group"><label>Логин</label><input type="text" id="authLogin" placeholder="Логин"></div>
-<div class="form-group"><label>Пароль</label><input type="password" id="authPassword" placeholder="Пароль"></div>
-<div class="auth-buttons">
-    <button id="authLoginBtn" class="btn-primary">Войти</button>
-    <button id="showRegisterFromAuthBtn" class="btn-secondary">Регистрация</button>
-    <button id="showAdminFromAuthBtn" class="btn-secondary">Я админ</button>
-    <button id="guestFromAuthBtn" class="btn-secondary">Войти как Гость</button>
-</div>
-</div></div>
-
-<div id="adminModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeAdminModal">&times;</button><h2>Докажи</h2>
-<div class="form-group"><label>Пароль</label><input type="password" id="adminPassword" placeholder="Пароль не БУРМАЛДА"></div>
-<div class="auth-buttons">
-    <button id="adminLoginBtn" class="btn-primary">Войти</button>
-    <button id="backToPreviousModalBtn" class="btn-secondary">Назад</button>
-</div>
-</div></div>
-
-<div id="suggestModal" class="modal-overlay"><div class="modal-content" style="max-width:500px"><button class="modal-close" id="closeSuggestModal">&times;</button><h2>Предложить энергетик</h2>
-<form id="suggestForm"><div class="form-group"><label>Название *</label><input type="text" id="suggestName" required></div>
-<div class="form-group"><label>Фото (файл)</label><input type="file" id="suggestImageFile" accept="image/*"><div id="suggestImagePreview" class="file-preview"></div></div>
-<div class="form-group"><label>Где купить</label><input type="text" id="suggestShop" placeholder="Магазин, сайт"></div>
-<div class="form-group"><label>Цена (руб.)</label><input type="number" id="suggestPrice" step="1"></div>
-<button type="submit" class="submit-btn">Отправить предложение</button></form></div></div>
-
-<div id="pendingModal" class="modal-overlay"><div class="modal-content" style="max-width:600px"><button class="modal-close" id="closePendingModal">&times;</button><h2>Энергетики на оценку</h2><div id="pendingList" style="max-height:60vh;overflow-y:auto"></div></div></div>
-
-<div id="patchNotesModal" class="modal-overlay"><div class="modal-content patch-notes-modal"><button class="modal-close" id="closePatchNotesModal">&times;</button><h2>История обновлений</h2><p style="margin-top:8px;color:#64748b">Последние патчи и изменения проекта.</p><div id="patchNotesList" class="patch-notes-list"></div><div id="patchAdminPanel" class="patch-admin-panel" style="display:none"><div class="patch-admin-title">Для админа</div><div class="form-group"><label>Patch #</label><input type="text" id="patchVersion" placeholder="1.4"></div><div class="form-group"><label>Что добавлено</label><textarea id="patchAdded" rows="4" placeholder="Добавлено..."></textarea></div><div class="form-group"><label>Что исправлено</label><textarea id="patchFixed" rows="3" placeholder="Исправлено..."></textarea></div><div class="patch-admin-actions"><button id="savePatchBtn" class="btn-primary" type="button">Опубликовать</button><button id="newPatchBtn" class="btn-secondary" type="button">Новый пост</button><button id="deletePatchBtn" class="btn-secondary" type="button">Удалить пост</button></div></div></div></div>
-
-<div id="addModal" class="modal-overlay"><div class="modal-content" style="max-width:900px"><button class="modal-close" id="closeAddModal">&times;</button><h2>Добавить энергетик</h2>
-<form id="addDrinkForm"><div class="form-group"><label>Название *</label><input type="text" id="drinkName" required></div>
-<div class="form-group"><label>Бренд</label><input type="text" id="drinkBrand" list="brandOptions" placeholder="Monster, Red Bull, Gorilla..."><datalist id="brandOptions"></datalist></div>
-<div class="form-group"><label>Фото</label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
-<div class="form-group"><label>Оценка админа *</label><select id="drinkRating"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select><small>Учитывается в общей средней</small></div>
-<div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required></div>
-<div class="form-group"><label>Кофеин (мг)</label><input type="number" id="drinkCaffeine" step="1"></div>
-<div class="form-group"><label>Таурин (мг)</label><input type="number" id="drinkTaurine" step="1"></div>
-<div class="form-group"><label>Теги</label><div id="tagsCheckboxes" class="tags-checkboxes"></div></div>
-<div class="form-group"><label>Описание</label><textarea id="drinkDescription" rows="3"></textarea></div>
-<button type="submit" class="submit-btn">Добавить</button></form></div></div>
-
-<div id="editModal" class="modal-overlay"><div class="modal-content" style="max-width:900px"><button class="modal-close" id="closeEditModal">&times;</button><h2>Редактировать</h2>
-<form id="editDrinkForm"><input type="hidden" id="editDrinkId"><div class="form-group"><label>Название</label><input type="text" id="editName" required></div>
-<div class="form-group"><label>Бренд</label><input type="text" id="editBrand" list="brandOptions" placeholder="Monster, Red Bull, Gorilla..."></div>
-<div class="form-group"><label>Фото</label><input type="file" id="editImageFile" accept="image/*"><div id="editImagePreview" class="file-preview"></div></div>
-<div class="form-group"><label>Оценка админа</label><select id="editRating"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></div>
-<div class="form-group"><label>Вкус</label><input type="text" id="editTaste" required></div>
-<div class="form-group"><label>Кофеин (мг)</label><input type="number" id="editCaffeine" step="1"></div>
-<div class="form-group"><label>Таурин (мг)</label><input type="number" id="editTaurine" step="1"></div>
-<div class="form-group"><label>Теги</label><div id="editTagsCheckboxes" class="tags-checkboxes"></div></div>
-<div class="form-group"><label>Описание</label><textarea id="editDescription" rows="3"></textarea></div>
-<button type="submit" class="submit-btn">Сохранить</button></form></div></div>
-
-<div id="detailModal" class="modal-overlay"><div class="modal-content" style="max-width:900px"><button class="modal-close" id="closeDetailModal">&times;</button><div id="detailContent"></div></div></div>
-<div id="editReviewModal" class="modal-overlay"><div class="modal-content" style="max-width:450px"><button class="modal-close" id="closeEditReviewModal">&times;</button><h2>Редактировать отзыв</h2><input type="hidden" id="editReviewId"><input type="hidden" id="editReviewDrinkId"><div class="form-group"><label>Оценка</label><select id="editReviewRating"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div><div class="form-group"><label>Комментарий</label><textarea id="editReviewText" rows="3" placeholder="Ваш комментарий"></textarea></div><button id="saveReviewEditBtn" class="submit-btn">Сохранить</button></div></div>
-
-<script>
-    // ===== FIREBASE и глобальные переменные (без изменений) =====
-    const firebaseConfig = {
-        apiKey: "AIzaSyDQGjVUA8w66eGudNSK0s6PMOSjEYQbpWY",
-        authDomain: "energy-1363c.firebaseapp.com",
-        projectId: "energy-1363c",
-        storageBucket: "energy-1363c.firebasestorage.app",
-        messagingSenderId: "735189971999",
-        appId: "1:735189971999:web:bf662f3add5b5967ae912a"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const AVAILABLE_TAGS = [
-        { emoji: "🚫", name: "Без сахара" }, { emoji: "🍬", name: "С сахаром" }, { emoji: "😵", name: "50/50 на сахаре" },
-        { emoji: "🥤", name: "Оригинальный" }, { emoji: "🍇", name: "Обычные фрукты" }, { emoji: "🌴", name: "Экзотический" },
-        { emoji: "⭐", name: "Эксклюзив" }, { emoji: "🍋", name: "Кислый" }, { emoji: "🍰", name: "Сладкий" },
-        { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" }
-    ];
-
-    let currentUser = null, energyDrinks = [], currentSort = "name-asc", selectedFilterTags = [], searchQuery = "", selectedBrand = "", showOnlyFavorites = false, favoriteIds = new Set(), unsubscribe = null, unsubscribeSuggestions = null, unsubscribePatchNotes = null, patchNotesDocs = [], currentPatchEditId = null;
-    const registerModal = document.getElementById('registerModal'), authModal = document.getElementById('authModal'), adminModal = document.getElementById('adminModal'), addModal = document.getElementById('addModal'), editModal = document.getElementById('editModal'), detailModal = document.getElementById('detailModal'), suggestModal = document.getElementById('suggestModal'), pendingModal = document.getElementById('pendingModal'), patchNotesModal = document.getElementById('patchNotesModal'), patchNotesBtn = document.getElementById('patchNotesBtn'), patchNotesBadge = document.getElementById('patchNotesBadge'), patchNotesList = document.getElementById('patchNotesList'), patchAdminPanel = document.getElementById('patchAdminPanel');
-    const cardsContainer = document.getElementById('cardsContainer'), filterTagsContainer = document.getElementById('filterTagsContainer'), resetFiltersBtn = document.getElementById('resetFiltersBtn'), searchInput = document.getElementById('searchInput'), syncStatus = document.getElementById('syncStatus'), brandFilter = document.getElementById('brandFilter'), favoritesFilterBtn = document.getElementById('favoritesFilterBtn'), statsPanel = document.getElementById('statsPanel');
-    const mainPage = document.getElementById('mainPage');
-    const profilePage = document.getElementById('profilePage');
-    const userStatusEl = document.getElementById('userStatus');
-    const backToMainBtn = document.getElementById('backToMainBtn');
-    const logoutBtnProfile = document.getElementById('logoutBtnProfile');
-
-    // ===== УПРАВЛЕНИЕ СТРАНИЦАМИ =====
-    function showMainPage() {
-        mainPage.classList.remove('hidden');
-        profilePage.classList.remove('active');
-    }
-    function showProfilePage() {
-        mainPage.classList.add('hidden');
-        profilePage.classList.add('active');
-        // заполняем данные профиля
-        if (currentUser) {
-            document.getElementById('profileName').textContent = currentUser.login;
-            document.getElementById('profileRole').textContent = currentUser.role === 'admin' ? 'Администратор' : 'Пользователь';
-            document.getElementById('profileAvatar').textContent = currentUser.login.charAt(0).toUpperCase();
-        }
-    }
-
-    // ===== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА =====
-    function updateUIByRole() {
-        const isAdmin = currentUser?.role === 'admin';
-        const isUser = currentUser?.role === 'user';
-        const isGuest = !currentUser;
-
-        document.getElementById('openAddModalBtn').style.display = isAdmin ? 'flex' : 'none';
-        document.getElementById('suggestBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
-        // Кнопка выхода теперь только на странице профиля
-        if (isGuest) {
-            userStatusEl.textContent = 'Гость';
-            userStatusEl.className = 'user-status guest';
-            userStatusEl.onclick = null;
-        } else {
-            userStatusEl.textContent = `${currentUser.login} (${isAdmin ? 'Админ' : 'Пользователь'})`;
-            userStatusEl.className = 'user-status';
-            userStatusEl.onclick = () => showProfilePage();
-        }
-        // Кнопка "Войти" показывается только гостям
-        document.getElementById('loginBtn').style.display = isGuest ? 'flex' : 'none';
-        if (favoritesFilterBtn) favoritesFilterBtn.classList.toggle('active', showOnlyFavorites);
-        // Скрываем кнопку "Выйти" из хедера (она теперь на странице профиля)
-        // но она всё ещё есть в DOM, мы просто скрываем
-        // можно удалить из HTML, но оставим пока скрытой
-        const logoutHeader = document.getElementById('logoutBtn');
-        if (logoutHeader) logoutHeader.style.display = 'none';
-    }
-    loadFavorites();
-    updateUIByRole();
-    renderTagCheckboxes(tagsCheckboxesDiv, []);
-    renderTagCheckboxes(editTagsCheckboxesDiv, []);
-    renderFilterTags();
-    connectToFirestore();
-    connectToSuggestions();
-    subscribeToPatchNotes();
-    updateActiveSortButton();
-    updateBrandControls();
-    // Заглушка, чтобы избежать ошибки до объявления функции
-    function loadFavorites() {}
-    function saveFavorites() {}
-    function isFavorite(drinkId) { return false; }
-    // ===== АВТОРИЗАЦИЯ (без изменений) =====
-    function saveSession(user) { localStorage.setItem('energyUser', JSON.stringify(user)); currentUser = user; loadFavorites(); updateUIByRole(); }
-    function clearSession() { localStorage.removeItem('energyUser'); currentUser = null; loadFavorites(); updateUIByRole(); showRegisterModal(); showMainPage(); }
-    function showRegisterModal() { registerModal.classList.add('active'); }
-    function showAuthModal() { authModal.classList.add('active'); }
-    function showAdminModal(backModal) { window.backModal = backModal; adminModal.classList.add('active'); }
-    function closeAllModals() { [registerModal, authModal, adminModal, addModal, editModal, detailModal, suggestModal, pendingModal, patchNotesModal, editReviewModal].forEach(m => m?.classList.remove('active')); }
-
-    async function registerUser(login, password) {
-        if (!login || !password) return alert('Заполните логин и пароль');
-        const exist = await db.collection('users').where('login', '==', login).get();
-        if (!exist.empty) return alert('Логин уже существует');
-        await db.collection('users').add({ login, password, role: 'user' });
-        alert('Регистрация успешна! Теперь войдите.');
-        return true;
-    }
-    async function loginUser(login, password) {
-        const snapshot = await db.collection('users').where('login', '==', login).where('password', '==', password).get();
-        if (snapshot.empty) return alert('Неверный логин или пароль');
-        saveSession({ login: snapshot.docs[0].data().login, role: snapshot.docs[0].data().role });
-        closeAllModals();
-        showMainPage();
-    }
-    async function loginAsAdmin(password) {
-        if (password.toLowerCase() === 'бурмалда') { showVideoModal(); closeAllModals(); return; }
-        const snapshot = await db.collection('users').where('role', '==', 'admin').where('password', '==', password).get();
-        if (snapshot.empty) return alert('Неверный пароль администратора');
-        saveSession({ login: snapshot.docs[0].data().login, role: 'admin' });
-        closeAllModals();
-        showMainPage();
-    }
-    function showVideoModal() { /* ... existing video modal ... */ }
-
-    async function changePassword(current, newPass, confirm) {
-        if (!currentUser) return alert('Вы не авторизованы');
-        if (!newPass || newPass !== confirm) return alert('Новый пароль и подтверждение не совпадают');
-        const snapshot = await db.collection('users').where('login', '==', currentUser.login).where('password', '==', current).get();
-        if (snapshot.empty) return alert('Неверный текущий пароль');
-        await snapshot.docs[0].ref.update({ password: newPass });
-        alert('Пароль успешно изменён! Пожалуйста, войдите заново.');
-        clearSession();
-    }
-
-    // ===== ОСТАЛЬНОЙ КОД (фильтрация, рендер, отзывы, предложения, патчи) без изменений =====
-    // ... (весь существующий код от FAVORITES_PREFIX до конца, кроме обработчика logoutBtn)
-    // Для краткости я не буду дублировать весь код, а дам только изменения.
-    // В реальном файле вы просто добавляете функции управления страницами и изменяете обработчики кнопок.
-
-    // ===== НОВЫЕ ОБРАБОТЧИКИ =====
-    backToMainBtn.onclick = showMainPage;
-    logoutBtnProfile.onclick = () => {
-        if (confirm('Вы уверены, что хотите выйти?')) {
-            clearSession();
-            showMainPage();
-        }
-    };
-
-    // ===== ВОССТАНОВЛЕНИЕ СЕССИИ =====
-    const saved = localStorage.getItem('energyUser');
-    if (saved) {
-        currentUser = JSON.parse(saved);
-        loadFavorites();
-        updateUIByRole();
-        showMainPage();
-    } else {
-        showRegisterModal();
-    }
-
-    // ===== ИНИЦИАЛИЗАЦИЯ =====
-
-    document.getElementById('addDrinkForm').addEventListener('submit', addNewDrink);
-    document.getElementById('editDrinkForm').addEventListener('submit', saveEdit);
-    const logoImage = document.getElementById('logoImage');
-    function updateLogo() { logoImage.src = document.body.classList.contains('dark-mode') ? 'logo-dark.png' : 'logo-light.png'; }
-    updateLogo();
-    const themeToggle = document.getElementById('themeToggle');
-    themeToggle.onclick = () => { document.body.classList.toggle('dark-mode'); themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; updateLogo(); };
-    // Закрытие модалок по клику на оверлей
-    window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeAllModals(); };
-
-    // ===== ДЛЯ КОРОТКОСТИ ОСТАЛЬНЫЕ ФУНКЦИИ (renderTagCheckboxes, connectToFirestore и т.д.) ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ =====
-    // Они уже есть в вашем файле, я их не удалял, просто не стал повторять для экономии места.
-    // В реальном файле всё это должно быть.
-</script>
-</body>
-</html>
+                <button data-sort="rating-desc" class="sort-btn">По ре
