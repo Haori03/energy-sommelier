@@ -14,7 +14,7 @@
         .logo img { height: 60px; width: auto; object-fit: contain; }
         .filters-panel { background: white; border-radius: 28px; padding: 18px 24px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .energy-counter { background: #eef2ff; display: inline-block; padding: 6px 16px; border-radius: 40px; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
-        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .patch-notes-btn {
+        .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .patch-notes-btn {
             border: none;
             padding: 0 20px;
             height: 52px;
@@ -33,15 +33,13 @@
         .btn-login { background: #0d6efd; }
         .btn-suggest { background: #4a6d8c; }
         .btn-pending { background: #6c757d; }
-        .btn-profile { background: #198754; }
         .patch-notes-btn { background: #4a6d8c; gap: 10px; }
-        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .btn-profile:hover, .patch-notes-btn:hover { transform: scale(0.96); }
+        .btn-plus:hover, .btn-logout:hover, .btn-login:hover, .btn-suggest:hover, .btn-pending:hover, .patch-notes-btn:hover { transform: scale(0.96); }
         .btn-plus:hover { background: #1f5f3a; }
         .btn-logout:hover { background: #5a6268; }
         .btn-login:hover { background: #0b5ed7; }
         .btn-suggest:hover { background: #2b4f6e; }
         .btn-pending:hover { background: #5a6268; }
-        .btn-profile:hover { background: #146c43; }
         .patch-notes-btn:hover { background: #2b4f6e; }
         .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid #cbd5e1; font-size: 1rem; margin-bottom: 16px; }
         .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
@@ -54,7 +52,7 @@
         .filter-tag.selected { background: #f4a261; color: white; }
         .reset-filters { background: #e2e8f0; border: none; padding: 6px 18px; border-radius: 30px; cursor: pointer; margin-left: auto; }
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-        .drink-card { background: white; border-radius: 28px; display: flex; padding: 16px; gap: 16px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 8px 18px rgba(0,0,0,0.05); }
+        .drink-card { background: white; border-radius: 28px; display: flex; padding: 16px; gap: 16px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 8px 18px rgba(0,0,0,0.05); position: relative; }
         .drink-card:hover { transform: translateY(-4px); }
         .card-img { width: 100px; height: 100px; object-fit: contain; background: #f8fafc; border-radius: 16px; }
         .card-info { flex: 1; }
@@ -108,7 +106,20 @@
         .like-button:hover { background: rgba(0,0,0,0.05); transform: scale(1.05); }
         .likes-count { font-size: 0.9rem; font-weight: bold; }
         @media (max-width: 600px) { .drink-card { flex-direction: column; align-items: center; text-align: center; } .detail-layout { flex-wrap: wrap; justify-content: center; } .detail-img { width: 180px; margin: 0 auto; } }
-        
+        .new-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #f97316;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25);
+            pointer-events: none;
+        }
 
         .filters-row { display: flex; flex-direction: column; gap: 14px; }
         .brand-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -190,7 +201,6 @@
         body.dark-mode .btn-primary, body.dark-mode .btn-plus { background: #2b7a4b; }
         body.dark-mode .btn-login { background: #0d6efd; }
         body.dark-mode .btn-suggest { background: #4a6d8c; }
-        body.dark-mode .btn-profile { background: #198754; }
         body.dark-mode .modal-close { color: #e2e8f0; }
         body.dark-mode .modal-close:hover { color: #ef4444; }
         body.dark-mode .review-rating { background: #5681ba; color: #fbbf24; }
@@ -211,7 +221,7 @@
             .reset-filters { margin-left: 0; align-self: center; }
             .drink-card { flex-direction: column; align-items: center; text-align: center; }
             .card-img { width: 120px; height: 120px; }
-            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .btn-profile, .patch-notes-btn { padding: 0 12px; height: 44px; font-size: 14px; }
+            .btn-plus, .btn-logout, .btn-login, .btn-suggest, .btn-pending, .patch-notes-btn { padding: 0 12px; height: 44px; font-size: 14px; }
             .theme-toggle { width: 44px; height: 44px; font-size: 24px; }
             .user-status { font-size: 0.8rem; padding: 4px 12px; }
             .modal-content { width: 95% !important; padding: 20px 16px !important; max-width: 95% !important; }
@@ -264,7 +274,6 @@
             <button class="btn-plus" id="openAddModalBtn" style="display: none;">Добавить</button>
             <button class="btn-suggest" id="suggestBtn" style="display: none;">Предложить</button>
             <button class="btn-pending" id="pendingBtn">На оценку</button>
-            <button class="btn-profile" id="profileBtn" style="display: none;">Профиль</button>
             <button class="btn-logout" id="logoutBtn" style="display: none;">Выйти</button>
             <button class="btn-login" id="loginBtn" style="display: none;">Войти</button>
             <button id="patchNotesBtn" class="patch-notes-btn" type="button">📜 История обновлений <span id="patchNotesBadge" class="patch-notes-badge hidden">!</span></button>
@@ -342,17 +351,6 @@
         <button class="modal-close" id="closePendingModal">&times;</button>
         <h2>Энергетики на оценку</h2>
         <div id="pendingList" style="max-height: 60vh; overflow-y: auto;"></div>
-    </div>
-</div>
-
-<div id="profileModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 450px;">
-        <button class="modal-close" id="closeProfileModal">&times;</button>
-        <h2>Смена пароля</h2>
-        <div class="form-group"><label>Текущий пароль</label><input type="password" id="currentPassword" placeholder="Текущий пароль"></div>
-        <div class="form-group"><label>Новый пароль</label><input type="password" id="newPassword" placeholder="Новый пароль"></div>
-        <div class="form-group"><label>Подтверждение пароля</label><input type="password" id="confirmPassword" placeholder="Подтверждение"></div>
-        <button id="changePasswordBtn" class="submit-btn">Сменить пароль</button>
     </div>
 </div>
 
@@ -434,14 +432,13 @@
     ];
 
     let currentUser = null, energyDrinks = [], currentSort = "name-asc", selectedFilterTags = [], searchQuery = "", selectedBrand = "", showOnlyFavorites = false, favoriteIds = new Set(), unsubscribe = null, unsubscribeSuggestions = null, unsubscribePatchNotes = null, patchNotesDocs = [], currentPatchEditId = null;
-    const registerModal = document.getElementById('registerModal'), authModal = document.getElementById('authModal'), adminModal = document.getElementById('adminModal'), addModal = document.getElementById('addModal'), editModal = document.getElementById('editModal'), detailModal = document.getElementById('detailModal'), suggestModal = document.getElementById('suggestModal'), pendingModal = document.getElementById('pendingModal'), profileModal = document.getElementById('profileModal'), editReviewModal = document.getElementById('editReviewModal'), patchNotesModal = document.getElementById('patchNotesModal'), patchNotesBtn = document.getElementById('patchNotesBtn'), patchNotesBadge = document.getElementById('patchNotesBadge'), patchNotesList = document.getElementById('patchNotesList'), patchAdminPanel = document.getElementById('patchAdminPanel');
+    const registerModal = document.getElementById('registerModal'), authModal = document.getElementById('authModal'), adminModal = document.getElementById('adminModal'), addModal = document.getElementById('addModal'), editModal = document.getElementById('editModal'), detailModal = document.getElementById('detailModal'), suggestModal = document.getElementById('suggestModal'), pendingModal = document.getElementById('pendingModal'), patchNotesModal = document.getElementById('patchNotesModal'), patchNotesBtn = document.getElementById('patchNotesBtn'), patchNotesBadge = document.getElementById('patchNotesBadge'), patchNotesList = document.getElementById('patchNotesList'), patchAdminPanel = document.getElementById('patchAdminPanel');
     const cardsContainer = document.getElementById('cardsContainer'), filterTagsContainer = document.getElementById('filterTagsContainer'), resetFiltersBtn = document.getElementById('resetFiltersBtn'), searchInput = document.getElementById('searchInput'), syncStatus = document.getElementById('syncStatus'), brandFilter = document.getElementById('brandFilter'), favoritesFilterBtn = document.getElementById('favoritesFilterBtn'), statsPanel = document.getElementById('statsPanel');
 
     function updateUIByRole() {
         const isAdmin = currentUser?.role === 'admin', isUser = currentUser?.role === 'user', isGuest = !currentUser;
         document.getElementById('openAddModalBtn').style.display = isAdmin ? 'flex' : 'none';
         document.getElementById('suggestBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
-        document.getElementById('profileBtn').style.display = isUser ? 'flex' : 'none';
         document.getElementById('logoutBtn').style.display = (isAdmin || isUser) ? 'flex' : 'none';
         document.getElementById('loginBtn').style.display = isGuest ? 'flex' : 'none';
         if (favoritesFilterBtn) favoritesFilterBtn.classList.toggle('active', showOnlyFavorites);
@@ -453,7 +450,7 @@
     function showRegisterModal() { registerModal.classList.add('active'); }
     function showAuthModal() { authModal.classList.add('active'); }
     function showAdminModal(backModal) { window.backModal = backModal; adminModal.classList.add('active'); }
-    function closeAllModals() { [registerModal, authModal, adminModal, addModal, editModal, detailModal, suggestModal, pendingModal, profileModal, editReviewModal, patchNotesModal].forEach(m => m?.classList.remove('active')); }
+    function closeAllModals() { [registerModal, authModal, adminModal, addModal, editModal, detailModal, suggestModal, pendingModal, patchNotesModal].forEach(m => m?.classList.remove('active')); }
 
 
     const FAVORITES_PREFIX = 'energyFavorites_';
@@ -802,7 +799,7 @@
         else detailModal.classList.remove('active');
     }
     async function fetchReviews(drinkId) { const snap = await db.collection('reviews').where('drinkId', '==', drinkId).get(); return snap.docs.map(doc => ({ id: doc.id, ...doc.data() })); }
-    function connectToFirestore() { if (unsubscribe) unsubscribe(); unsubscribe = db.collection('energydrinks').onSnapshot(snapshot => { energyDrinks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), brand: doc.data().brand || null, rating: doc.data().averageRating ?? doc.data().adminRating ?? 3, caffeine: doc.data().caffeine ?? null, taurine: doc.data().taurine ?? null })); updateBrandControls(); applyFiltersAndRender(); syncStatus.innerHTML = 'Синхронизировано'; setTimeout(() => syncStatus.innerHTML = 'Данные в облаке', 2000); }, error => syncStatus.innerHTML = 'Ошибка подключения'); }
+    function connectToFirestore() { if (unsubscribe) unsubscribe(); unsubscribe = db.collection('energydrinks').onSnapshot(snapshot => { energyDrinks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), brand: doc.data().brand || null, rating: doc.data().averageRating ?? doc.data().adminRating ?? 3, caffeine: doc.data().caffeine ?? null, taurine: doc.data().taurine ?? null, createdAt: doc.data().createdAt || null })); updateBrandControls(); applyFiltersAndRender(); syncStatus.innerHTML = 'Синхронизировано'; setTimeout(() => syncStatus.innerHTML = 'Данные в облаке', 2000); }, error => syncStatus.innerHTML = 'Ошибка подключения'); }
 
     let selectedSuggestionImageBase64 = null;
     document.getElementById('suggestImageFile').onchange = async (e) => {
@@ -878,13 +875,23 @@
             cardsContainer.innerHTML = '<div class="empty-message">Ничего не найдено. Попробуй сбросить фильтры или добавить новый энергетик.</div>';
             return;
         }
+        const now = Date.now();
+        const ONE_DAY = 24 * 60 * 60 * 1000;
         cardsContainer.innerHTML = drinks.map(drink => {
             const brand = normalizeBrand(drink.brand);
             const tagsHtml = (drink.tags || []).map(t => {
                 const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t);
                 return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`;
             }).join('');
+            let isNew = false;
+            if (drink.createdAt) {
+                const createdDate = drink.createdAt.toDate ? drink.createdAt.toDate() : new Date(drink.createdAt);
+                if (!isNaN(createdDate.getTime())) {
+                    isNew = (now - createdDate.getTime()) < ONE_DAY;
+                }
+            }
             return `<div class="drink-card" data-id="${drink.id}">
+                ${isNew ? '<span class="new-badge">NEW</span>' : ''}
                 <button class="favorite-toggle-btn ${isFavorite(drink.id) ? 'active' : ''}" data-favorite-id="${drink.id}" title="Избранное">${isFavorite(drink.id) ? '♥' : '♡'}</button>
                 <img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='https://via.placeholder.com/100'">
                 <div class="card-info">
@@ -982,7 +989,6 @@
     document.getElementById('openAddModalBtn').onclick = () => { if (checkAuthForAdd()) addModal.classList.add('active'); };
     document.getElementById('suggestBtn').onclick = () => { if (checkAuthForReview()) suggestModal.classList.add('active'); };
     document.getElementById('pendingBtn').onclick = () => pendingModal.classList.add('active');
-    document.getElementById('profileBtn').onclick = () => profileModal.classList.add('active');
     patchNotesBtn.onclick = () => openPatchNotesModal();
     document.getElementById('logoutBtn').onclick = clearSession;
     document.getElementById('loginBtn').onclick = showRegisterModal;
@@ -994,8 +1000,6 @@
     document.getElementById('closeDetailModal').onclick = closeAllModals;
     document.getElementById('closeSuggestModal').onclick = closeAllModals;
     document.getElementById('closePendingModal').onclick = closeAllModals;
-    document.getElementById('closeProfileModal').onclick = closeAllModals;
-    document.getElementById('closeEditReviewModal').onclick = closeAllModals;
     document.getElementById('closePatchNotesModal').onclick = closeAllModals;
     window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeAllModals(); };
     document.getElementById('suggestForm').addEventListener('submit', async (e) => { e.preventDefault(); const name = document.getElementById('suggestName').value.trim(), shop = document.getElementById('suggestShop').value.trim(), price = document.getElementById('suggestPrice').value; if (await addSuggestion(name, selectedSuggestionImageBase64, shop, price)) { closeAllModals(); document.getElementById('suggestForm').reset(); selectedSuggestionImageBase64 = null; document.getElementById('suggestImagePreview').innerHTML = ''; } });
