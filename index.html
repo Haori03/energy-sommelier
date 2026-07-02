@@ -914,7 +914,6 @@
             return;
         }
         const now = Date.now();
-        const ONE_DAY = 24 * 60 * 60 * 1000;
         cardsContainer.innerHTML = drinks.map(drink => {
             const brand = normalizeBrand(drink.brand);
             const tagsHtml = (drink.tags || []).map(t => {
@@ -925,7 +924,7 @@
             if (drink.createdAt) {
                 const createdDate = drink.createdAt.toDate ? drink.createdAt.toDate() : new Date(drink.createdAt);
                 if (!isNaN(createdDate.getTime())) {
-                    isNew = (now - createdDate.getTime()) < ONE_DAY;
+                    isNew = (now - createdDate.getTime()) < five_day;
                 }
             }
             return `<div class="drink-card" data-id="${drink.id}">
