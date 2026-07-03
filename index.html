@@ -913,6 +913,7 @@
             return;
         }
         const now = Date.now();
+        const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
         cardsContainer.innerHTML = drinks.map(drink => {
             const brand = normalizeBrand(drink.brand);
             const tagsHtml = (drink.tags || []).map(t => {
