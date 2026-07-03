@@ -865,7 +865,6 @@
         const now = Date.now();
         const ONE_DAY = 24 * 60 * 60 * 1000;
         const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
-        const five_day = 7 * 24 * 60 * 60 * 1000;
         // Разделяем на NEW и старые
         const newDrinks = [];
         const oldDrinks = [];
@@ -875,7 +874,7 @@
             if (drink.createdAt) {
                 const createdDate = drink.createdAt.toDate ? drink.createdAt.toDate() : new Date(drink.createdAt);
                 if (!isNaN(createdDate.getTime())) {
-                    isNew = (now - createdDate.getTime()) < five_day;
+                    isNew = (now - createdDate.getTime()) < ONE_WEEK;
                 }
             }
             if (isNew) {
@@ -924,7 +923,7 @@
             if (drink.createdAt) {
                 const createdDate = drink.createdAt.toDate ? drink.createdAt.toDate() : new Date(drink.createdAt);
                 if (!isNaN(createdDate.getTime())) {
-                    isNew = (now - createdDate.getTime()) < five_day;
+                    isNew = (now - createdDate.getTime()) < ONE_WEEK;
                 }
             }
             return `<div class="drink-card" data-id="${drink.id}">
