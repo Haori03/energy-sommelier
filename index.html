@@ -513,9 +513,22 @@
 
     async function registerUser(login, password) {
         if (!login || !password) return alert('Заполните логин и пароль');
-        const exist = await db.collection('users').where('login', '==', login).get();
-        if (!exist.empty) return alert('Логин уже существует');
-        await db.collection('users').add({ login, password, role: 'user' });
+        
+        // Проверка логина
+        const existLogin = await db.collection('users').where('login', '==', login).get();
+        if (!existLogin.empty) return alert('Пользователь с таким логином уже существует');
+        
+        // Проверка никнейма (по умолчанию ник = логин)
+        const existNick = await db.collection('users').where('displayName', '==', login).get();
+        if (!existNick.empty) return alert('Пользователь с таким никнеймом уже существует');
+
+        // Создаем пользователя, сразу задавая displayName
+        await db.collection('users').add({ 
+            login, 
+            password, 
+            displayName: login, 
+            role: 'user' 
+        });
         alert('Регистрация успешна! Теперь войдите.');
         return true;
     }
