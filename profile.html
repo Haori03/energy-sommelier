@@ -432,35 +432,58 @@ function resizeImageToSquare(file, targetSize = 400, quality = 0.85) { return ne
 
 // ===== Загрузка данных =====
 async function init() {
-    if (!isOwnProfile) {
-        document.getElementById('editNameBtn').style.display = 'none';
-        document.getElementById('avatarEditLabel').style.display = 'none';
-        document.getElementById('drinkActionBtns').style.display = 'none';
-        document.getElementById('addFriendSection').style.display = 'none';
-        document.getElementById('editStatsBtnContainer').style.display = 'none';
-    }
+    // Показываем "Загрузку" пока тянем данные
+    document.getElementById('displayName').textContent = 'Загрузка...';
+    document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Загрузка статистики...</div>';
+    document.getElementById('extendedStatsGrid').innerHTML = '';
 
-    const drinksSnap = await db.collection('energydrinks').get();
-    allDrinks = drinksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const optionsHtml = allDrinks.map(d => `<option value="${escapeHtml(d.name)}">`).join('');
-    document.getElementById('drinkSuggestions').innerHTML = optionsHtml;
-    document.getElementById('drinkSuggestions2').innerHTML = optionsHtml;
+    // Защита от вечной загрузки (если Firebase упал)
+    const timeoutId = setTimeout(() => {
+        if (document.getElementById('displayName').textContent === 'Загрузка...') {
+            document.getElementById('displayName').textContent = 'Ошибка загрузки (проверьте интернет)';
+            document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Не удалось связаться с базой данных. Попробуйте перезагрузить страницу.</div>';
+        }
+    }, 8000); // 8 секунд ожидания
 
-    const snap = await db.collection('users').where('login', '==', targetLogin).get();
-    if (!snap.empty) {
-        userDocRef = snap.docs[0].ref;
-        userProfile = snap.docs[0].data();
-        
-        if (!userProfile.createdAt && isOwnProfile) {
-            await userDocRef.update({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-            userProfile.createdAt = new Date();
+    try {
+        if (!isOwnProfile) {
+            document.getElementById('editNameBtn').style.display = 'none';
+            document.getElementById('avatarEditLabel').style.display = 'none';
+            document.getElementById('drinkActionBtns').style.display = 'none';
+            document.getElementById('addFriendSection').style.display = 'none';
+            document.getElementById('editStatsBtnContainer').style.display = 'none';
         }
 
-        renderProfile();
-        await loadLogs(); 
-        loadFriendsAndRequests();
-    } else {
-        document.getElementById('displayName').textContent = 'Пользователь не найден';
+        const drinksSnap = await db.collection('energydrinks').get();
+        allDrinks = drinksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const optionsHtml = allDrinks.map(d => `<option value="${escapeHtml(d.name)}">`).join('');
+        document.getElementById('drinkSuggestions').innerHTML = optionsHtml;
+        document.getElementById('drinkSuggestions2').innerHTML = optionsHtml;
+
+        const snap = await db.collection('users').where('login', '==', targetLogin).get();
+        if (!snap.empty) {
+            userDocRef = snap.docs[0].ref;
+            userProfile = snap.docs[0].data();
+            
+            if (!userProfile.createdAt && isOwnProfile) {
+                await userDocRef.update({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                userProfile.createdAt = new Date();
+            }
+
+            clearTimeout(timeoutId); // Отменяем таймер, так как данные пришли
+            renderProfile();
+            await loadLogs(); 
+            loadFriendsAndRequests();
+        } else {
+            clearTimeout(timeoutId);
+            document.getElementById('displayName').textContent = 'Пользователь не найден';
+            document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Профиль не существует.</div>';
+        }
+    } catch (error) {
+        clearTimeout(timeoutId);
+        console.error(error);
+        document.getElementById('displayName').textContent = 'Ошибка';
+        document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Ошибка загрузки данных.</div>';
     }
 }
 
