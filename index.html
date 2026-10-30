@@ -213,7 +213,6 @@
             <button class="btn-plus" id="openAddModalBtn" style="display: none;">Добавить</button>
             <button class="btn-suggest" id="suggestBtn" style="display: none;">Предложить</button>
             <button class="btn-pending" id="pendingBtn">На оценку</button>
-            <button class="btn-logout" id="logoutBtn" style="display: none;">Выйти</button>
             <button class="btn-login" id="loginBtn" style="display: none;">Войти</button>
             <button id="patchNotesBtn" class="patch-notes-btn" type="button">📜 История обновлений <span id="patchNotesBadge" class="patch-notes-badge hidden">!</span></button>
         </div>
@@ -414,7 +413,6 @@
               isGuest = !currentUser;
         document.getElementById('openAddModalBtn').style.display = isAdmin ? 'flex' : 'none';
         document.getElementById('suggestBtn').style.display = (isUser || isAdmin) ? 'flex' : 'none';
-        document.getElementById('logoutBtn').style.display = (isAdmin || isUser) ? 'flex' : 'none';
         document.getElementById('loginBtn').style.display = isGuest ? 'flex' : 'none';
         document.getElementById('profileBtn').style.display = (isAdmin || isUser) ? 'flex' : 'none';
         if (favoritesFilterBtn) favoritesFilterBtn.classList.toggle('active', showOnlyFavorites);
@@ -1125,7 +1123,6 @@
     document.getElementById('pendingBtn').onclick = () => pendingModal.classList.add('active');
     patchNotesBtn.onclick = () => openPatchNotesModal();
     document.getElementById('profileBtn').onclick = () => window.location.href = 'profile.html';
-    document.getElementById('logoutBtn').onclick = clearSession;
     document.getElementById('loginBtn').onclick = showAuthModal;  // ← исправлено: было showRegisterModal
     document.getElementById('closeRegisterModal').onclick = closeAllModals;
     document.getElementById('closeAuthModal').onclick = closeAllModals;
