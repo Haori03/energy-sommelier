@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Профиль | Энергетический сомелье Ivan</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        .app-container { max-width: 1000px; margin: 0 auto; }
+
+        .btn-back {
+            background: #4a6d8c; color: white; border: none;
+            padding: 0 20px; height: 52px; border-radius: 30px;
+            font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-back:hover { transform: scale(0.96); background: #2b4f6e; }
+        body.dark-mode .btn-back { background: #4a6d8c; }
+
+        .profile-card {
+            background: white; border-radius: 32px; padding: 32px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+            display: flex; gap: 28px; align-items: center;
+            margin-bottom: 24px; flex-wrap: wrap;
+        }
+        body.dark-mode .profile-card { background: #1e293b; }
+
+        .avatar-wrapper { position: relative; flex-shrink: 0; }
+        .avatar {
+            width: 140px; height: 140px; border-radius: 50%; object-fit: cover;
+            background: #f8fafc; border: 4px solid #e2e8f0;
+        }
+        body.dark-mode .avatar { background: #2d3a4e; border-color: #334155; }
+        .avatar-edit {
+            position: absolute; bottom: 4px; right: 4px;
+            background: #2b7a4b; color: white;
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s;
+        }
+        .avatar-edit:hover { transform: scale(1.1); }
+
+        .profile-info { flex: 1; min-width: 200px; }
+        .profile-info h1 { font-size: 2rem; margin-bottom: 8px; word-break: break-word; }
+        .profile-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+        .role-badge {
+            background: #eef2ff; padding: 6px 14px; border-radius: 30px;
+            font-size: 0.85rem; font-weight: 600;
+        }
+        body.dark-mode .role-badge { background: #2d3a4e; color: #e2e8f0; }
+        .role-badge.admin { background: #fef3c7; color: #92400e; }
+        body.dark-mode .role-badge.admin { background: #422006; color: #fbbf24; }
+        .login-label { color: #64748b; font-size: 0.95rem; }
+        body.dark-mode .login-label { color: #94a3b8; }
+
+        .btn-edit-name {
+            background: #4a6d8c; color: white; border: none;
+            padding: 8px 18px; border-radius: 24px;
+            font-weight: 600; cursor: pointer; font-size: 0.9rem;
+        }
+        .btn-edit-name:hover { background: #2b4f6e; }
+
+        .tabs {
+            display: flex; gap: 12px; margin-bottom: 20px;
+            background: white; padding: 8px;
+            border-radius: 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+        }
+        body.dark-mode .tabs { background: #1e293b; }
+        .tab-btn {
+            flex: 1; background: transparent; border: none; padding: 14px 20px;
+            border-radius: 20px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; color: inherit; transition: 0.2s;
+        }
+        .tab-btn.active { background: #2b7a4b; color: white; }
+        .tab-btn:not(.active):hover { background: #edf2f7; }
+        body.dark-mode .tab-btn:not(.active):hover { background: #2d3a4e; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+        .stat-card {
+            background: white; border-radius: 24px; padding: 20px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05); text-align: center;
+            border: 1px solid transparent;
+        }
+        body.dark-mode .stat-card { background: #1e293b; border-color: #334155; }
+        .stat-icon { font-size: 2rem; margin-bottom: 8px; }
+        .stat-label {
+            font-size: 0.85rem; color: #64748b; margin-bottom: 8px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        body.dark-mode .stat-label { color: #94a3b8; }
+        .stat-value { font-size: 2rem; font-weight: 900; color: #1e2a3e; }
+        body.dark-mode .stat-value { color: #f8fafc; }
+        .stat-sub { font-size: 0.85rem; color: #64748b; margin-top: 6px; }
+        body.dark-mode .stat-sub { color: #cbd5e1; }
+
+        .friends-header { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .friends-header input {
+            flex: 1; min-width: 200px; padding: 12px 18px; border-radius: 40px;
+            border: 1px solid #cbd5e1; font-size: 1rem;
+        }
+        body.dark-mode .friends-header input { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+
+        .friends-list { display: flex; flex-direction: column; gap: 12px; }
+        .friend-card {
+            background: white; border-radius: 24px; padding: 14px 20px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+            display: flex; align-items: center; gap: 16px;
+        }
+        body.dark-mode .friend-card { background: #1e293b; }
+        .friend-avatar {
+            width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
+            background: #f8fafc; flex-shrink: 0;
+        }
+        body.dark-mode .friend-avatar { background: #2d3a4e; }
+        .friend-info { flex: 1; min-width: 0; }
+        .friend-name { font-weight: 700; font-size: 1.05rem; }
+        .friend-login { color: #64748b; font-size: 0.85rem; }
+        body.dark-mode .friend-login { color: #94a3b8; }
+        .btn-remove-friend {
+            background: #e53e3e; color: white; border: none;
+            padding: 8px 16px; border-radius: 30px;
+            font-weight: 600; cursor: pointer; font-size: 0.85rem;
+        }
+        .btn-remove-friend:hover { background: #c53030; }
+
+        .empty-state {
+            text-align: center; padding: 40px 20px; color: #64748b;
+            background: white; border-radius: 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+        }
+        body.dark-mode .empty-state { background: #1e293b; color: #94a3b8; }
+
+        @media (max-width: 600px) {
+            .profile-card { flex-direction: column; text-align: center; padding: 24px 16px; }
+            .profile-meta { justify-content: center; }
+            .avatar { width: 120px; height: 120px; }
+            .profile-info h1 { font-size: 1.5rem; }
+            .tab-btn { padding: 12px 12px; font-size: 0.9rem; }
+            .stat-value { font-size: 1.6rem; }
+            .friend-card { flex-wrap: wrap; justify-content: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <div class="logo"><img id="logoImage" src="logo-light.png" alt="Логотип"></div>
+        <div class="header-buttons">
+            <button class="btn-back" id="backBtn">← К коллекции</button>
+            <div class="user-status" id="userStatus">Гость</div>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </div>
+    </div>
+
+    <div class="profile-card">
+        <div class="avatar-wrapper">
+            <img id="avatarImg" class="avatar" src="logo-light.png" alt="Аватар">
+            <label class="avatar-edit" for="avatarUpload" title="Загрузить аватар">✏️</label>
+            <input type="file" id="avatarUpload" accept="image/*" style="display:none">
+        </div>
+        <div class="profile-info">
+            <h1 id="displayName">Загрузка...</h1>
+            <div class="profile-meta">
+                <span class="role-badge" id="roleBadge">Пользователь</span>
+                <span class="login-label" id="loginLabel"></span>
+            </div>
+            <button class="btn-edit-name" id="editNameBtn">Изменить имя</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="stats">📊 Статистика</button>
+        <button class="tab-btn" data-tab="friends">👥 Друзья</button>
+    </div>
+
+    <div id="statsTab" class="tab-content active">
+        <div class="stats-grid" id="statsGrid">
+            <div class="empty-state">Загрузка статистики...</div>
+        </div>
+    </div>
+
+    <div id="friendsTab" class="tab-content">
+        <div class="friends-header">
+            <input type="text" id="friendLoginInput" placeholder="Введите логин друга...">
+            <button id="addFriendBtn" class="btn-primary">Добавить</button>
+        </div>
+        <div id="friendsList" class="friends-list"></div>
+    </div>
+</div>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyDQGjVUA8w66eGudNSK0s6PMOSjEYQbpWY",
+    authDomain: "energy-1363c.firebaseapp.com",
+    projectId: "energy-1363c",
+    storageBucket: "energy-1363c.firebasestorage.app",
+    messagingSenderId: "735189971999",
+    appId: "1:735189971999:web:bf662f3add5b5967ae912a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// SVG-заглушка
+const NO_AVATAR_URI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">' +
+    '<rect width="200" height="200" fill="#e2e8f0"/>' +
+    '<circle cx="100" cy="80" r="35" fill="#94a3b8"/>' +
+    '<ellipse cx="100" cy="170" rx="60" ry="50" fill="#94a3b8"/></svg>'
+);
+
+const saved = localStorage.getItem('energyUser');
+const currentUser = saved ? JSON.parse(saved) : null;
+
+if (!currentUser) {
+    window.location.replace('index.html');
+    throw new Error('Redirecting to index.html');
+}
+
+let userDocRef = null;
+let userProfile = {};
+
+// ===== Тема =====
+const themeToggle = document.getElementById('themeToggle');
+function applyTheme(dark) {
+    document.body.classList.toggle('dark-mode', dark);
+    themeToggle.textContent = dark ? '☀️' : '🌙';
+    const logo = document.getElementById('logoImage');
+    if (logo) logo.src = dark ? 'logo-dark.png' : 'logo-light.png';
+}
+applyTheme(localStorage.getItem('energyTheme') === 'dark');
+themeToggle.onclick = () => {
+    const isDark = !document.body.classList.contains('dark-mode');
+    applyTheme(isDark);
+    localStorage.setItem('energyTheme', isDark ? 'dark' : 'light');
+};
+
+document.getElementById('backBtn').onclick = () => window.location.href = 'index.html';
+
+// ===== Хелперы =====
+function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m]);
+}
+function getAvatarUri(name, login) {
+    return `data:image/svg+xml;charset=utf-8,` + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">' +
+        '<rect width="200" height="200" fill="#7c3aed"/>' +
+        `<text x="100" y="130" font-family="Arial,sans-serif" font-size="90" font-weight="bold" fill="#fff" text-anchor="middle">${(name || login || '?')[0].toUpperCase()}</text></svg>`
+    );
+}
+function resizeImageToSquare(file, targetSize = 400, quality = 0.85) {
+    return new Promise((resolve, reject) => {
+        if (!file || !file.type.match('image.*')) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = canvas.height = targetSize;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, targetSize, targetSize);
+                const ratio = img.width / img.height;
+                let dw, dh, dx, dy;
+                if (ratio > 1) { dw = targetSize; dh = targetSize / ratio; dx = 0; dy = (targetSize - dh) / 2; }
+                else { dh = targetSize; dw = targetSize * ratio; dx = (targetSize - dw) / 2; dy = 0; }
+                ctx.drawImage(img, dx, dy, dw, dh);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// ===== Загрузка профиля =====
+async function loadProfile() {
+    try {
+        const snap = await db.collection('users').where('login', '==', currentUser.login).get();
+        if (snap.empty) {
+            document.getElementById('displayName').textContent = 'Пользователь не найден';
+            return;
+        }
+        userDocRef = snap.docs[0].ref;
+        userProfile = snap.docs[0].data();
+        renderProfile();
+        loadStats();
+        loadFriends();
+    } catch (e) {
+        console.error(e);
+        document.getElementById('displayName').textContent = 'Ошибка загрузки';
+    }
+}
+
+function renderProfile() {
+    const login = userProfile.login || currentUser.login;
+    const name = userProfile.displayName || login;
+    const isAdmin = userProfile.role === 'admin';
+
+    document.getElementById('displayName').textContent = name;
+    document.getElementById('loginLabel').textContent = '@' + login;
+
+    const roleBadge = document.getElementById('roleBadge');
+    roleBadge.textContent = isAdmin ? '👑 Админ' : '👤 Пользователь';
+    roleBadge.classList.toggle('admin', isAdmin);
+    document.getElementById('userStatus').textContent = `${login} (${isAdmin ? 'Админ' : 'Пользователь'})`;
+
+    document.getElementById('avatarImg').src = userProfile.avatar || getAvatarUri(name, login);
+}
+
+document.getElementById('avatarUpload').onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+        const base64 = await resizeImageToSquare(file, 400, 0.85);
+        if (!base64) return;
+        await userDocRef.update({ avatar: base64 });
+        userProfile.avatar = base64;
+        document.getElementById('avatarImg').src = base64;
+    } catch (err) {
+        alert('Ошибка загрузки аватара: ' + err.message);
+    }
+};
+
+document.getElementById('editNameBtn').onclick = async () => {
+    const current = userProfile.displayName || userProfile.login;
+    const name = prompt('Введите новое имя:', current);
+    if (!name || !name.trim()) return;
+    try {
+        await userDocRef.update({ displayName: name.trim() });
+        userProfile.displayName = name.trim();
+        renderProfile();
+    } catch (e) {
+        alert('Не удалось сохранить имя');
+    }
+};
+
+// ===== Вкладки =====
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
+    };
+});
+
+// ===== Статистика =====
+async function loadStats() {
+    const login = userProfile.login || currentUser.login;
+    try {
+        const reviewsSnap = await db.collection('reviews').where('userName', '==', login).get();
+        const reviewCount = reviewsSnap.size;
+        let sumGiven = 0;
+        reviewsSnap.forEach(d => sumGiven += Number(d.data().rating) || 0);
+        const avgGiven = reviewCount ? (sumGiven / reviewCount).toFixed(1) : '—';
+
+        const suggSnap = await db.collection('suggestions').where('userName', '==', login).get();
+        const suggestionCount = suggSnap.size;
+        let totalLikes = 0;
+        suggSnap.forEach(d => totalLikes += (d.data().likes || []).length);
+
+        let favCount = 0;
+        try {
+            const raw = localStorage.getItem('energyFavorites_' + login);
+            const parsed = raw ? JSON.parse(raw) : [];
+            favCount = Array.isArray(parsed) ? parsed.length : 0;
+        } catch {}
+
+        const friendsCount = (userProfile.friends || []).length;
+
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-label">Отзывов</div>
+                <div class="stat-value">${reviewCount}</div>
+                <div class="stat-sub">Средняя оценка: ${avgGiven}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💡</div>
+                <div class="stat-label">Предложений</div>
+                <div class="stat-value">${suggestionCount}</div>
+                <div class="stat-sub">Лайков получено: ${totalLikes}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">❤️</div>
+                <div class="stat-label">В избранном</div>
+                <div class="stat-value">${favCount}</div>
+                <div class="stat-sub">Энергетиков сохранено</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">Друзей</div>
+                <div class="stat-value">${friendsCount}</div>
+                <div class="stat-sub">В вашем списке</div>
+            </div>
+        `;
+    } catch (e) {
+        console.error(e);
+        document.getElementById('statsGrid').innerHTML = '<div class="empty-state">Не удалось загрузить статистику</div>';
+    }
+}
+
+// ===== Друзья =====
+async function loadFriends() {
+    const friends = userProfile.friends || [];
+    const container = document.getElementById('friendsList');
+    if (!friends.length) {
+        container.innerHTML = '<div class="empty-state">У вас пока нет друзей.<br>Добавьте первого друга по логину выше!</div>';
+        return;
+    }
+    try {
+        const results = await Promise.all(friends.map(login =>
+            db.collection('users').where('login', '==', login).get()
+                .then(s => s.empty ? { login, missing: true } : ({ id: s.docs[0].id, ...s.docs[0].data() }))
+        ));
+        container.innerHTML = results.map(f => {
+            if (f.missing) {
+                return `<div class="friend-card">
+                    <div class="friend-avatar" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">?</div>
+                    <div class="friend-info">
+                        <div class="friend-name">${escapeHtml(f.login)}</div>
+                        <div class="friend-login">Пользователь не найден</div>
+                    </div>
+                    <button class="btn-remove-friend" data-login="${escapeHtml(f.login)}">Удалить</button>
+                </div>`;
+            }
+            const name = f.displayName || f.login;
+            const avatar = f.avatar || getAvatarUri(name, f.login);
+            return `<div class="friend-card">
+                <img class="friend-avatar" src="${escapeHtml(avatar)}" alt="">
+                <div class="friend-info">
+                    <div class="friend-name">${escapeHtml(name)}</div>
+                    <div class="friend-login">@${escapeHtml(f.login)}</div>
+                </div>
+                <button class="btn-remove-friend" data-login="${escapeHtml(f.login)}">Удалить</button>
+            </div>`;
+        }).join('');
+
+        container.querySelectorAll('.btn-remove-friend').forEach(btn => {
+            btn.onclick = async () => {
+                const login = btn.dataset.login;
+                if (!confirm(`Удалить ${login} из друзей?`)) return;
+                const newFriends = (userProfile.friends || []).filter(l => l !== login);
+                try {
+                    await userDocRef.update({ friends: newFriends });
+                    userProfile.friends = newFriends;
+                    loadFriends();
+                    loadStats();
+                } catch (e) { alert('Не удалось удалить'); }
+            };
+        });
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<div class="empty-state">Ошибка загрузки друзей</div>';
+    }
+}
+
+document.getElementById('addFriendBtn').onclick = async () => {
+    const input = document.getElementById('friendLoginInput');
+    const login = input.value.trim();
+    if (!login) return;
+    if (login === (userProfile.login || currentUser.login)) return alert('Нельзя добавить самого себя');
+    if ((userProfile.friends || []).includes(login)) return alert('Этот пользователь уже в друзьях');
+
+    try {
+        const snap = await db.collection('users').where('login', '==', login).get();
+        if (snap.empty) return alert('Пользователь с таким логином не найден');
+        const newFriends = [...(userProfile.friends || []), login];
+        await userDocRef.update({ friends: newFriends });
+        userProfile.friends = newFriends;
+        input.value = '';
+        loadFriends();
+        loadStats();
+    } catch (e) {
+        alert('Не удалось добавить друга');
+    }
+};
+
+// ===== Старт =====
+loadProfile();
+</script>
+</body>
+</html>
