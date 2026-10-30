@@ -909,7 +909,16 @@ document.querySelectorAll('.modal-close').forEach(btn => {
     };
 });
 window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); };
+// Выход из аккаунта
+document.getElementById('logoutBtn').onclick = () => {
+    if (confirm('Выйти из аккаунта?')) {
+        localStorage.removeItem('energyUser');
+        window.location.href = 'index.html';
+    }
+};
 
+// ===== Старт =====
+init();
 // ===== Старт =====
 init();
 </script>
