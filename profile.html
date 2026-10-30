@@ -99,7 +99,20 @@
         body.dark-mode .stat-value { color: #f8fafc; }
         .stat-sub { font-size: 0.85rem; color: #64748b; margin-top: 6px; }
         body.dark-mode .stat-sub { color: #cbd5e1; }
-
+        .btn-logout { 
+            background: #6c757d; 
+            color: white; 
+            border: none; 
+            padding: 0 20px; 
+            height: 52px; 
+            border-radius: 30px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+        .btn-logout:hover { background: #5a6268; transform: scale(0.96); }
+        body.dark-mode .btn-logout { background: #475569; }
         /* Расширенная статистика */
         .extended-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px; }
         .ext-stat-item { 
