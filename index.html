@@ -884,8 +884,8 @@
         newDrinks.sort(sortFn); oldDrinks.sort(sortFn);
         return [...newDrinks, ...oldDrinks];
     }
-    function applyFiltersAndRender() {
-        loadFavorites();
+    async function applyFiltersAndRender() {
+        await loadFavorites(); // Ждем загрузки избранного из базы
         const filtered = filterDrinks(energyDrinks);
         const sorted = sortDrinks(filtered);
         renderCards(sorted);
@@ -1215,8 +1215,10 @@
     if (saved) currentUser = JSON.parse(saved);
     else showRegisterModal();
 
-    loadFavorites();
-    updateUIByRole();
+    (async () => {
+        await loadFavorites();
+        updateUIByRole();
+    })();
     renderTagCheckboxes(tagsCheckboxesDiv, []);
     renderTagCheckboxes(editTagsCheckboxesDiv, []);
     renderFilterTags();
