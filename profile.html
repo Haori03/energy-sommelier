@@ -287,7 +287,7 @@
     <!-- Контент: Друзья -->
     <div id="friendsTab" class="tab-content">
         <div class="friends-header" id="addFriendSection">
-            <input type="text" id="friendLoginInput" placeholder="Введите логин друга для заявки...">
+            <input type="text" id="friendLoginInput" placeholder="Введите логин или ник друга">
             <button id="addFriendBtn" class="btn-primary">Отправить заявку</button>
         </div>
         
@@ -509,11 +509,28 @@ document.getElementById('avatarUpload').onchange = async (e) => {
 };
 
 document.getElementById('editNameBtn').onclick = async () => {
-    const name = prompt('Введите новое имя:', userProfile.displayName || userProfile.login);
-    if (!name || !name.trim()) return;
-    await userDocRef.update({ displayName: name.trim() });
-    userProfile.displayName = name.trim();
-    renderProfile();
+    const currentName = userProfile.displayName || userProfile.login;
+    const newName = prompt('Введите новое имя:', currentName);
+    
+    if (!newName || !newName.trim()) return;
+    if (newName.trim() === currentName) return; // Если не изменилось — выходим
+    
+    const trimmedName = newName.trim();
+
+    try {
+        // Проверяем, не занят ли никнейм кем-то другим
+        const snap = await db.collection('users').where('displayName', '==', trimmedName).get();
+        if (!snap.empty) {
+            return alert('Этот никнейм уже занят другим пользователем!');
+        }
+
+        await userDocRef.update({ displayName: trimmedName });
+        userProfile.displayName = trimmedName;
+        renderProfile();
+        alert('Имя успешно изменено!');
+    } catch(e) {
+        alert('Ошибка сохранения');
+    }
 };
 
 // ===== Вкладки =====
@@ -854,31 +871,53 @@ async function renderUserCards(logins, type) {
 
 document.getElementById('addFriendBtn').onclick = async () => {
     const input = document.getElementById('friendLoginInput');
-    const targetLoginInput = input.value.trim();
-    if (!targetLoginInput || targetLoginInput === userProfile.login) return;
+    const searchQuery = input.value.trim();
+    if (!searchQuery) return;
 
-    const snap = await db.collection('users').where('login', '==', targetLoginInput).get();
-    if (snap.empty) return alert('Пользователь не найден');
+    try {
+        // Ищем по логину
+        const snapByLogin = await db.collection('users').where('login', '==', searchQuery).get();
+        let targetDoc = null;
 
-    const targetDoc = snap.docs[0];
-    
-    if ((userProfile.friends || []).includes(targetLoginInput)) return alert('Уже в друзьях');
-    if ((userProfile.sentRequests || []).includes(targetLoginInput)) return alert('Заявка уже отправлена');
+        if (!snapByLogin.empty) {
+            targetDoc = snapByLogin.docs[0];
+        } else {
+            // Если по логину не нашли, ищем по никнейму
+            const snapByNick = await db.collection('users').where('displayName', '==', searchQuery).get();
+            if (!snapByNick.empty) {
+                targetDoc = snapByNick.docs[0];
+            }
+        }
 
-    if ((userProfile.incomingRequests || []).includes(targetLoginInput)) {
-        await acceptFriend(targetLoginInput);
-        return;
+        if (!targetDoc) return alert('Пользователь с таким логином или ником не найден');
+        
+        const targetData = targetDoc.data();
+        const targetLogin = targetData.login;
+
+        // Дальше стандартные проверки
+        if (targetLogin === userProfile.login) return alert('Нельзя добавить самого себя');
+        if ((userProfile.friends || []).includes(targetLogin)) return alert('Этот пользователь уже у вас в друзьях');
+        if ((userProfile.sentRequests || []).includes(targetLogin)) return alert('Заявка этому пользователю уже отправлена');
+
+        // Если он нам уже прислал заявку — сразу принимаем в друзья
+        if ((userProfile.incomingRequests || []).includes(targetLogin)) {
+            await acceptFriend(targetLogin);
+            return;
+        }
+
+        // Отправляем заявку
+        await userDocRef.update({ sentRequests: firebase.firestore.FieldValue.arrayUnion(targetLogin) });
+        await targetDoc.ref.update({ incomingRequests: firebase.firestore.FieldValue.arrayUnion(userProfile.login) });
+
+        input.value = '';
+        userProfile.sentRequests = [...(userProfile.sentRequests||[]), targetLogin];
+        loadFriendsAndRequests();
+        alert('Заявка отправлена!');
+    } catch (e) {
+        console.error(e);
+        alert('Ошибка при отправке заявки');
     }
-
-    await userDocRef.update({ sentRequests: firebase.firestore.FieldValue.arrayUnion(targetLoginInput) });
-    await targetDoc.ref.update({ incomingRequests: firebase.firestore.FieldValue.arrayUnion(userProfile.login) });
-
-    input.value = '';
-    userProfile.sentRequests = [...(userProfile.sentRequests||[]), targetLoginInput];
-    loadFriendsAndRequests();
-    alert('Заявка отправлена!');
 };
-
 window.handleRequest = async (senderLogin, action) => {
     if (action === 'accept') {
         await acceptFriend(senderLogin);
