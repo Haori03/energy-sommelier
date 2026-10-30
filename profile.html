@@ -8,132 +8,47 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
+        /* Специфичные стили для профиля */
         .app-container { max-width: 1000px; margin: 0 auto; }
-
-        .btn-back {
-            background: #4a6d8c; color: white; border: none;
-            padding: 0 20px; height: 52px; border-radius: 30px;
-            font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
-        }
+        .btn-back { background: #4a6d8c; color: white; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-back:hover { transform: scale(0.96); background: #2b4f6e; }
-        body.dark-mode .btn-back { background: #4a6d8c; }
-
-        .profile-card {
-            background: white; border-radius: 32px; padding: 32px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-            display: flex; gap: 28px; align-items: center;
-            margin-bottom: 24px; flex-wrap: wrap;
-        }
-        body.dark-mode .profile-card { background: #1e293b; }
-
+        .profile-card { background: var(--card-bg); border-radius: 32px; padding: 32px; box-shadow: var(--shadow); display: flex; gap: 28px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; position: relative; }
         .avatar-wrapper { position: relative; flex-shrink: 0; }
-        .avatar {
-            width: 140px; height: 140px; border-radius: 50%; object-fit: cover;
-            background: #f8fafc; border: 4px solid #e2e8f0;
-        }
-        body.dark-mode .avatar { background: #2d3a4e; border-color: #334155; }
-        .avatar-edit {
-            position: absolute; bottom: 4px; right: 4px;
-            background: #2b7a4b; color: white;
-            width: 38px; height: 38px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s;
-        }
+        .avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; background: var(--bg); border: 4px solid var(--border); }
+        .avatar-edit { position: absolute; bottom: 4px; right: 4px; background: var(--primary); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; }
         .avatar-edit:hover { transform: scale(1.1); }
-
         .profile-info { flex: 1; min-width: 200px; }
         .profile-info h1 { font-size: 2rem; margin-bottom: 8px; word-break: break-word; }
-        .profile-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
-        .role-badge {
-            background: #eef2ff; padding: 6px 14px; border-radius: 30px;
-            font-size: 0.85rem; font-weight: 600;
-        }
-        body.dark-mode .role-badge { background: #2d3a4e; color: #e2e8f0; }
+        .profile-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+        .role-badge { background: var(--tag-bg); padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; }
         .role-badge.admin { background: #fef3c7; color: #92400e; }
         body.dark-mode .role-badge.admin { background: #422006; color: #fbbf24; }
-        .login-label { color: #64748b; font-size: 0.95rem; }
-        body.dark-mode .login-label { color: #94a3b8; }
-
-        .btn-edit-name {
-            background: #4a6d8c; color: white; border: none;
-            padding: 8px 18px; border-radius: 24px;
-            font-weight: 600; cursor: pointer; font-size: 0.9rem;
-        }
+        .login-label { color: var(--text-muted); font-size: 0.95rem; }
+        .btn-edit-name { background: #4a6d8c; color: white; border: none; padding: 8px 18px; border-radius: 24px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
         .btn-edit-name:hover { background: #2b4f6e; }
-
-        .tabs {
-            display: flex; gap: 12px; margin-bottom: 20px;
-            background: white; padding: 8px;
-            border-radius: 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-        }
-        body.dark-mode .tabs { background: #1e293b; }
-        .tab-btn {
-            flex: 1; background: transparent; border: none; padding: 14px 20px;
-            border-radius: 20px; font-size: 1rem; font-weight: 600;
-            cursor: pointer; color: inherit; transition: 0.2s;
-        }
-        .tab-btn.active { background: #2b7a4b; color: white; }
-        .tab-btn:not(.active):hover { background: #edf2f7; }
-        body.dark-mode .tab-btn:not(.active):hover { background: #2d3a4e; }
-
+        .tabs { display: flex; gap: 12px; margin-bottom: 20px; background: var(--card-bg); padding: 8px; border-radius: 24px; box-shadow: var(--shadow); }
+        .tab-btn { flex: 1; background: transparent; border: none; padding: 14px 20px; border-radius: 20px; font-size: 1rem; font-weight: 600; cursor: pointer; color: var(--text); transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-btn:not(.active):hover { background: var(--tag-bg); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-        .stat-card {
-            background: white; border-radius: 24px; padding: 20px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.05); text-align: center;
-            border: 1px solid transparent;
-        }
-        body.dark-mode .stat-card { background: #1e293b; border-color: #334155; }
+        .stat-card { background: var(--card-bg); border-radius: 24px; padding: 20px; box-shadow: var(--shadow); text-align: center; border: 1px solid var(--border); }
         .stat-icon { font-size: 2rem; margin-bottom: 8px; }
-        .stat-label {
-            font-size: 0.85rem; color: #64748b; margin-bottom: 8px;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        body.dark-mode .stat-label { color: #94a3b8; }
-        .stat-value { font-size: 2rem; font-weight: 900; color: #1e2a3e; }
-        body.dark-mode .stat-value { color: #f8fafc; }
-        .stat-sub { font-size: 0.85rem; color: #64748b; margin-top: 6px; }
-        body.dark-mode .stat-sub { color: #cbd5e1; }
-
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 2rem; font-weight: 900; color: var(--text); }
+        .stat-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
         .friends-header { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .friends-header input {
-            flex: 1; min-width: 200px; padding: 12px 18px; border-radius: 40px;
-            border: 1px solid #cbd5e1; font-size: 1rem;
-        }
-        body.dark-mode .friends-header input { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-
+        .friends-header input { flex: 1; min-width: 200px; padding: 12px 18px; border-radius: 40px; border: 1px solid var(--input-border); font-size: 1rem; background: var(--input-bg); color: var(--text); }
         .friends-list { display: flex; flex-direction: column; gap: 12px; }
-        .friend-card {
-            background: white; border-radius: 24px; padding: 14px 20px;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-            display: flex; align-items: center; gap: 16px;
-        }
-        body.dark-mode .friend-card { background: #1e293b; }
-        .friend-avatar {
-            width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
-            background: #f8fafc; flex-shrink: 0;
-        }
-        body.dark-mode .friend-avatar { background: #2d3a4e; }
+        .friend-card { background: var(--card-bg); border-radius: 24px; padding: 14px 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; border: 1px solid var(--border); }
+        .friend-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: var(--bg); flex-shrink: 0; }
         .friend-info { flex: 1; min-width: 0; }
         .friend-name { font-weight: 700; font-size: 1.05rem; }
-        .friend-login { color: #64748b; font-size: 0.85rem; }
-        body.dark-mode .friend-login { color: #94a3b8; }
-        .btn-remove-friend {
-            background: #e53e3e; color: white; border: none;
-            padding: 8px 16px; border-radius: 30px;
-            font-weight: 600; cursor: pointer; font-size: 0.85rem;
-        }
+        .friend-login { color: var(--text-muted); font-size: 0.85rem; }
+        .btn-remove-friend { background: #e53e3e; color: white; border: none; padding: 8px 16px; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
         .btn-remove-friend:hover { background: #c53030; }
-
-        .empty-state {
-            text-align: center; padding: 40px 20px; color: #64748b;
-            background: white; border-radius: 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.05);
-        }
-        body.dark-mode .empty-state { background: #1e293b; color: #94a3b8; }
-
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); background: var(--card-bg); border-radius: 24px; box-shadow: var(--shadow); }
         @media (max-width: 600px) {
             .profile-card { flex-direction: column; text-align: center; padding: 24px 16px; }
             .profile-meta { justify-content: center; }
@@ -142,6 +57,8 @@
             .tab-btn { padding: 12px 12px; font-size: 0.9rem; }
             .stat-value { font-size: 1.6rem; }
             .friend-card { flex-wrap: wrap; justify-content: center; text-align: center; }
+            .calendar-grid { gap: 4px; }
+            .cal-day { font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -156,6 +73,7 @@
         </div>
     </div>
 
+    <!-- Профиль -->
     <div class="profile-card">
         <div class="avatar-wrapper">
             <img id="avatarImg" class="avatar" src="logo-light.png" alt="Аватар">
@@ -169,26 +87,119 @@
                 <span class="login-label" id="loginLabel"></span>
             </div>
             <button class="btn-edit-name" id="editNameBtn">Изменить имя</button>
+            
+            <div class="action-buttons-profile" id="drinkActionBtns">
+                <button class="btn-drink" id="btnIDrank">🥤 Я выпил</button>
+                <button class="btn-delete-drink" id="btnDeleteDrank">🗑️ Удалить выпитое</button>
+            </div>
         </div>
     </div>
 
+    <!-- Вкладки -->
     <div class="tabs">
         <button class="tab-btn active" data-tab="stats">📊 Статистика</button>
         <button class="tab-btn" data-tab="friends">👥 Друзья</button>
     </div>
 
+    <!-- Контент: Статистика -->
     <div id="statsTab" class="tab-content active">
-        <div class="stats-grid" id="statsGrid">
+        <!-- Основные карточки -->
+        <div class="stats-grid" id="mainStatsGrid">
             <div class="empty-state">Загрузка статистики...</div>
+        </div>
+
+        <!-- Расширенная статистика -->
+        <div class="extended-stats" id="extendedStatsGrid"></div>
+        <div style="text-align: center;" id="editStatsBtnContainer"></div>
+
+        <!-- Календарь -->
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="cal-nav-btn" id="prevMonth">←</button>
+                <div class="calendar-title" id="calendarTitle">Месяц</div>
+                <button class="cal-nav-btn" id="nextMonth">→</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
         </div>
     </div>
 
+    <!-- Контент: Друзья -->
     <div id="friendsTab" class="tab-content">
         <div class="friends-header">
-            <input type="text" id="friendLoginInput" placeholder="Введите логин друга...">
-            <button id="addFriendBtn" class="btn-primary">Добавить</button>
+            <input type="text" id="friendLoginInput" placeholder="Введите логин друга для заявки...">
+            <button id="addFriendBtn" class="btn-primary">Отправить заявку</button>
         </div>
+        
+        <div id="incomingRequestsSection"></div>
+        <div id="sentRequestsSection"></div>
+        
+        <div class="friend-section-title">Мои друзья</div>
         <div id="friendsList" class="friends-list"></div>
+    </div>
+</div>
+
+<!-- Модалка: Я выпил -->
+<div id="drinkLogModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" id="closeDrinkLogModal">&times;</button>
+        <h2>Что выпил?</h2>
+        <form id="drinkLogForm">
+            <div class="form-group">
+                <label>Название энергетика</label>
+                <input type="text" id="logDrinkName" list="drinkSuggestions" placeholder="Начните вводить..." required>
+                <datalist id="drinkSuggestions"></datalist>
+            </div>
+            <div class="form-group">
+                <label>Количество (банок)</label>
+                <input type="number" id="logDrinkQty" min="1" value="1" required>
+            </div>
+            <div class="form-group">
+                <label>Дата</label>
+                <input type="date" id="logDrinkDate" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%">Добавить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модалка: Удалить выпитое -->
+<div id="deleteDrankModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" id="closeDeleteDrankModal">&times;</button>
+        <h2>Выпитое</h2>
+        <div id="drinkLogsList" style="max-height: 50vh; overflow-y: auto; margin-top: 15px;"></div>
+    </div>
+</div>
+
+<!-- Модалка: Редактировать расширенную статистику -->
+<div id="editStatsModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close" id="closeEditStatsModal">&times;</button>
+        <h2>Редактировать статы</h2>
+        <form id="editStatsForm">
+            <div class="form-group"><label>Любимый энергетик</label><input type="text" id="statFavDrink" list="drinkSuggestions2"><datalist id="drinkSuggestions2"></datalist></div>
+            <div class="form-group"><label>Нелюбимый энергетик</label><input type="text" id="statLeastDrink"></div>
+            <div class="form-group"><label>О себе / Другое</label><textarea id="statCustomNote" rows="3"></textarea></div>
+            <button type="submit" class="btn-primary" style="width:100%">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модалка: Мои отзывы -->
+<div id="myReviewsModal" class="modal-overlay">
+    <div class="modal-content profile-modal">
+        <button class="modal-close" id="closeMyReviewsModal">&times;</button>
+        <h2>Мои отзывы</h2>
+        <div id="myReviewsList" style="margin-top: 15px; max-height: 60vh; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<!-- Модалка: Избранное -->
+<div id="myFavsModal" class="modal-overlay">
+    <div class="modal-content profile-modal">
+        <button class="modal-close" id="closeMyFavsModal">&times;</button>
+        <h2>Избранное</h2>
+        <div id="myFavsList" class="fav-list-grid" style="margin-top: 15px; max-height: 60vh; overflow-y: auto;"></div>
     </div>
 </div>
 
@@ -204,24 +215,15 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// SVG-заглушка
-const NO_AVATAR_URI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">' +
-    '<rect width="200" height="200" fill="#e2e8f0"/>' +
-    '<circle cx="100" cy="80" r="35" fill="#94a3b8"/>' +
-    '<ellipse cx="100" cy="170" rx="60" ry="50" fill="#94a3b8"/></svg>'
-);
-
 const saved = localStorage.getItem('energyUser');
 const currentUser = saved ? JSON.parse(saved) : null;
-
-if (!currentUser) {
-    window.location.replace('index.html');
-    throw new Error('Redirecting to index.html');
-}
+if (!currentUser) { window.location.replace('index.html'); }
 
 let userDocRef = null;
 let userProfile = {};
+let allDrinks = []; // Кэш всех энергетиков для автокомплита
+let allLogs = []; // Логи выпитого
+let currentCalDate = new Date();
 
 // ===== Тема =====
 const themeToggle = document.getElementById('themeToggle');
@@ -237,107 +239,69 @@ themeToggle.onclick = () => {
     applyTheme(isDark);
     localStorage.setItem('energyTheme', isDark ? 'dark' : 'light');
 };
-
 document.getElementById('backBtn').onclick = () => window.location.href = 'index.html';
 
 // ===== Хелперы =====
-function escapeHtml(str) {
-    if (str == null) return '';
-    return String(str).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m]);
-}
-function getAvatarUri(name, login) {
-    return `data:image/svg+xml;charset=utf-8,` + encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">' +
-        '<rect width="200" height="200" fill="#7c3aed"/>' +
-        `<text x="100" y="130" font-family="Arial,sans-serif" font-size="90" font-weight="bold" fill="#fff" text-anchor="middle">${(name || login || '?')[0].toUpperCase()}</text></svg>`
-    );
-}
-function resizeImageToSquare(file, targetSize = 400, quality = 0.85) {
-    return new Promise((resolve, reject) => {
-        if (!file || !file.type.match('image.*')) return resolve(null);
-        const reader = new FileReader();
-        reader.onload = e => {
-            const img = new Image();
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = canvas.height = targetSize;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, targetSize, targetSize);
-                const ratio = img.width / img.height;
-                let dw, dh, dx, dy;
-                if (ratio > 1) { dw = targetSize; dh = targetSize / ratio; dx = 0; dy = (targetSize - dh) / 2; }
-                else { dh = targetSize; dw = targetSize * ratio; dx = (targetSize - dw) / 2; dy = 0; }
-                ctx.drawImage(img, dx, dy, dw, dh);
-                resolve(canvas.toDataURL('image/jpeg', quality));
-            };
-            img.onerror = reject;
-            img.src = e.target.result;
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
+function escapeHtml(str) { return str ? String(str).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m]) : ''; }
+function getAvatarUri(name, login) { return `data:image/svg+xml;charset=utf-8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#7c3aed"/><text x="100" y="130" font-family="Arial,sans-serif" font-size="90" font-weight="bold" fill="#fff" text-anchor="middle">${(name || login || '?')[0].toUpperCase()}</text></svg>`); }
+function resizeImageToSquare(file, targetSize = 400, quality = 0.85) { return new Promise((resolve, reject) => { if (!file || !file.type.match('image.*')) return resolve(null); const reader = new FileReader(); reader.onload = e => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = canvas.height = targetSize; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, targetSize, targetSize); const ratio = img.width / img.height; let dw, dh, dx, dy; if (ratio > 1) { dw = targetSize; dh = targetSize / ratio; dx = 0; dy = (targetSize - dh) / 2; } else { dh = targetSize; dw = targetSize * ratio; dx = (targetSize - dw) / 2; dy = 0; } ctx.drawImage(img, dx, dy, dw, dh); resolve(canvas.toDataURL('image/jpeg', quality)); }; img.onerror = reject; img.src = e.target.result; }; reader.onerror = reject; reader.readAsDataURL(file); }); }
 
-// ===== Загрузка профиля =====
-async function loadProfile() {
-    try {
-        const snap = await db.collection('users').where('login', '==', currentUser.login).get();
-        if (snap.empty) {
-            document.getElementById('displayName').textContent = 'Пользователь не найден';
-            return;
-        }
+// ===== Загрузка данных =====
+async function init() {
+    // 1. Загружаем все энергетики для автокомплита
+    const drinksSnap = await db.collection('energydrinks').get();
+    allDrinks = drinksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const optionsHtml = allDrinks.map(d => `<option value="${escapeHtml(d.name)}">`).join('');
+    document.getElementById('drinkSuggestions').innerHTML = optionsHtml;
+    document.getElementById('drinkSuggestions2').innerHTML = optionsHtml;
+
+    // 2. Загружаем профиль
+    const snap = await db.collection('users').where('login', '==', currentUser.login).get();
+    if (!snap.empty) {
         userDocRef = snap.docs[0].ref;
         userProfile = snap.docs[0].data();
+        
+        // Если нет даты регистрации - ставим текущую
+        if (!userProfile.createdAt) {
+            await userDocRef.update({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            userProfile.createdAt = new Date(); // локально
+        }
+
         renderProfile();
-        loadStats();
-        loadFriends();
-    } catch (e) {
-        console.error(e);
-        document.getElementById('displayName').textContent = 'Ошибка загрузки';
+        await loadLogs(); // Загружаем выпитое и считаем стату
+        loadFriendsAndRequests();
+    } else {
+        document.getElementById('displayName').textContent = 'Ошибка профиля';
     }
 }
 
 function renderProfile() {
-    const login = userProfile.login || currentUser.login;
+    const login = userProfile.login;
     const name = userProfile.displayName || login;
     const isAdmin = userProfile.role === 'admin';
-
     document.getElementById('displayName').textContent = name;
     document.getElementById('loginLabel').textContent = '@' + login;
-
-    const roleBadge = document.getElementById('roleBadge');
-    roleBadge.textContent = isAdmin ? '👑 Админ' : '👤 Пользователь';
-    roleBadge.classList.toggle('admin', isAdmin);
-    document.getElementById('userStatus').textContent = `${login} (${isAdmin ? 'Админ' : 'Пользователь'})`;
-
+    document.getElementById('roleBadge').textContent = isAdmin ? '👑 Админ' : '👤 Пользователь';
+    document.getElementById('roleBadge').classList.toggle('admin', isAdmin);
+    document.getElementById('userStatus').textContent = `${login}`;
     document.getElementById('avatarImg').src = userProfile.avatar || getAvatarUri(name, login);
 }
 
 document.getElementById('avatarUpload').onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-        const base64 = await resizeImageToSquare(file, 400, 0.85);
-        if (!base64) return;
-        await userDocRef.update({ avatar: base64 });
-        userProfile.avatar = base64;
-        document.getElementById('avatarImg').src = base64;
-    } catch (err) {
-        alert('Ошибка загрузки аватара: ' + err.message);
-    }
+    const file = e.target.files[0]; if (!file) return;
+    const base64 = await resizeImageToSquare(file, 400, 0.85);
+    if (!base64) return;
+    await userDocRef.update({ avatar: base64 });
+    userProfile.avatar = base64;
+    document.getElementById('avatarImg').src = base64;
 };
 
 document.getElementById('editNameBtn').onclick = async () => {
-    const current = userProfile.displayName || userProfile.login;
-    const name = prompt('Введите новое имя:', current);
+    const name = prompt('Введите новое имя:', userProfile.displayName || userProfile.login);
     if (!name || !name.trim()) return;
-    try {
-        await userDocRef.update({ displayName: name.trim() });
-        userProfile.displayName = name.trim();
-        renderProfile();
-    } catch (e) {
-        alert('Не удалось сохранить имя');
-    }
+    await userDocRef.update({ displayName: name.trim() });
+    userProfile.displayName = name.trim();
+    renderProfile();
 };
 
 // ===== Вкладки =====
@@ -350,140 +314,394 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     };
 });
 
-// ===== Статистика =====
-async function loadStats() {
-    const login = userProfile.login || currentUser.login;
-    try {
-        const reviewsSnap = await db.collection('reviews').where('userName', '==', login).get();
-        const reviewCount = reviewsSnap.size;
-        let sumGiven = 0;
-        reviewsSnap.forEach(d => sumGiven += Number(d.data().rating) || 0);
-        const avgGiven = reviewCount ? (sumGiven / reviewCount).toFixed(1) : '—';
+// ===== Выпитое (Логи) =====
+async function loadLogs() {
+    const snap = await db.collection('drink_logs').where('userLogin', '==', userProfile.login).get();
+    allLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    // Считаем общую стату
+    const totalDrank = allLogs.reduce((sum, log) => sum + (log.quantity || 0), 0);
+    
+    // Считаем самого частого
+    const counts = {};
+    allLogs.forEach(log => counts[log.drinkName] = (counts[log.drinkName] || 0) + log.quantity);
+    let maxDrink = '—', maxCount = 0;
+    for (const [drink, count] of Object.entries(counts)) {
+        if (count > maxCount) { maxDrink = drink; maxCount = count; }
+    }
 
-        const suggSnap = await db.collection('suggestions').where('userName', '==', login).get();
-        const suggestionCount = suggSnap.size;
-        let totalLikes = 0;
-        suggSnap.forEach(d => totalLikes += (d.data().likes || []).length);
+    // Обновляем расширенную статистику
+    renderExtendedStats(totalDrank, maxDrink, maxCount);
+    renderCalendar(); // Перерисовываем календарь
+}
 
-        let favCount = 0;
-        try {
-            const raw = localStorage.getItem('energyFavorites_' + login);
-            const parsed = raw ? JSON.parse(raw) : [];
-            favCount = Array.isArray(parsed) ? parsed.length : 0;
-        } catch {}
+function renderExtendedStats(totalDrank, maxDrink, maxCount) {
+    const regDate = userProfile.createdAt ? (userProfile.createdAt.toDate ? userProfile.createdAt.toDate() : new Date(userProfile.createdAt)) : new Date();
+    const stats = userProfile.stats || {};
 
-        const friendsCount = (userProfile.friends || []).length;
+    document.getElementById('extendedStatsGrid').innerHTML = `
+        <div class="ext-stat-item"><div class="ext-stat-label">Дата регистрации</div><div class="ext-stat-value">${regDate.toLocaleDateString('ru-RU')}</div></div>
+        <div class="ext-stat-item"><div class="ext-stat-label">Любимый</div><div class="ext-stat-value">${escapeHtml(stats.favoriteDrink) || '—'}</div></div>
+        <div class="ext-stat-item"><div class="ext-stat-label">Нелюбимый</div><div class="ext-stat-value">${escapeHtml(stats.leastFavoriteDrink) || '—'}</div></div>
+        <div class="ext-stat-item"><div class="ext-stat-label">Всего выпито</div><div class="ext-stat-value">${totalDrank} шт.</div></div>
+        <div class="ext-stat-item"><div class="ext-stat-label">Больше всего выпито</div><div class="ext-stat-value">${maxDrink !== '—' ? `${escapeHtml(maxDrink)} (${maxCount} шт.)` : '—'}</div></div>
+        <div class="ext-stat-item"><div class="ext-stat-label">Другое</div><div class="ext-stat-value">${escapeHtml(stats.customNote) || '—'}</div></div>
+    `;
+    
+    document.getElementById('editStatsBtnContainer').innerHTML = `<button class="btn-edit-stats" onclick="openEditStats()">✏️ Редактировать</button>`;
+    loadStatsCards(totalDrank); // Обновляем верхние карточки
+}
 
-        document.getElementById('statsGrid').innerHTML = `
-            <div class="stat-card">
-                <div class="stat-icon">⭐</div>
-                <div class="stat-label">Отзывов</div>
-                <div class="stat-value">${reviewCount}</div>
-                <div class="stat-sub">Средняя оценка: ${avgGiven}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">💡</div>
-                <div class="stat-label">Предложений</div>
-                <div class="stat-value">${suggestionCount}</div>
-                <div class="stat-sub">Лайков получено: ${totalLikes}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">❤️</div>
-                <div class="stat-label">В избранном</div>
-                <div class="stat-value">${favCount}</div>
-                <div class="stat-sub">Энергетиков сохранено</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-label">Друзей</div>
-                <div class="stat-value">${friendsCount}</div>
-                <div class="stat-sub">В вашем списке</div>
-            </div>
-        `;
-    } catch (e) {
-        console.error(e);
-        document.getElementById('statsGrid').innerHTML = '<div class="empty-state">Не удалось загрузить статистику</div>';
+window.openEditStats = () => {
+    const stats = userProfile.stats || {};
+    document.getElementById('statFavDrink').value = stats.favoriteDrink || '';
+    document.getElementById('statLeastDrink').value = stats.leastFavoriteDrink || '';
+    document.getElementById('statCustomNote').value = stats.customNote || '';
+    document.getElementById('editStatsModal').classList.add('active');
+};
+
+document.getElementById('editStatsForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const newStats = {
+        favoriteDrink: document.getElementById('statFavDrink').value.trim(),
+        leastFavoriteDrink: document.getElementById('statLeastDrink').value.trim(),
+        customNote: document.getElementById('statCustomNote').value.trim()
+    };
+    await userDocRef.update({ stats: newStats });
+    userProfile.stats = newStats;
+    document.getElementById('editStatsModal').classList.remove('active');
+    loadLogs(); // Пересчитает и обновит интерфейс
+};
+
+// ===== Календарь =====
+function renderCalendar() {
+    const year = currentCalDate.getFullYear();
+    const month = currentCalDate.getMonth();
+    const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1).getDay(); // 0 - Вс
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const startOffset = firstDay === 0 ? 6 : firstDay - 1; // Сдвиг для Пн-Вс
+
+    let html = `
+        <div class="cal-day-name">Пн</div><div class="cal-day-name">Вт</div><div class="cal-day-name">Ср</div>
+        <div class="cal-day-name">Чт</div><div class="cal-day-name">Пт</div><div class="cal-day-name">Сб</div><div class="cal-day-name">Вс</div>
+    `;
+
+    for (let i = 0; i < startOffset; i++) html += `<div class="cal-day empty"></div>`;
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        // Считаем банки за этот день
+        const dayLogs = allLogs.filter(l => {
+            const d = l.date ? (l.date.toDate ? l.date.toDate() : new Date(l.date)) : null;
+            return d && d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
+        });
+        const cans = dayLogs.reduce((sum, l) => sum + l.quantity, 0);
+        
+        let dots = '';
+        if (cans > 0) {
+            // Ограничим количество отображаемых точек до 10, чтобы не ломало верстку
+            const visualDots = Math.min(cans, 10);
+            dots = `<div class="dots-container">${'<div class="red-dot"></div>'.repeat(visualDots)}</div>`;
+        }
+
+        const isToday = new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year;
+
+        html += `<div class="cal-day ${cans > 0 ? 'has-drinks' : ''}" style="${isToday ? 'border: 2px solid #2b7a4b;' : ''}">
+            ${day} ${dots}
+        </div>`;
+    }
+    document.getElementById('calendarGrid').innerHTML = html;
+}
+
+document.getElementById('prevMonth').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); };
+document.getElementById('nextMonth').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); };
+
+// ===== Модалки выпитого =====
+document.getElementById('btnIDrank').onclick = () => {
+    document.getElementById('logDrinkDate').valueAsDate = new Date(); // Сегодня
+    document.getElementById('drinkLogModal').classList.add('active');
+};
+
+document.getElementById('drinkLogForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('logDrinkName').value.trim();
+    const qty = parseInt(document.getElementById('logDrinkQty').value);
+    const dateStr = document.getElementById('logDrinkDate').value;
+    
+    // Создаем timestamp из выбранной даты (полдень, чтобы не было проблем с часовыми поясами)
+    const dateObj = new Date(dateStr + 'T12:00:00');
+
+    await db.collection('drink_logs').add({
+        userLogin: userProfile.login,
+        drinkName: name,
+        quantity: qty,
+        date: firebase.firestore.Timestamp.fromDate(dateObj),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    document.getElementById('drinkLogModal').classList.remove('active');
+    document.getElementById('drinkLogForm').reset();
+    loadLogs(); // Обновляем все данные
+};
+
+document.getElementById('btnDeleteDrank').onclick = () => {
+    const list = document.getElementById('drinkLogsList');
+    if (!allLogs.length) { list.innerHTML = '<p>Нет записей.</p>'; }
+    else {
+        // Сортируем по дате (новые сверху)
+        const sorted = [...allLogs].sort((a, b) => {
+            const dA = a.date ? a.date.toDate() : new Date(0);
+            const dB = b.date ? b.date.toDate() : new Date(0);
+            return dB - dA;
+        });
+        list.innerHTML = sorted.map(log => {
+            const d = log.date ? log.date.toDate().toLocaleDateString('ru-RU') : '';
+            return `<div class="log-item">
+                <div><strong>${escapeHtml(log.drinkName)}</strong> (${log.quantity} шт.) <br><small>${d}</small></div>
+                <button class="btn-del-log" onclick="deleteLog('${log.id}')">×</button>
+            </div>`;
+        }).join('');
+    }
+    document.getElementById('deleteDrankModal').classList.add('active');
+};
+
+window.deleteLog = async (id) => {
+    if(!confirm('Удалить запись?')) return;
+    await db.collection('drink_logs').doc(id).delete();
+    document.getElementById('deleteDrankModal').classList.remove('active');
+    loadLogs();
+};
+
+// ===== Карточки статистики (верхние) =====
+async function loadStatsCards(totalDrank) {
+    const login = userProfile.login;
+    const reviewsSnap = await db.collection('reviews').where('userName', '==', login).get();
+    const reviewCount = reviewsSnap.size;
+    const favCount = (userProfile.favorites || []).length;
+    const friendsCount = (userProfile.friends || []).length;
+    const suggSnap = await db.collection('suggestions').where('userName', '==', login).get();
+
+    document.getElementById('mainStatsGrid').innerHTML = `
+        <div class="stat-card clickable" onclick="showMyReviews()">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-label">Отзывов</div>
+            <div class="stat-value">${reviewCount}</div>
+            <div class="stat-sub">Нажмите, чтобы посмотреть</div>
+        </div>
+        <div class="stat-card clickable" onclick="showMyFavorites()">
+            <div class="stat-icon">❤️</div>
+            <div class="stat-label">В избранном</div>
+            <div class="stat-value">${favCount}</div>
+            <div class="stat-sub">Нажмите, чтобы посмотреть</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💡</div>
+            <div class="stat-label">Предложений</div>
+            <div class="stat-value">${suggSnap.size}</div>
+            <div class="stat-sub">Создано вами</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-label">Друзей</div>
+            <div class="stat-value">${friendsCount}</div>
+            <div class="stat-sub">В вашем списке</div>
+        </div>
+    `;
+}
+
+window.showMyReviews = async () => {
+    const snap = await db.collection('reviews').where('userName', '==', userProfile.login).get();
+    const container = document.getElementById('myReviewsList');
+    if (snap.empty) {
+        container.innerHTML = '<p>Вы еще не оставляли отзывов.</p>';
+    } else {
+        container.innerHTML = snap.docs.map(doc => {
+            const r = doc.data();
+            const drink = allDrinks.find(d => d.id === r.drinkId);
+            return `<div class="review-list-item">
+                <h4>${drink ? escapeHtml(drink.name) : 'Неизвестный энергетик'} — ${r.rating} ★</h4>
+                <p>${escapeHtml(r.text)}</p>
+            </div>`;
+        }).join('');
+    }
+    document.getElementById('myReviewsModal').classList.add('active');
+};
+
+window.showMyFavorites = () => {
+    const container = document.getElementById('myFavsList');
+    const favIds = userProfile.favorites || [];
+    if (!favIds.length) {
+        container.innerHTML = '<p>В избранном пусто.</p>';
+    } else {
+        container.innerHTML = favIds.map(id => {
+            const drink = allDrinks.find(d => d.id === id);
+            if (!drink) return '';
+            const img = drink.imageData || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect width="60" height="60" fill="#e2e8f0"/></svg>');
+            return `<div class="fav-list-item">
+                <img src="${img}">
+                <span>${escapeHtml(drink.name)}</span>
+            </div>`;
+        }).join('');
+    }
+    document.getElementById('myFavsModal').classList.add('active');
+};
+
+// ===== Друзья и Заявки =====
+async function loadFriendsAndRequests() {
+    const friends = userProfile.friends || [];
+    const sent = userProfile.sentRequests || [];
+    const incoming = userProfile.incomingRequests || [];
+
+    const containerFriends = document.getElementById('friendsList');
+    const containerIncoming = document.getElementById('incomingRequestsSection');
+    const containerSent = document.getElementById('sentRequestsSection');
+
+    // Входящие
+    if (incoming.length) {
+        const html = await renderUserCards(incoming, 'incoming');
+        containerIncoming.innerHTML = `<div class="friend-section-title">Входящие заявки</div><div class="friends-list">${html}</div>`;
+    } else containerIncoming.innerHTML = '';
+
+    // Отправленные
+    if (sent.length) {
+        const html = await renderUserCards(sent, 'sent');
+        containerSent.innerHTML = `<div class="friend-section-title">Отправленные заявки</div><div class="friends-list">${html}</div>`;
+    } else containerSent.innerHTML = '';
+
+    // Друзья
+    if (friends.length) {
+        containerFriends.innerHTML = await renderUserCards(friends, 'friend');
+    } else {
+        containerFriends.innerHTML = '<div class="empty-state">У вас пока нет друзей.</div>';
     }
 }
 
-// ===== Друзья =====
-async function loadFriends() {
-    const friends = userProfile.friends || [];
-    const container = document.getElementById('friendsList');
-    if (!friends.length) {
-        container.innerHTML = '<div class="empty-state">У вас пока нет друзей.<br>Добавьте первого друга по логину выше!</div>';
-        return;
-    }
-    try {
-        const results = await Promise.all(friends.map(login =>
-            db.collection('users').where('login', '==', login).get()
-                .then(s => s.empty ? { login, missing: true } : ({ id: s.docs[0].id, ...s.docs[0].data() }))
-        ));
-        container.innerHTML = results.map(f => {
-            if (f.missing) {
-                return `<div class="friend-card">
-                    <div class="friend-avatar" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">?</div>
-                    <div class="friend-info">
-                        <div class="friend-name">${escapeHtml(f.login)}</div>
-                        <div class="friend-login">Пользователь не найден</div>
-                    </div>
-                    <button class="btn-remove-friend" data-login="${escapeHtml(f.login)}">Удалить</button>
-                </div>`;
-            }
-            const name = f.displayName || f.login;
-            const avatar = f.avatar || getAvatarUri(name, f.login);
-            return `<div class="friend-card">
-                <img class="friend-avatar" src="${escapeHtml(avatar)}" alt="">
-                <div class="friend-info">
-                    <div class="friend-name">${escapeHtml(name)}</div>
-                    <div class="friend-login">@${escapeHtml(f.login)}</div>
-                </div>
-                <button class="btn-remove-friend" data-login="${escapeHtml(f.login)}">Удалить</button>
-            </div>`;
-        }).join('');
+async function renderUserCards(logins, type) {
+    const results = await Promise.all(logins.map(login => 
+        db.collection('users').where('login', '==', login).get()
+            .then(s => s.empty ? { login, missing: true } : ({ id: s.docs[0].id, ...s.docs[0].data() }))
+    ));
 
-        container.querySelectorAll('.btn-remove-friend').forEach(btn => {
-            btn.onclick = async () => {
-                const login = btn.dataset.login;
-                if (!confirm(`Удалить ${login} из друзей?`)) return;
-                const newFriends = (userProfile.friends || []).filter(l => l !== login);
-                try {
-                    await userDocRef.update({ friends: newFriends });
-                    userProfile.friends = newFriends;
-                    loadFriends();
-                    loadStats();
-                } catch (e) { alert('Не удалось удалить'); }
-            };
-        });
-    } catch (e) {
-        console.error(e);
-        container.innerHTML = '<div class="empty-state">Ошибка загрузки друзей</div>';
-    }
+    return results.map(f => {
+        if (f.missing) return `<div class="friend-card"><div class="friend-info"><div class="friend-name">${escapeHtml(f.login)}</div><div class="friend-login">Удален</div></div></div>`;
+        
+        const name = f.displayName || f.login;
+        const avatar = f.avatar || getAvatarUri(name, f.login);
+        
+        let buttons = '';
+        if (type === 'incoming') {
+            buttons = `<div>
+                <button class="btn-accept" onclick="handleRequest('${f.login}', 'accept')">Принять</button>
+                <button class="btn-reject" onclick="handleRequest('${f.login}', 'reject')">Отклонить</button>
+            </div>`;
+        } else if (type === 'sent') {
+            buttons = `<button class="btn-remove-friend" onclick="cancelRequest('${f.login}')">Отменить</button>`;
+        } else if (type === 'friend') {
+            buttons = `<button class="btn-remove-friend" onclick="removeFriend('${f.login}')">Удалить</button>`;
+        }
+
+        return `<div class="friend-card">
+            <img class="friend-avatar" src="${escapeHtml(avatar)}" alt="">
+            <div class="friend-info">
+                <div class="friend-name">${escapeHtml(name)}</div>
+                <div class="friend-login">@${escapeHtml(f.login)}</div>
+            </div>
+            ${buttons}
+        </div>`;
+    }).join('');
 }
 
 document.getElementById('addFriendBtn').onclick = async () => {
     const input = document.getElementById('friendLoginInput');
-    const login = input.value.trim();
-    if (!login) return;
-    if (login === (userProfile.login || currentUser.login)) return alert('Нельзя добавить самого себя');
-    if ((userProfile.friends || []).includes(login)) return alert('Этот пользователь уже в друзьях');
+    const targetLogin = input.value.trim();
+    if (!targetLogin || targetLogin === userProfile.login) return;
 
-    try {
-        const snap = await db.collection('users').where('login', '==', login).get();
-        if (snap.empty) return alert('Пользователь с таким логином не найден');
-        const newFriends = [...(userProfile.friends || []), login];
-        await userDocRef.update({ friends: newFriends });
-        userProfile.friends = newFriends;
-        input.value = '';
-        loadFriends();
-        loadStats();
-    } catch (e) {
-        alert('Не удалось добавить друга');
+    const snap = await db.collection('users').where('login', '==', targetLogin).get();
+    if (snap.empty) return alert('Пользователь не найден');
+
+    const targetDoc = snap.docs[0];
+    const targetData = targetDoc.data();
+
+    // Проверки
+    if ((userProfile.friends || []).includes(targetLogin)) return alert('Уже в друзьях');
+    if ((userProfile.sentRequests || []).includes(targetLogin)) return alert('Заявка уже отправлена');
+
+    // Если нам уже прислали заявку, принимаем её автоматически
+    if ((userProfile.incomingRequests || []).includes(targetLogin)) {
+        await acceptFriend(targetLogin);
+        return;
+    }
+
+    // Отправляем
+    await userDocRef.update({ sentRequests: firebase.firestore.FieldValue.arrayUnion(targetLogin) });
+    await targetDoc.ref.update({ incomingRequests: firebase.firestore.FieldValue.arrayUnion(userProfile.login) });
+
+    input.value = '';
+    userProfile.sentRequests = [...(userProfile.sentRequests||[]), targetLogin];
+    loadFriendsAndRequests();
+    alert('Заявка отправлена!');
+};
+
+window.handleRequest = async (senderLogin, action) => {
+    if (action === 'accept') {
+        await acceptFriend(senderLogin);
+    } else {
+        // Отклонение
+        await userDocRef.update({ incomingRequests: firebase.firestore.FieldValue.arrayRemove(senderLogin) });
+        const senderSnap = await db.collection('users').where('login', '==', senderLogin).get();
+        if(!senderSnap.empty) await senderSnap.docs[0].ref.update({ sentRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+        userProfile.incomingRequests = userProfile.incomingRequests.filter(l => l !== senderLogin);
+        loadFriendsAndRequests();
     }
 };
 
+async function acceptFriend(senderLogin) {
+    // Добавляем в друзья обоим
+    await userDocRef.update({
+        friends: firebase.firestore.FieldValue.arrayUnion(senderLogin),
+        incomingRequests: firebase.firestore.FieldValue.arrayRemove(senderLogin)
+    });
+    const senderSnap = await db.collection('users').where('login', '==', senderLogin).get();
+    if(!senderSnap.empty) {
+        await senderSnap.docs[0].ref.update({
+            friends: firebase.firestore.FieldValue.arrayUnion(userProfile.login),
+            sentRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login)
+        });
+    }
+    userProfile.friends = [...(userProfile.friends||[]), senderLogin];
+    userProfile.incomingRequests = userProfile.incomingRequests.filter(l => l !== senderLogin);
+    loadFriendsAndRequests();
+}
+
+window.cancelRequest = async (targetLogin) => {
+    await userDocRef.update({ sentRequests: firebase.firestore.FieldValue.arrayRemove(targetLogin) });
+    const targetSnap = await db.collection('users').where('login', '==', targetLogin).get();
+    if(!targetSnap.empty) await targetSnap.docs[0].ref.update({ incomingRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+    userProfile.sentRequests = userProfile.sentRequests.filter(l => l !== targetLogin);
+    loadFriendsAndRequests();
+};
+
+window.removeFriend = async (targetLogin) => {
+    if(!confirm('Удалить из друзей?')) return;
+    await userDocRef.update({ friends: firebase.firestore.FieldValue.arrayRemove(targetLogin) });
+    const targetSnap = await db.collection('users').where('login', '==', targetLogin).get();
+    if(!targetSnap.empty) await targetSnap.docs[0].ref.update({ friends: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+    userProfile.friends = userProfile.friends.filter(l => l !== targetLogin);
+    loadFriendsAndRequests();
+};
+
+// ===== Закрытие модалок =====
+document.querySelectorAll('.modal-close').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    };
+});
+window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); };
+
 // ===== Старт =====
-loadProfile();
+init();
 </script>
 </body>
 </html>
