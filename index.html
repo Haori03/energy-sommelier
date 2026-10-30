@@ -430,22 +430,47 @@
     function showAdminModal(backModal) { window.backModal = backModal; adminModal.classList.add('active'); }
     function closeAllModals() { [registerModal, authModal, adminModal, addModal, editModal, detailModal, suggestModal, pendingModal, patchNotesModal].forEach(m => m?.classList.remove('active')); }
 
-    function getFavoritesStorageKey() { return FAVORITES_PREFIX + (currentUser?.login || 'guest'); }
-    function loadFavorites() {
-        try {
-            const raw = localStorage.getItem(getFavoritesStorageKey());
-            const parsed = raw ? JSON.parse(raw) : [];
-            favoriteIds = new Set(Array.isArray(parsed) ? parsed : []);
-        } catch { favoriteIds = new Set(); }
+        // === ОБНОВЛЕННАЯ ЛОГИКА ИЗБРАННОГО (Синхронизация с БД) ===
+    async function loadFavorites() {
+        if (currentUser && currentUser.role !== 'guest') {
+            try {
+                const snap = await db.collection('users').where('login', '==', currentUser.login).get();
+                if (!snap.empty) {
+                    const data = snap.docs[0].data();
+                    favoriteIds = new Set(data.favorites || []);
+                }
+            } catch (e) { console.error("Ошибка загрузки избранного", e); }
+        } else {
+            try {
+                const raw = localStorage.getItem('energyFavorites_guest');
+                const parsed = raw ? JSON.parse(raw) : [];
+                favoriteIds = new Set(Array.isArray(parsed) ? parsed : []);
+            } catch { favoriteIds = new Set(); }
+        }
     }
-    function saveFavorites() { localStorage.setItem(getFavoritesStorageKey(), JSON.stringify(Array.from(favoriteIds))); }
+
+    async function saveFavorites() {
+        if (currentUser && currentUser.role !== 'guest') {
+            try {
+                const snap = await db.collection('users').where('login', '==', currentUser.login).get();
+                if (!snap.empty) {
+                    await snap.docs[0].ref.update({ favorites: Array.from(favoriteIds) });
+                }
+            } catch (e) { console.error("Ошибка сохранения избранного", e); }
+        } else {
+            localStorage.setItem('energyFavorites_guest', JSON.stringify(Array.from(favoriteIds)));
+        }
+    }
+
     function isFavorite(drinkId) { return favoriteIds.has(drinkId); }
+
     async function toggleFavorite(drinkId) {
-        loadFavorites();
         if (favoriteIds.has(drinkId)) favoriteIds.delete(drinkId);
         else favoriteIds.add(drinkId);
-        saveFavorites();
+        
+        await saveFavorites(); // Ждем сохранения в базу
         applyFiltersAndRender();
+        
         const openDrink = energyDrinks.find(d => d.id === drinkId);
         if (detailModal.classList.contains('active') && openDrink) openDetailModal(openDrink);
     }
@@ -1121,7 +1146,6 @@
               price = document.getElementById('suggestPrice').value;
         if (await addSuggestion(name, selectedSuggestionImageBase64, shop, price)) {
             closeAllModals();
-            document.getElementById('suggestForm').reset
             document.getElementById('suggestForm').reset();
             selectedSuggestionImageBase64 = null;
             document.getElementById('suggestImagePreview').innerHTML = '';
