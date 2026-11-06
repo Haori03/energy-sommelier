@@ -239,3 +239,76 @@ body.dark-mode .cal-day.has-drinks { background: #1e3a8a; color: #93c5fd; border
 .log-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 10px; border-radius: 12px; margin-bottom: 8px; }
 .btn-del-log { background: #e53e3e; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; }
 
+/* ============================================
+   ПОДВАЛ САЙТА (FOOTER)
+   ============================================ */
+.site-footer {
+    background: white;
+    border-radius: 32px 32px 0 0;
+    padding: 40px 20px 20px;
+    margin-top: 40px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
+    border-top: 1px solid #e2e8f0;
+}
+body.dark-mode .site-footer {
+    background: #1e293b;
+    border-top-color: #334155;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+}
+
+.footer-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto 30px;
+}
+.footer-column h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #1e2a3e;
+}
+body.dark-mode .footer-column h3 { color: #f8fafc; }
+
+.footer-column p {
+    color: #64748b;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+body.dark-mode .footer-column p { color: #94a3b8; }
+
+.footer-column a {
+    color: #4a6d8c;
+    text-decoration: none;
+    font-weight: 600;
+}
+body.dark-mode .footer-column a { color: #7dd3fc; }
+.footer-column a:hover { text-decoration: underline; }
+
+.footer-btn {
+    background: #4a6d8c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+.footer-btn:hover { background: #2b4f6e; transform: scale(0.96); }
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+body.dark-mode .footer-bottom { border-top-color: #334155; }
+
+@media (max-width: 600px) {
+    .site-footer { padding: 30px 15px 15px; }
+    .footer-columns { gap: 20px; }
+}
