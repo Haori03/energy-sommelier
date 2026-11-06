@@ -361,6 +361,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    db.settings({ experimentalForceLongPolling: true }); // Фикс вечной загрузки
 
     // SVG-заглушка вместо внешнего placeholder.com
     const NO_IMAGE_URI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
