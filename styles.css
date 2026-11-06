@@ -247,6 +247,10 @@ body.dark-mode .cal-day.has-drinks { background: #1e3a8a; color: #93c5fd; border
     border-radius: 32px 32px 0 0;
     padding: 40px 20px 20px;
     margin-top: 40px;
+    /* Магия для растягивания на всю ширину, несмотря на padding у body */
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: -24px; 
     box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
     border-top: 1px solid #e2e8f0;
 }
@@ -309,6 +313,11 @@ body.dark-mode .footer-column a { color: #7dd3fc; }
 body.dark-mode .footer-bottom { border-top-color: #334155; }
 
 @media (max-width: 600px) {
-    .site-footer { padding: 30px 15px 15px; }
+    .site-footer { 
+        padding: 30px 15px 15px; 
+        margin-left: -10px;
+        margin-right: -10px;
+        margin-bottom: -12px;
+    }
     .footer-columns { gap: 20px; }
 }
