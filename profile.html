@@ -393,6 +393,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+db.settings({ experimentalForceLongPolling: true }); // Фикс вечной загрузки
 
 const saved = localStorage.getItem('energyUser');
 const currentUser = saved ? JSON.parse(saved) : null;
@@ -432,18 +433,23 @@ function resizeImageToSquare(file, targetSize = 400, quality = 0.85) { return ne
 
 // ===== Загрузка данных =====
 async function init() {
-    // Показываем "Загрузку" пока тянем данные
-    document.getElementById('displayName').textContent = 'Загрузка...';
-    document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Загрузка статистики...</div>';
-    document.getElementById('extendedStatsGrid').innerHTML = '';
+    // 1. МГНОВЕННЫЙ РЕНДЕР ИЗ КЭША (Пока Firebase думает)
+    if (currentUser) {
+        document.getElementById('displayName').textContent = currentUser.login;
+        document.getElementById('loginLabel').textContent = '@' + currentUser.login;
+        document.getElementById('userStatus').textContent = currentUser.login;
+        
+        // Если есть закешированный аватар в localStorage, показываем его
+        const cachedAvatar = localStorage.getItem('cachedAvatar_' + currentUser.login);
+        if (cachedAvatar) document.getElementById('avatarImg').src = cachedAvatar;
+    }
 
-    // Защита от вечной загрузки (если Firebase упал)
+    // 2. Дальше тянем свежие данные из базы
     const timeoutId = setTimeout(() => {
-        if (document.getElementById('displayName').textContent === 'Загрузка...') {
-            document.getElementById('displayName').textContent = 'Ошибка загрузки (проверьте интернет)';
-            document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Не удалось связаться с базой данных. Попробуйте перезагрузить страницу.</div>';
+        if (document.getElementById('displayName').textContent === currentUser.login) {
+             document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Обновление данных занимает больше времени...</div>';
         }
-    }, 8000); // 8 секунд ожидания
+    }, 5000);
 
     try {
         if (!isOwnProfile) {
@@ -465,24 +471,27 @@ async function init() {
             userDocRef = snap.docs[0].ref;
             userProfile = snap.docs[0].data();
             
+            // Кэшируем аватар для следующего перехода
+            if (userProfile.avatar) {
+                localStorage.setItem('cachedAvatar_' + userProfile.login, userProfile.avatar);
+            }
+
             if (!userProfile.createdAt && isOwnProfile) {
                 await userDocRef.update({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
                 userProfile.createdAt = new Date();
             }
 
-            clearTimeout(timeoutId); // Отменяем таймер, так как данные пришли
+            clearTimeout(timeoutId);
             renderProfile();
             await loadLogs(); 
             loadFriendsAndRequests();
         } else {
             clearTimeout(timeoutId);
             document.getElementById('displayName').textContent = 'Пользователь не найден';
-            document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Профиль не существует.</div>';
         }
     } catch (error) {
         clearTimeout(timeoutId);
         console.error(error);
-        document.getElementById('displayName').textContent = 'Ошибка';
         document.getElementById('mainStatsGrid').innerHTML = '<div class="empty-state">Ошибка загрузки данных.</div>';
     }
 }
