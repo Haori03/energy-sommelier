@@ -506,6 +506,7 @@ function renderProfile() {
     document.getElementById('roleBadge').classList.toggle('admin', isAdmin);
     document.getElementById('userStatus').textContent = `${currentUser.login}`;
     document.getElementById('avatarImg').src = userProfile.avatar || getAvatarUri(name, login);
+    updateFooterAdminBtn(); // Обновляем кнопку в подвале
 }
 
 document.getElementById('avatarUpload').onchange = async (e) => {
@@ -990,6 +991,32 @@ document.getElementById('logoutBtn').onclick = () => {
 
 // ===== Старт =====
 init();
+
+<footer class="site-footer">
+    <div class="footer-columns">
+        <div class="footer-column">
+            <h3>🍹 О проекте</h3>
+            <p>Энергетический сомелье Ivan — твой личный путеводитель по миру энергетических напитков. Отслеживай статистику, делись мнением и находи новые вкусы!</p>
+        </div>
+        <div class="footer-column">
+            <h3>📬 Контакты</h3>
+            <p>По вопросам сотрудничества и рекламы:</p>
+            <p>Email: <a href="mailto:info@energy-somelier.ru">info@energy-somelier.ru</a></p>
+            <p>Telegram: <a href="https://t.me/energy_somelier" target="_blank">@energy_somelier</a></p>
+        </div>
+        <div class="footer-column">
+            <h3>💡 Есть идея?</h3>
+            <p>Помоги нам сделать сайт еще лучше! Напиши, чего не хватает или что можно улучшить.</p>
+            <button class="footer-btn" id="openSiteSuggestBtn">Предложить идею</button>
+            <!-- Кнопка админа изначально скрыта -->
+            <button class="footer-btn" id="openAdminSuggestBtn" style="display:none; background:#e53e3e; margin-top:10px;">Посмотреть идеи (Админ)</button>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        © 2024 Энергетический сомелье. Все права защищены.
+    </div>
+</footer>
+
     // ===== ЛОГИКА ПРЕДЛОЖЕНИЙ ПО САЙТУ =====
     
     // Показ кнопки "Посмотреть идеи" для админа
@@ -1072,58 +1099,79 @@ init();
     // Закрытие модалок
     document.getElementById('closeSiteSuggestModal').onclick = () => document.getElementById('siteSuggestModal').classList.remove('active');
     document.getElementById('closeAdminSiteSuggestModal').onclick = () => document.getElementById('adminSiteSuggestModal').classList.remove('active');
+    // ===== ЛОГИКА ПРЕДЛОЖЕНИЙ ПО САЙТУ =====
+    
+    // Функция проверки прав для кнопки админа
+    function updateFooterAdminBtn() {
+        const isAdmin = currentUser && currentUser.role === 'admin';
+        const adminBtn = document.getElementById('openAdminSuggestBtn');
+        if (adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none';
+    }
+
+    // Вызываем проверку прав чуть позже (когда DOM точно загружен)
+    setTimeout(updateFooterAdminBtn, 1000);
+
+    // Открытие формы предложения
+    document.getElementById('openSiteSuggestBtn').onclick = () => {
+        if (!currentUser) {
+            alert('Пожалуйста, войдите в аккаунт, чтобы оставить предложение.');
+            return;
+        }
+        document.getElementById('siteSuggestModal').classList.add('active');
+    };
+
+    // Отправка формы
+    document.getElementById('siteSuggestForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const topic = document.getElementById('siteSuggestTopic').value.trim();
+        const text = document.getElementById('siteSuggestText').value.trim();
+        
+        try {
+            await db.collection('site_suggestions').add({
+                topic: topic,
+                text: text,
+                userName: currentUser.login,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            alert('Спасибо! Ваше предложение отправлено администратору.');
+            document.getElementById('siteSuggestModal').classList.remove('active');
+            document.getElementById('siteSuggestForm').reset();
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка при отправке. Попробуйте позже.');
+        }
+    };
+
+    // Просмотр идей (только админ)
+    document.getElementById('openAdminSuggestBtn').onclick = async () => {
+        const list = document.getElementById('adminSiteSuggestList');
+        list.innerHTML = '<p style="text-align:center;">Загрузка...</p>';
+        document.getElementById('adminSiteSuggestModal').classList.add('active');
+        
+        try {
+            const snap = await db.collection('site_suggestions').orderBy('createdAt', 'desc').get();
+            if (snap.empty) {
+                list.innerHTML = '<p style="text-align:center;">Пока нет предложений.</p>';
+            } else {
+                list.innerHTML = snap.docs.map(doc => {
+                    const d = doc.data();
+                    const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('ru-RU') : '';
+                    return `<div class="review-list-item" style="background:#f8fafc; padding:15px; border-radius:16px; margin-bottom:10px; border:1px solid #e2e8f0;">
+                        <h4 style="color:#3182ce; margin-bottom:5px;">${escapeHtml(d.topic)}</h4>
+                        <p style="margin-bottom:5px;">${escapeHtml(d.text)}</p>
+                        <small style="color:#64748b;">От: ${escapeHtml(d.userName)} | ${date}</small>
+                    </div>`;
+                }).join('');
+            }
+        } catch (error) {
+            console.error(error);
+            list.innerHTML = '<p style="text-align:center; color:red;">Ошибка загрузки данных.</p>';
+        }
+    };
+
+    // Закрытие модалок
+    document.getElementById('closeSiteSuggestModal').onclick = () => document.getElementById('siteSuggestModal').classList.remove('active');
+    document.getElementById('closeAdminSiteSuggestModal').onclick = () => document.getElementById('adminSiteSuggestModal').classList.remove('active');
 </script>
-    <!-- ПОДВАЛ САЙТА -->
-    <footer class="site-footer">
-        <div class="footer-columns">
-            <div class="footer-column">
-                <h3>🍹 О проекте</h3>
-                <p>Энергетический сомелье Ivan — твой личный путеводитель по миру энергетических напитков. Отслеживай статистику, делись мнением и находи новые вкусы!</p>
-            </div>
-            <div class="footer-column">
-                <h3>📬 Контакты</h3>
-                <p>По вопросам сотрудничества и рекламы:</p>
-                <p>Email: <a href="mailto:info@energy-somelier.ru">info@energy-somelier.ru</a></p>
-                <p>Telegram: <a href="https://t.me/energy_somelier" target="_blank">@energy_somelier</a></p>
-            </div>
-            <div class="footer-column">
-                <h3>💡 Есть идея?</h3>
-                <p>Помоги нам сделать сайт еще лучше! Напиши, чего не хватает или что можно улучшить.</p>
-                <button class="footer-btn" id="openSiteSuggestBtn">Предложить идею</button>
-                <button class="footer-btn" id="openAdminSuggestBtn" style="display:none; background:#e53e3e; margin-top:10px;">Посмотреть идеи (Админ)</button>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            © 2024 Энергетический сомелье. Все права защищены.
-        </div>
-    </footer>
-
-    <!-- МОДАЛКА: ОТПРАВКА ПРЕДЛОЖЕНИЯ ПО САЙТУ -->
-    <div id="siteSuggestModal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close" id="closeSiteSuggestModal">&times;</button>
-            <h2>Предложить идею</h2>
-            <form id="siteSuggestForm">
-                <div class="form-group">
-                    <label>Тема</label>
-                    <input type="text" id="siteSuggestTopic" required placeholder="Например: Добавить карту магазинов">
-                </div>
-                <div class="form-group">
-                    <label>Описание</label>
-                    <textarea id="siteSuggestText" rows="4" required placeholder="Подробно опишите вашу идею..."></textarea>
-                </div>
-                <button type="submit" class="btn-primary" style="width:100%">Отправить</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- МОДАЛКА: ПРОСМОТР ПРЕДЛОЖЕНИЙ (ТОЛЬКО ДЛЯ АДМИНА) -->
-    <div id="adminSiteSuggestModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 600px;">
-            <button class="modal-close" id="closeAdminSiteSuggestModal">&times;</button>
-            <h2>Идеи по сайту</h2>
-            <div id="adminSiteSuggestList" style="max-height: 60vh; overflow-y: auto; margin-top: 15px;"></div>
-        </div>
-    </div>
 </body>
 </html>
