@@ -173,7 +173,7 @@
     <div class="profile-card">
         <div class="avatar-wrapper">
             <img id="avatarImg" class="avatar" src="logo-light.png" alt="Аватар">
-            <label class="avatar-edit" id="avatarEditLabel" for="avatarUpload" title="Загрузить аватар">🖼️</label>
+            <label class="avatar-edit" id="avatarEditLabel" for="avatarUpload" title="Загрузить аватар">✏️</label>
             <input type="file" id="avatarUpload" accept="image/*" style="display:none">
         </div>
         <div class="profile-info">
@@ -192,8 +192,8 @@
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" data-tab="stats">📊 Статистика</button>
-        <button class="tab-btn" data-tab="friends">👥 Друзья</button>
+        <button class="tab-btn active" data-tab="stats">Статистика</button>
+        <button class="tab-btn" data-tab="friends">Друзья</button>
     </div>
 
     <div id="statsTab" class="tab-content active">
@@ -265,7 +265,12 @@
             </div>
             <div class="form-group">
                 <label>Описание</label>
-                <textarea id="siteSuggestText" rows="4" required placeholder="Подробно опишите вашу идею..."></textarea>
+                <textarea id="siteSuggestText" rows="3" required placeholder="Подробно опишите вашу идею..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Фото (необязательно)</label>
+                <input type="file" id="siteSuggestImage" accept="image/*">
+                <div id="siteSuggestImagePreview" class="file-preview"></div>
             </div>
             <button type="submit" class="btn-primary" style="width:100%">Отправить</button>
         </form>
@@ -301,7 +306,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-db.settings({ experimentalForceLongPolling: true }); // ФИКС
+db.settings({ experimentalForceLongPolling: true });
 
 const saved = localStorage.getItem('energyUser');
 const currentUser = saved ? JSON.parse(saved) : null;
@@ -384,7 +389,7 @@ function renderProfile() {
     const login = userProfile.login, name = userProfile.displayName || login, isAdmin = userProfile.role === 'admin';
     document.getElementById('displayName').textContent = name;
     document.getElementById('loginLabel').textContent = '@' + login;
-    document.getElementById('roleBadge').textContent = isAdmin ? '👑 Админ' : '👤 Пользователь';
+    document.getElementById('roleBadge').textContent = isAdmin ? 'Админ' : 'Пользователь';
     document.getElementById('roleBadge').classList.toggle('admin', isAdmin);
     document.getElementById('userStatus').textContent = `${currentUser.login}`;
     document.getElementById('avatarImg').src = userProfile.avatar || getAvatarUri(name, login);
@@ -425,7 +430,7 @@ function renderExtendedStats(totalDrank, maxDrink, maxCount) {
     const regDate = userProfile.createdAt ? (userProfile.createdAt.toDate ? userProfile.createdAt.toDate() : new Date(userProfile.createdAt)) : new Date();
     const stats = userProfile.stats || {};
     document.getElementById('extendedStatsGrid').innerHTML = `<div class="ext-stat-item"><div class="ext-stat-label">Дата регистрации</div><div class="ext-stat-value">${regDate.toLocaleDateString('ru-RU')}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Любимый</div><div class="ext-stat-value">${escapeHtml(stats.favoriteDrink) || '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Нелюбимый</div><div class="ext-stat-value">${escapeHtml(stats.leastFavoriteDrink) || '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Всего выпито</div><div class="ext-stat-value">${totalDrank} шт.</div></div><div class="ext-stat-item"><div class="ext-stat-label">Больше всего выпито</div><div class="ext-stat-value">${maxDrink !== '—' ? `${escapeHtml(maxDrink)} (${maxCount} шт.)` : '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Другое</div><div class="ext-stat-value">${escapeHtml(stats.customNote) || '—'}</div></div>`;
-    if (isOwnProfile) document.getElementById('editStatsBtnContainer').innerHTML = `<button class="btn-edit-stats" onclick="openEditStats()">✏️ Редактировать</button>`;
+    if (isOwnProfile) document.getElementById('editStatsBtnContainer').innerHTML = `<button class="btn-edit-stats" onclick="openEditStats()">Редактировать</button>`;
     loadStatsCards(totalDrank);
 }
 
@@ -582,6 +587,16 @@ window.removeFriend = async (targetLogin) => {
 // Подвал
 function updateFooterAdminBtn() { const isAdmin = currentUser && currentUser.role === 'admin'; const adminBtn = document.getElementById('openAdminSuggestBtn'); if (adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none'; }
 
+let selectedSiteSuggestImageBase64 = null;
+document.getElementById('siteSuggestImage')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) { selectedSiteSuggestImageBase64 = null; document.getElementById('siteSuggestImagePreview').innerHTML = ''; return; }
+    try {
+        selectedSiteSuggestImageBase64 = await resizeImageToSquare(file, 800, 0.8);
+        document.getElementById('siteSuggestImagePreview').innerHTML = `<img src="${selectedSiteSuggestImageBase64}" style="max-width:150px;border-radius:16px; margin-top:10px;">`;
+    } catch (err) { alert('Ошибка обработки фото'); selectedSiteSuggestImageBase64 = null; }
+});
+
 document.getElementById('openSiteSuggestBtn')?.addEventListener('click', () => {
     if (!currentUser) return alert('Пожалуйста, войдите в аккаунт.');
     document.getElementById('siteSuggestModal')?.classList.add('active');
@@ -591,11 +606,27 @@ document.getElementById('siteSuggestForm')?.addEventListener('submit', async (e)
     e.preventDefault();
     const topic = document.getElementById('siteSuggestTopic').value.trim(), text = document.getElementById('siteSuggestText').value.trim();
     try {
-        await db.collection('site_suggestions').add({ topic, text, userName: currentUser.login, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        await db.collection('site_suggestions').add({ 
+            topic, 
+            text, 
+            imageData: selectedSiteSuggestImageBase64,
+            userName: currentUser.login, 
+            createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+        });
         alert('Спасибо! Ваше предложение отправлено.');
-        document.getElementById('siteSuggestModal')?.classList.remove('active'); document.getElementById('siteSuggestForm')?.reset();
-    } catch (error) { alert('Ошибка.'); }
+        closeAllModals(); 
+        document.getElementById('siteSuggestForm')?.reset();
+        document.getElementById('siteSuggestImagePreview').innerHTML = '';
+        selectedSiteSuggestImageBase64 = null;
+    } catch (error) { alert('Ошибка при отправке.'); }
 });
+
+window.deleteSiteSuggestion = async (id) => {
+    if (confirm('Удалить это предложение?')) {
+        await db.collection('site_suggestions').doc(id).delete();
+        document.getElementById('openAdminSuggestBtn').click(); // Перезагружаем список
+    }
+};
 
 document.getElementById('openAdminSuggestBtn')?.addEventListener('click', async () => {
     const list = document.getElementById('adminSiteSuggestList'); list.innerHTML = '<p style="text-align:center;">Загрузка...</p>';
@@ -603,8 +634,17 @@ document.getElementById('openAdminSuggestBtn')?.addEventListener('click', async 
     try {
         const snap = await db.collection('site_suggestions').orderBy('createdAt', 'desc').get();
         if (snap.empty) list.innerHTML = '<p style="text-align:center;">Пока нет предложений.</p>';
-        else list.innerHTML = snap.docs.map(doc => { const d = doc.data(), date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('ru-RU') : ''; return `<div class="review-list-item" style="background:#f8fafc; padding:15px; border-radius:16px; margin-bottom:10px; border:1px solid #e2e8f0;"><h4 style="color:#3182ce; margin-bottom:5px;">${escapeHtml(d.topic)}</h4><p style="margin-bottom:5px;">${escapeHtml(d.text)}</p><small style="color:#64748b;">От: ${escapeHtml(d.userName)} | ${date}</small></div>`; }).join('');
-    } catch (error) { list.innerHTML = '<p style="text-align:center; color:red;">Ошибка.</p>'; }
+        else list.innerHTML = snap.docs.map(doc => { 
+            const d = doc.data(), date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('ru-RU') : ''; 
+            return `<div class="review-list-item" style="background:#f8fafc; padding:15px; border-radius:16px; margin-bottom:10px; border:1px solid #e2e8f0; position:relative;">
+                ${d.imageData ? `<img src="${d.imageData}" style="max-width:100%; border-radius:8px; margin-bottom:10px;">` : ''}
+                <h4 style="color:#3182ce; margin-bottom:5px; padding-right:70px;">${escapeHtml(d.topic)}</h4>
+                <p style="margin-bottom:5px;">${escapeHtml(d.text)}</p>
+                <small style="color:#64748b;">От: ${escapeHtml(d.userName)} | ${date}</small>
+                <button onclick="deleteSiteSuggestion('${doc.id}')" style="position:absolute; top:15px; right:15px; background:#e53e3e; color:white; border:none; padding:6px 12px; border-radius:10px; cursor:pointer; font-size:0.8rem;">Удалить</button>
+            </div>`; 
+        }).join('');
+    } catch (error) { list.innerHTML = '<p style="text-align:center; color:red;">Ошибка загрузки.</p>'; }
 });
 
 document.getElementById('closeSiteSuggestModal')?.addEventListener('click', () => document.getElementById('siteSuggestModal')?.classList.remove('active'));
