@@ -9,34 +9,31 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         .app-container { max-width: 1300px; margin: 0 auto; }
-        .filters-panel { background: white; border-radius: 28px; padding: 18px 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .energy-counter { background: #eef2ff; display: inline-block; padding: 6px 16px; border-radius: 40px; margin-top: 12px; font-size: 0.9rem; font-weight: bold; }
-        .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid #cbd5e1; font-size: 1rem; margin-bottom: 16px; }
-        .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+        .filters-panel { background: var(--surface); border-radius: 28px; padding: 18px 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1rem; margin-bottom: 16px; }
+        .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
         .sort-buttons { display: flex; gap: 12px; }
-        .sort-btn { background: #edf2f7; border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; transition: all 0.2s; }
-        .sort-btn.active { background: #2b7a4b; color: white; }
+        .sort-btn { background: var(--tag-bg); color: var(--text); border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; transition: all 0.2s; }
+        .sort-btn.active { background: var(--primary); color: white; }
         .tags-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
         .filter-tags-group { display: flex; flex-wrap: wrap; gap: 12px; }
-        .filter-tag { background: #edf2f7; padding: 6px 14px; border-radius: 40px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-        .filter-tag.selected { background: #f4a261; color: white; }
-        .reset-filters { background: #e2e8f0; border: none; padding: 6px 18px; border-radius: 30px; cursor: pointer; margin-left: auto; }
+        .filter-tag { background: var(--tag-bg); color: var(--text); padding: 6px 14px; border-radius: 40px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .filter-tag.selected { background: var(--primary); color: white; }
+        .reset-filters { background: var(--border); color: var(--text); border: none; padding: 6px 18px; border-radius: 30px; cursor: pointer; margin-left: auto; }
         
-        /* НОВЫЙ БЛОК С КНОПКАМИ НАД КАРТОЧКАМИ */
         .suggest-bar {
-            background: white;
+            background: var(--surface);
             border-radius: 28px;
             padding: 16px 24px;
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow);
             flex-wrap: wrap;
             gap: 15px;
         }
-        body.dark-mode .suggest-bar { background: #1e293b; color: #e2e8f0; }
-        .suggest-bar span { font-weight: 600; font-size: 1.1rem; }
+        .suggest-bar span { font-weight: 600; font-size: 1.1rem; color: var(--text); }
         .suggest-bar-actions { display: flex; gap: 12px; flex-wrap: wrap; }
         @media (max-width: 600px) {
             .suggest-bar { flex-direction: column; text-align: center; padding: 16px; }
@@ -44,128 +41,114 @@
         }
 
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-        .drink-card { background: white; border-radius: 28px; display: flex; padding: 16px; gap: 16px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 8px 18px rgba(0,0,0,0.05); position: relative; }
-        .drink-card:hover { transform: translateY(-4px); }
-        .card-img { width: 100px; height: 100px; object-fit: contain; background: #f8fafc; border-radius: 16px; }
+        .drink-card { background: var(--surface); border-radius: 28px; display: flex; padding: 16px; gap: 16px; cursor: pointer; transition: transform 0.2s; box-shadow: var(--shadow); position: relative; border: 1px solid transparent; }
+        .drink-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+        .card-img { width: 100px; height: 100px; object-fit: contain; background: var(--bg); border-radius: 16px; }
         .card-info { flex: 1; }
-        .card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+        .card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
         .tags-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .tags-list { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag-badge { background: #eef2ff; padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; }
-        .rating-value { background: #fef9e3; padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; color: #b45309; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; z-index: 1002 !important; visibility: hidden; opacity: 0; transition: 0.2s; }
+        .tag-badge { background: var(--tag-bg); color: var(--tag-text); padding: 4px 10px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; }
+        .rating-value { background: #FFF3CD; padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; color: #856404; font-weight: bold; }
+        body.dark-mode .rating-value { background: #3B2F14; color: #FBBF24; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1002 !important; visibility: hidden; opacity: 0; transition: 0.2s; }
         .modal-overlay.active { visibility: visible; opacity: 1; }
-        .modal-content { background: white; width: 90%; max-width: 450px; border-radius: 36px; overflow-y: auto; padding: 28px 24px; position: relative; }
-        .modal-close { position: absolute; top: 18px; right: 24px; font-size: 28px; background: none; border: none; cursor: pointer; }
+        .modal-content { background: var(--surface); width: 90%; max-width: 450px; border-radius: 36px; overflow-y: auto; padding: 28px 24px; position: relative; color: var(--text); }
+        .modal-close { position: absolute; top: 18px; right: 24px; font-size: 28px; background: none; border: none; cursor: pointer; color: var(--text-muted); }
+        .modal-close:hover { color: var(--primary); }
+        
         .detail-layout { display: flex; flex-wrap: nowrap; gap: 28px; }
         .detail-img { flex-shrink: 0; width: 200px; }
-        .detail-img img { width: 100%; object-fit: contain; border-radius: 24px; background: #f8fafc; }
-        .taste-block { background: #fff3e0; padding: 12px 16px; border-radius: 24px; margin: 12px 0; border-left: 4px solid #f4a261; }
-        .detail-description { background: #f8fafc; padding: 16px; border-radius: 24px; margin-top: 12px; }
-        .action-buttons { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+        .detail-img img { width: 100%; object-fit: contain; border-radius: 24px; background: var(--bg); }
+        .taste-block { background: var(--tag-bg); color: var(--text); padding: 12px 16px; border-radius: 24px; margin: 12px 0; border-left: 4px solid var(--primary); }
+        .detail-description { background: var(--bg); padding: 16px; border-radius: 24px; margin-top: 12px; }
+        
         .edit-button, .delete-button, .review-button { flex: 1; padding: 12px; border-radius: 40px; font-weight: bold; border: none; cursor: pointer; text-align: center; }
-        .edit-button { background: #3182ce; color: white; }
-        .delete-button { background: #e53e3e; color: white; }
-        .review-button { background: #f4a261; color: white; }
-        .reviews-section { margin-top: 20px; border-top: 2px solid #e2e8f0; padding-top: 20px; }
-        .review-card { background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .edit-button { background: var(--secondary); color: white; }
+        .delete-button { background: #EF4444; color: white; }
+        .review-button { background: var(--primary); color: white; }
+        
+        .reviews-section { margin-top: 20px; border-top: 2px solid var(--border); padding-top: 20px; }
+        .review-card { background: var(--bg); border-radius: 20px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         .review-info { flex: 1; }
         .review-user { font-weight: bold; }
-        .review-text { margin-top: 4px; }
-        .review-rating { background: #fef9e3; padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; }
-        .add-review-form { margin-top: 16px; background: #f1f5f9; border-radius: 24px; padding: 16px; }
-        .add-review-form textarea, .add-review-form select { width: 100%; padding: 8px 12px; border-radius: 24px; border: 1px solid #cbd5e1; margin-bottom: 12px; }
+        .review-text { margin-top: 4px; color: var(--text-muted); }
+        .review-rating { background: var(--tag-bg); color: var(--primary); padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; font-weight: bold; }
+        
+        .add-review-form { margin-top: 16px; background: var(--bg); border-radius: 24px; padding: 16px; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { font-weight: 600; display: block; margin-bottom: 8px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 16px; border-radius: 24px; border: 1px solid #cbd5e1; }
-        .form-group select { padding-right: 32px; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; }
+        .form-group label { font-weight: 600; display: block; margin-bottom: 8px; color: var(--text); }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 16px; border-radius: 24px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: inherit; font-size: 1rem; }
+        .form-group select { padding-right: 32px; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; }
+        
         .tags-checkboxes { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; }
-        .tag-check { display: flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 6px 14px; border-radius: 40px; cursor: pointer; }
+        .tag-check { display: flex; align-items: center; gap: 6px; background: var(--bg); color: var(--text); padding: 6px 14px; border-radius: 40px; cursor: pointer; border: 1px solid var(--border); }
+        .tag-check input { accent-color: var(--primary); }
         .file-preview { margin-top: 10px; max-width: 120px; }
         .file-preview img { width: 100%; border-radius: 16px; }
-        .submit-btn { background: #2b7a4b; color: white; padding: 12px 28px; border-radius: 40px; border: none; font-weight: bold; cursor: pointer; width: 100%; }
-        .sync-status { font-size: 0.7rem; color: #2b7a4b; margin-top: 12px; display: flex; align-items: center; gap: 6px; }
+        .submit-btn { background: var(--primary); color: white; padding: 12px 28px; border-radius: 40px; border: none; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; }
+        .submit-btn:hover { background: var(--primary-hover); }
+        
+        .sync-status { font-size: 0.75rem; color: var(--primary); margin-top: 12px; display: flex; align-items: center; gap: 6px; font-weight: 600; }
         .auth-buttons { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
         .auth-buttons button { width: 100%; padding: 12px; border-radius: 40px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .pending-card { display: flex; gap: 12px; background: #f8fafc; border-radius: 20px; padding: 12px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
-        .delete-suggestion-btn { background: #e53e3e; border: none; border-radius: 30px; padding: 6px 12px; color: white; cursor: pointer; }
-        .delete-suggestion-btn:hover { background: #c2410c !important; }
+        
+        .pending-card { display: flex; gap: 12px; background: var(--bg); border-radius: 20px; padding: 12px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+        .delete-suggestion-btn { background: #EF4444; border: none; border-radius: 30px; padding: 6px 12px; color: white; cursor: pointer; font-weight: bold; }
         .like-button { background: none; border: none; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 30px; transition: 0.2s; }
         .like-button:hover { background: rgba(0,0,0,0.05); transform: scale(1.05); }
+        body.dark-mode .like-button:hover { background: rgba(255,255,255,0.05); }
         .likes-count { font-size: 0.9rem; font-weight: bold; }
-        .new-badge { position: absolute; top: 12px; left: 12px; background: #f97316; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 10px; border-radius: 20px; letter-spacing: 0.3px; box-shadow: 0 2px 8px rgba(249, 115, 22, 0.25); pointer-events: none; }
-        .filters-row { display: flex; flex-direction: column; gap: 14px; }
-        .brand-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .brand-filter-select { min-width: 220px; padding: 12px 16px; border-radius: 48px; border: 1px solid #cbd5e1; background: white; font-size: 1rem; }
-        .favorite-filter-btn { background: #7c3aed; border: none; color: white; padding: 12px 18px; border-radius: 40px; cursor: pointer; font-weight: 700; transition: transform 0.2s, opacity 0.2s; }
-        .favorite-filter-btn.active { background: #c026d3; }
+        
+        .new-badge { position: absolute; top: 12px; left: 12px; background: var(--primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 10px; border-radius: 20px; letter-spacing: 0.3px; box-shadow: 0 2px 8px rgba(138, 43, 226, 0.3); pointer-events: none; }
+        
+        .brand-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--text); }
+        .brand-filter-select { min-width: 220px; padding: 12px 16px; border-radius: 48px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1rem; }
+        
+        .favorite-filter-btn { background: var(--secondary); border: none; color: white; padding: 12px 18px; border-radius: 40px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .favorite-filter-btn.active { background: var(--primary); }
         .favorite-filter-btn:hover { transform: scale(0.98); }
+        
         .stats-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 18px; }
-        .stat-card { background: #ffffff; border-radius: 24px; padding: 14px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid transparent; }
-        .stat-label { font-size: 0.8rem; color: #64748b; margin-bottom: 6px; }
-        .stat-value { font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 6px 0 2px; }
-        .stat-sub { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
-        .favorite-toggle-btn { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border: none; border-radius: 999px; background: rgba(15, 23, 42, 0.08); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.2s, background 0.2s; }
-        .favorite-toggle-btn:hover { transform: scale(1.05); background: rgba(15, 23, 42, 0.14); }
-        .favorite-toggle-btn.active { background: rgba(244, 63, 94, 0.18); }
-        .brand-badge { display: inline-flex; align-items: center; gap: 6px; background: #e0f2fe; color: #075985; padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; margin-bottom: 8px; }
+        .stat-card { background: var(--bg); border-radius: 24px; padding: 14px 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+        .stat-value { font-size: 1.5rem; font-weight: 900; color: var(--text); margin: 6px 0 2px; }
+        .stat-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+        
+        .favorite-toggle-btn { position: absolute; top: 12px; right: 12px; width: 40px; height: 40px; border: none; border-radius: 999px; background: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.2s, background 0.2s; color: var(--text-muted); border: 1px solid var(--border); }
+        .favorite-toggle-btn:hover { transform: scale(1.05); background: var(--tag-bg); color: var(--primary); }
+        .favorite-toggle-btn.active { background: var(--tag-bg); color: #EF4444; border-color: #EF4444; }
+        
+        .brand-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--tag-bg); color: var(--primary); padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; }
         .detail-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 8px; }
         .detail-meta .brand-badge { margin-bottom: 0; }
-        .detail-actions-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
-        .favorite-detail-btn { background: #ec4899; color: white; border: none; border-radius: 40px; padding: 12px 16px; font-weight: 800; cursor: pointer; }
-        .favorite-detail-btn.active { background: #be185d; }
-        .patch-notes-badge { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #ef4444; color: white; font-size: 14px; line-height: 1; box-shadow: 0 4px 10px rgba(239,68,68,0.35); }
+        
+        .favorite-detail-btn { background: var(--secondary); color: white; border: none; border-radius: 40px; padding: 12px 16px; font-weight: 800; cursor: pointer; }
+        .favorite-detail-btn.active { background: #EF4444; }
+        
+        .patch-notes-badge { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #EF4444; color: white; font-size: 14px; line-height: 1; box-shadow: 0 4px 10px rgba(239,68,68,0.35); }
         .patch-notes-badge.hidden { display: none; }
         .patch-notes-modal { max-width: 760px !important; }
         .patch-notes-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; max-height: 48vh; overflow-y: auto; padding-right: 4px; }
-        .patch-item { background: #f8fafc; border-radius: 22px; padding: 16px; border: 1px solid #e2e8f0; }
+        .patch-item { background: var(--bg); border-radius: 22px; padding: 16px; border: 1px solid var(--border); }
         .patch-item-header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 10px; }
-        .patch-version { font-weight: 900; font-size: 1.05rem; color: #0f172a; }
-        .patch-meta { font-size: 0.85rem; color: #64748b; }
+        .patch-version { font-weight: 900; font-size: 1.05rem; color: var(--text); }
+        .patch-meta { font-size: 0.85rem; color: var(--text-muted); }
         .patch-section { margin-top: 10px; }
-        .patch-section-title { font-weight: 800; margin-bottom: 4px; }
-        .patch-section-text { white-space: pre-wrap; line-height: 1.5; color: #1e293b; }
+        .patch-section-title { font-weight: 800; margin-bottom: 4px; color: var(--text); }
+        .patch-section-text { white-space: pre-wrap; line-height: 1.5; color: var(--text-muted); }
         .patch-item-actions { display: flex; gap: 8px; flex-wrap: wrap; }
         .patch-item-actions button { border: none; border-radius: 999px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
-        .patch-edit-btn { background: #2563eb; color: white; }
-        .patch-delete-btn { background: #dc2626; color: white; }
-        .patch-admin-panel { margin-top: 18px; padding: 16px; border-radius: 24px; background: #eef2ff; border: 1px solid #dbeafe; }
-        .patch-admin-title { font-weight: 900; margin-bottom: 12px; }
+        .patch-edit-btn { background: var(--secondary); color: white; }
+        .patch-delete-btn { background: #EF4444; color: white; }
+        .patch-admin-panel { margin-top: 18px; padding: 16px; border-radius: 24px; background: var(--tag-bg); border: 1px solid var(--border); }
+        .patch-admin-title { font-weight: 900; margin-bottom: 12px; color: var(--text); }
         .patch-admin-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
         .patch-admin-actions button { flex: 1; min-width: 160px; }
+        
         .card-headline { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-right: 40px; }
-
-        /* Тёмная тема */
-        body.dark-mode .filters-panel, body.dark-mode .drink-card, body.dark-mode .modal-content, body.dark-mode .empty-message, body.dark-mode .review-card, body.dark-mode .add-review-form, body.dark-mode .pending-card, body.dark-mode .stat-card { background: #1e293b; color: #e2e8f0; border-color: #334155; }
-        body.dark-mode .search-input, body.dark-mode .form-group input, body.dark-mode .form-group textarea, body.dark-mode .form-group select, body.dark-mode .add-review-form textarea, body.dark-mode .add-review-form select, body.dark-mode .brand-filter-select { background: #0f172a; border-color: #334155; color: #f1f5f9; }
-        body.dark-mode .tag-check, body.dark-mode .filter-tag { background: #2d3a4e; color: #e2e8f0; }
-        body.dark-mode .filter-tag.selected { background: #f4a261; color: #1e293b; }
-        body.dark-mode .tag-badge { background: #334155; }
-        body.dark-mode .rating-value { background: #2d3a2a; color: #fbbf24; }
-        body.dark-mode .taste-block, body.dark-mode .detail-description { background: #5681ba; border-left-color: #60a5fa; }
-        body.dark-mode .sort-btn { background: #2d3a4e; color: #e2e8f0; }
-        body.dark-mode .sort-btn.active { background: #2b7a4b; color: white; }
-        body.dark-mode .reset-filters { background: #2d3a4e; color: #e2e8f0; }
-        body.dark-mode .energy-counter { background: #2d3a4e; color: #e2e8f0; }
-        body.dark-mode .modal-close { color: #e2e8f0; }
-        body.dark-mode .modal-close:hover { color: #ef4444; }
-        body.dark-mode .review-rating { background: #5681ba; color: #fbbf24; }
-        body.dark-mode .delete-suggestion-btn { background: #c2410c; }
-        body.dark-mode .like-button:hover { background: rgba(255,255,255,0.1); }
-        body.dark-mode .favorite-toggle-btn { background: rgba(255,255,255,0.1); }
-        body.dark-mode .favorite-toggle-btn:hover { background: rgba(255,255,255,0.16); }
-        body.dark-mode .brand-badge { background: #1e293b; color: #7dd3fc; }
-        body.dark-mode .favorite-detail-btn { background: #db2777; }
-        body.dark-mode .favorite-detail-btn.active { background: #9d174d; }
-        body.dark-mode .patch-item { background: #1e293b; border-color: #334155; }
-        body.dark-mode .patch-version { color: #f8fafc; }
-        body.dark-mode .patch-meta { color: #cbd5e1; }
-        body.dark-mode .patch-section-title, body.dark-mode .patch-section-text { color: #e2e8f0; }
-        body.dark-mode .patch-admin-panel { background: #172554; border-color: #1d4ed8; }
-        body.dark-mode .patch-notes-badge { background: #fb7185; color: #0f172a; }
-        body.dark-mode .stat-label { color: #94a3b8; }
-        body.dark-mode .stat-value { color: #f8fafc; }
-        body.dark-mode .stat-sub { color: #cbd5e1; }
+        .empty-message { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted); background: var(--surface); border-radius: 24px; border: 1px dashed var(--border); }
 
         @media (max-width: 600px) {
             .filters-panel { padding: 12px 16px; }
@@ -176,36 +159,16 @@
             .reset-filters { margin-left: 0; align-self: center; }
             .drink-card { flex-direction: column; align-items: center; text-align: center; }
             .card-img { width: 120px; height: 120px; }
-            .modal-content { width: 95% !important; padding: 20px 16px !important; max-width: 95% !important; max-height: 85vh !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
-            .auth-buttons button { font-size: 0.9rem; padding: 10px; }
-            .form-group input, .form-group textarea, .form-group select { font-size: 0.9rem; padding: 10px 12px; }
+            .modal-content { width: 95% !important; padding: 20px 16px !important; max-width: 95% !important; max-height: 85vh !important; overflow-y: auto !important; }
             .detail-layout { flex-direction: column; align-items: center; gap: 16px; }
             .detail-img { width: 120px; margin: 0 auto; }
             .detail-info h2 { font-size: 1.3rem; text-align: center; }
-            .action-buttons { flex-direction: column; gap: 10px; }
             .edit-button, .delete-button, .review-button { width: 100%; }
-            .taste-block, .detail-description { padding: 8px 12px; font-size: 0.9rem; }
             .review-card { flex-direction: column; align-items: flex-start; }
-            .review-rating { align-self: flex-start; }
             .tags-row { flex-direction: column; align-items: flex-start; gap: 8px; }
             .rating-value { align-self: flex-start; }
-            .add-review-form { margin-top: 12px; padding: 12px; }
-            .add-review-form textarea { min-height: 60px; font-size: 14px; }
-            .add-review-form select { font-size: 14px; padding: 8px; }
-            .add-review-form .submit-btn { font-size: 14px; padding: 10px; margin-top: 5px; }
-            .reviews-section { margin-top: 15px; padding-top: 15px; }
-            .review-card { padding: 8px; margin-bottom: 8px; }
-            .review-text { font-size: 0.85rem; }
             .pending-card { flex-direction: column; align-items: flex-start; }
-            .empty-message { padding: 20px; text-align: center; }
         }
-        @media (max-width: 400px) {
-            .sort-buttons button { padding: 4px 10px; font-size: 0.8rem; }
-            .filter-tag { font-size: 0.7rem; padding: 4px 8px; }
-            .card-title { font-size: 1rem; }
-            .tag-badge { font-size: 0.6rem; }
-        }
-        .empty-message { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #64748b; background: white; border-radius: 24px; }
     </style>
 </head>
 <body>
@@ -242,7 +205,6 @@
         <div id="statsPanel" class="stats-panel"></div>
     </div>
 
-    <!-- НОВЫЙ БЛОК С КНОПКАМИ -->
     <div class="suggest-bar">
         <span>Не нашли интересный вас энергетик? Предложите!</span>
         <div class="suggest-bar-actions">
@@ -254,7 +216,6 @@
     <div id="cardsContainer" class="cards-grid"></div>
 </div>
 
-<!-- ПОДВАЛ САЙТА -->
 <footer class="site-footer">
     <div class="footer-columns">
         <div class="footer-column">
@@ -271,7 +232,7 @@
             <h3>Есть идея?</h3>
             <p>Помоги мне сделать сайт еще лучше. Напиши, чего не хватает или что можно улучшить.</p>
             <button class="footer-btn" id="openSiteSuggestBtn">Предложить идею</button>
-            <button class="footer-btn" id="openAdminSuggestBtn" style="display:none; background:#e53e3e; margin-top:10px;">Посмотреть идеи (Админ)</button>
+            <button class="footer-btn" id="openAdminSuggestBtn" style="display:none; background:#EF4444; margin-top:10px;">Посмотреть идеи (Админ)</button>
         </div>
     </div>
     <div class="footer-bottom">
@@ -279,7 +240,6 @@
     </div>
 </footer>
 
-<!-- МОДАЛКА: ОТПРАВКА ПРЕДЛОЖЕНИЯ ПО САЙТУ -->
 <div id="siteSuggestModal" class="modal-overlay">
     <div class="modal-content">
         <button class="modal-close" id="closeSiteSuggestModal">&times;</button>
@@ -303,7 +263,6 @@
     </div>
 </div>
 
-<!-- МОДАЛКА: ПРОСМОТР ПРЕДЛОЖЕНИЙ (ТОЛЬКО ДЛЯ АДМИНА) -->
 <div id="adminSiteSuggestModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 600px;">
         <button class="modal-close" id="closeAdminSiteSuggestModal">&times;</button>
@@ -312,7 +271,6 @@
     </div>
 </div>
 
-<!-- Модальные окна -->
 <div id="authModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeAuthModal">&times;</button><h2>Авторизация</h2>
 <div class="form-group"><label>Логин</label><input type="text" id="authLogin" placeholder="Логин"></div>
 <div class="form-group"><label>Пароль</label><input type="password" id="authPassword" placeholder="Пароль"></div>
@@ -369,7 +327,7 @@
     <div class="modal-content patch-notes-modal">
         <button class="modal-close" id="closePatchNotesModal">&times;</button>
         <h2>История обновлений</h2>
-        <p style="margin-top: 8px; color: #64748b;">Последние патчи и изменения проекта.</p>
+        <p style="margin-top: 8px; color: var(--text-muted);">Последние патчи и изменения проекта.</p>
         <div id="patchNotesList" class="patch-notes-list"></div>
         <div id="patchAdminPanel" class="patch-admin-panel" style="display:none;">
             <div class="patch-admin-title">Для админа</div>
@@ -389,7 +347,7 @@
 <form id="addDrinkForm"><div class="form-group"><label>Название *</label><input type="text" id="drinkName" required></div>
 <div class="form-group"><label>Бренд</label><input type="text" id="drinkBrand" list="brandOptions" placeholder="Monster, Red Bull, Gorilla..."><datalist id="brandOptions"></datalist></div>
 <div class="form-group"><label>Фото</label><input type="file" id="drinkImageFile" accept="image/*"><div id="imagePreview" class="file-preview"></div></div>
-<div class="form-group"><label>Оценка админа *</label><select id="drinkRating"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select><small>Учитывается в общей средней</small></div>
+<div class="form-group"><label>Оценка админа *</label><select id="drinkRating"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
 <div class="form-group"><label>Вкус *</label><input type="text" id="drinkTaste" required></div>
 <div class="form-group"><label>Кофеин (мг)</label><input type="number" id="drinkCaffeine" step="1"></div>
 <div class="form-group"><label>Таурин (мг)</label><input type="number" id="drinkTaurine" step="1"></div>
@@ -436,13 +394,13 @@
     const db = firebase.firestore();
     db.settings({ experimentalForceLongPolling: true });
 
-    const NO_IMAGE_URI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#e2e8f0"/><text x="100" y="110" font-family="Arial,sans-serif" font-size="18" fill="#94a3b8" text-anchor="middle">Нет фото</text></svg>');
+    const NO_IMAGE_URI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#E2E8F0"/><text x="100" y="110" font-family="Arial,sans-serif" font-size="18" fill="#64748B" text-anchor="middle">Нет фото</text></svg>');
 
     const AVAILABLE_TAGS = [
-        { emoji: "🚫", name: "Без сахара" }, { emoji: "🍬", name: "С сахаром" }, { emoji: "😵", name: "50/50 на сахаре" },
-        { emoji: "🥤", name: "Оригинальный" }, { emoji: "🍇", name: "Обычные фрукты" }, { emoji: "🌴", name: "Экзотический" },
-        { emoji: "⭐", name: "Эксклюзив" }, { emoji: "🍋", name: "Кислый" }, { emoji: "🍰", name: "Сладкий" },
-        { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" }, { emoji: "❌", name: "Снят с производства" }
+        { name: "Без сахара" }, { name: "С сахаром" }, { name: "50/50 на сахаре" },
+        { name: "Оригинальный" }, { name: "Обычные фрукты" }, { name: "Экзотический" },
+        { name: "Эксклюзив" }, { name: "Кислый" }, { name: "Сладкий" },
+        { name: "ОЧЕНЬ сладкий" }, { name: "Пресный" }, { name: "Снят с производства" }
     ];
 
     const BRAND_LABEL = 'Без бренда';
@@ -685,17 +643,17 @@
         const isAdmin = currentUser?.role === 'admin', userId = currentUser?.login;
         container.innerHTML = suggestions.map(sug => {
             const canDelete = isAdmin || (userId && userId === sug.userName), likes = sug.likes || [], liked = userId && likes.includes(userId), likeCount = likes.length, imgSrc = sug.imageData || sug.imageUrl;
-            return `<div class="pending-card" data-id="${sug.id}">${imgSrc ? `<img src="${escapeAttr(imgSrc)}" style="width:80px;height:80px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'">` : ''}<div style="flex:1"><div><strong>${escapeHtml(sug.name)}</strong></div><div>${sug.shop ? 'Где: ' + escapeHtml(sug.shop) : ''}</div><div>${sug.price ? 'Цена: ' + sug.price + ' руб.' : ''}</div><div><small>Предложил: ${escapeHtml(sug.userName)}</small></div></div><div style="display: flex; gap: 8px; align-items: center;">${userId ? `<button class="like-button" data-id="${sug.id}" style="color: ${liked ? '#e53e3e' : '#6c757d'};">❤️ <span class="likes-count">${likeCount}</span></button>` : `<span style="color: #6c757d;">❤️ ${likeCount}</span>`}${canDelete ? `<button class="delete-suggestion-btn" data-id="${sug.id}">Удалить</button>` : ''}</div></div>`;
+            return `<div class="pending-card" data-id="${sug.id}">${imgSrc ? `<img src="${escapeAttr(imgSrc)}" style="width:80px;height:80px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none'">` : ''}<div style="flex:1"><div><strong>${escapeHtml(sug.name)}</strong></div><div>${sug.shop ? 'Где: ' + escapeHtml(sug.shop) : ''}</div><div>${sug.price ? 'Цена: ' + sug.price + ' руб.' : ''}</div><div><small>Предложил: ${escapeHtml(sug.userName)}</small></div></div><div style="display: flex; gap: 8px; align-items: center;">${userId ? `<button class="like-button" data-id="${sug.id}" style="color: ${liked ? '#EF4444' : 'var(--text-muted)'};">♥ <span class="likes-count">${likeCount}</span></button>` : `<span style="color: var(--text-muted);">♥ ${likeCount}</span>`}${canDelete ? `<button class="delete-suggestion-btn" data-id="${sug.id}">Удалить</button>` : ''}</div></div>`;
         }).join('');
         document.querySelectorAll('.delete-suggestion-btn').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); if (confirm('Удалить?')) await db.collection('suggestions').doc(btn.dataset.id).delete(); }));
-        document.querySelectorAll('.like-button').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); if (!currentUser) return; const liked = btn.style.color === 'rgb(229, 62, 62)'; const countSpan = btn.querySelector('.likes-count'); let count = parseInt(countSpan.innerText); if (liked) { btn.style.color = '#6c757d'; countSpan.innerText = count - 1; } else { btn.style.color = '#e53e3e'; countSpan.innerText = count + 1; } await toggleLike(btn.dataset.id, currentUser.login); }));
+        document.querySelectorAll('.like-button').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); if (!currentUser) return; const liked = btn.style.color === 'rgb(239, 68, 68)'; const countSpan = btn.querySelector('.likes-count'); let count = parseInt(countSpan.innerText); if (liked) { btn.style.color = 'var(--text-muted)'; countSpan.innerText = count - 1; } else { btn.style.color = '#EF4444'; countSpan.innerText = count + 1; } await toggleLike(btn.dataset.id, currentUser.login); }));
     }
 
     function connectToSuggestions() { if (unsubscribeSuggestions) unsubscribeSuggestions(); unsubscribeSuggestions = db.collection('suggestions').orderBy('createdAt', 'desc').onSnapshot(snapshot => renderPendingList(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))), console.error); }
 
     function renderTagCheckboxes(container, selected = []) {
         if (!container) return;
-        container.innerHTML = ''; AVAILABLE_TAGS.forEach(tag => { const label = document.createElement('label'); label.className = 'tag-check'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag.name; if (selected.includes(tag.name)) cb.checked = true; const span = document.createElement('span'); span.innerText = `${tag.emoji} ${tag.name}`; label.appendChild(cb); label.appendChild(span); container.appendChild(label); });
+        container.innerHTML = ''; AVAILABLE_TAGS.forEach(tag => { const label = document.createElement('label'); label.className = 'tag-check'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag.name; if (selected.includes(tag.name)) cb.checked = true; const span = document.createElement('span'); span.innerText = tag.name; label.appendChild(cb); label.appendChild(span); container.appendChild(label); });
     }
 
     function getSelectedTags(container) { return Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value); }
@@ -729,8 +687,8 @@
         if (!drinks.length) { cardsContainer.innerHTML = '<div class="empty-message">Ничего не найдено.</div>'; return; }
         const now = Date.now(), ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
         cardsContainer.innerHTML = drinks.map(drink => {
-            const brand = normalizeBrand(drink.brand), tagsHtml = (drink.tags || []).map(t => { const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`; }).join('');
-            let isNew = false; if (drink.createdAt) { const createdDate = drink.createdAt.toDate ? drink.createdAt.toDate() : new Date(drink.createdAt); if (!isNaN(createdDate.getTime())) isNew = (now - createdDate.getTime()) < ONE_WEEK; }
+            const brand = normalizeBrand(drink.brand), tagsHtml = (drink.tags || []).map(t => `<span class="tag-badge">${escapeHtml(t)}</span>`).join('');
+            let isNew = false; if (drink.createdAt) { const createdDate = drink.createdAt.toDatetime ? drink.createdAt.toDate() : new Date(drink.createdAt); if (!isNaN(createdDate.getTime())) isNew = (now - createdDate.getTime()) < ONE_WEEK; }
             return `<div class="drink-card" data-id="${drink.id}">${isNew ? '<span class="new-badge">NEW</span>' : ''}<button class="favorite-toggle-btn ${isFavorite(drink.id) ? 'active' : ''}" data-favorite-id="${drink.id}" title="Избранное">${isFavorite(drink.id) ? '♥' : '♡'}</button><img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='${NO_IMAGE_URI}'"><div class="card-info"><div class="card-headline"><div><div class="card-title">${escapeHtml(drink.name)}</div><div class="brand-badge">${escapeHtml(brand)}</div></div><div class="rating-value">${drink.rating ? drink.rating.toFixed(1) : '?'}</div></div><div class="tags-row"><div class="tags-list">${tagsHtml}</div></div></div></div>`;
         }).join('');
         document.querySelectorAll('.drink-card').forEach(card => card.addEventListener('click', () => { const drink = energyDrinks.find(d => d.id === card.dataset.id); if (drink) openDetailModal(drink); }));
@@ -739,7 +697,7 @@
 
     async function openDetailModal(drink) {
         const reviews = await fetchReviews(drink.id);
-        const tagSpans = (drink.tags || []).map(t => { const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`; }).join('');
+        const tagSpans = (drink.tags || []).map(t => `<span class="tag-badge">${escapeHtml(t)}</span>`).join('');
         const isAdmin = currentUser?.role === 'admin', showReviewForm = currentUser && (currentUser.role === 'user' || currentUser.role === 'admin');
         let userSum = 0, userCount = 0; reviews.forEach(r => { userSum += r.rating; userCount++; });
         const userAvgRating = userCount ? (userSum / userCount).toFixed(1) : '—', brand = normalizeBrand(drink.brand);
@@ -747,8 +705,8 @@
         const reviewsDiv = document.getElementById('reviewsList');
         reviewsDiv.innerHTML = reviews.length ? reviews.map(review => {
             const canEditDelete = (currentUser?.role === 'admin') || (currentUser?.login === review.userName);
-            return `<div class="review-card" data-review-id="${review.id}"><div class="review-info"><div class="review-user">${escapeHtml(review.userName)}</div><div class="review-text">${escapeHtml(review.text)}</div></div><div style="display:flex;align-items:center;gap:12px;"><div class="review-rating">${review.rating}</div>${canEditDelete ? `<button class="edit-review-btn" data-id="${review.id}" data-text="${escapeAttr(review.text)}" data-rating="${review.rating}" style="background:none;border:none;cursor:pointer;font-size:1.3rem;">✏️</button><button class="delete-review-btn" data-review-id="${review.id}" style="background:none;border:none;cursor:pointer;font-size:1.3rem;">🗑️</button>` : ''}</div></div>`;
-        }).join('') : '<p>Пока нет отзывов.</p>';
+            return `<div class="review-card" data-review-id="${review.id}"><div class="review-info"><div class="review-user">${escapeHtml(review.userName)}</div><div class="review-text">${escapeHtml(review.text)}</div></div><div style="display:flex;align-items:center;gap:12px;"><div class="review-rating">${review.rating}</div>${canEditDelete ? `<button class="edit-review-btn" data-id="${review.id}" data-text="${escapeAttr(review.text)}" data-rating="${review.rating}" style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:var(--text-muted);">✎</button><button class="delete-review-btn" data-review-id="${review.id}" style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:#EF4444;">✖</button>` : ''}</div></div>`;
+        }).join('') : '<p style="color:var(--text-muted)">Пока нет отзывов.</p>';
         document.querySelectorAll('.delete-review-btn').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); const id = btn.dataset.reviewId; if (id) await deleteReview(id, drink.id); }));
         document.querySelectorAll('.edit-review-btn').forEach(btn => btn.addEventListener('click', () => { document.getElementById('editReviewId').value = btn.dataset.id; document.getElementById('editReviewDrinkId').value = drink.id; document.getElementById('editReviewText').value = btn.dataset.text; document.getElementById('editReviewRating').value = btn.dataset.rating; editReviewModal.classList.add('active'); }));
         if (showReviewForm) {
@@ -801,7 +759,7 @@
     function renderFilterTags() {
         filterTagsContainer.innerHTML = ''; const sugarTags = ["Без сахара", "С сахаром", "50/50 на сахаре"];
         AVAILABLE_TAGS.forEach(tag => {
-            const span = document.createElement('span'); span.className = 'filter-tag'; if (selectedFilterTags.includes(tag.name)) span.classList.add('selected'); span.innerText = `${tag.emoji} ${tag.name}`;
+            const span = document.createElement('span'); span.className = 'filter-tag'; if (selectedFilterTags.includes(tag.name)) span.classList.add('selected'); span.innerText = tag.name;
             span.onclick = () => { if (sugarTags.includes(tag.name)) { if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name); else { selectedFilterTags = selectedFilterTags.filter(t => !sugarTags.includes(t)); selectedFilterTags.push(tag.name); } } else { if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name); else selectedFilterTags.push(tag.name); } renderFilterTags(); applyFiltersAndRender(); };
             filterTagsContainer.appendChild(span);
         });
@@ -817,13 +775,12 @@
     brandFilter && (brandFilter.onchange = (e) => { selectedBrand = e.target.value; applyFiltersAndRender(); });
     favoritesFilterBtn && (favoritesFilterBtn.onclick = () => { showOnlyFavorites = !showOnlyFavorites; favoritesFilterBtn.classList.toggle('active', showOnlyFavorites); favoritesFilterBtn.textContent = showOnlyFavorites ? 'Показываю избранное' : 'Только избранное'; applyFiltersAndRender(); });
 
-    // Навигация
     document.getElementById('openAddModalBtn').onclick = () => { if (checkAuthForAdd()) addModal.classList.add('active'); };
     document.getElementById('suggestBtn').onclick = () => { if (checkAuthForReview()) suggestModal.classList.add('active'); };
     document.getElementById('pendingBtn').onclick = () => pendingModal.classList.add('active');
     patchNotesBtn.onclick = () => openPatchNotesModal();
     document.getElementById('profileBtn').onclick = () => window.location.href = 'profile.html';
-    document.getElementById('loginBtn').onclick = showAuthModal; // ИСПРАВЛЕНО: теперь открывает авторизацию
+    document.getElementById('loginBtn').onclick = showAuthModal; 
     document.getElementById('closeRegisterModal').onclick = closeAllModals; document.getElementById('closeAuthModal').onclick = closeAllModals; document.getElementById('closeAdminModal').onclick = closeAllModals; document.getElementById('closeAddModal').onclick = closeAllModals; document.getElementById('closeEditModal').onclick = closeAllModals; document.getElementById('closeDetailModal').onclick = closeAllModals; document.getElementById('closeSuggestModal').onclick = closeAllModals; document.getElementById('closePendingModal').onclick = closeAllModals; document.getElementById('closePatchNotesModal').onclick = closeAllModals; document.getElementById('closeEditReviewModal').onclick = closeAllModals; document.getElementById('closeSiteSuggestModal').onclick = closeAllModals; document.getElementById('closeAdminSiteSuggestModal').onclick = closeAllModals;
     window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) closeAllModals(); };
 
@@ -850,11 +807,10 @@
 
     const logoImage = document.getElementById('logoImage');
     const themeToggle = document.getElementById('themeToggle');
-    function applyTheme(dark) { document.body.classList.toggle('dark-mode', dark); if(themeToggle) themeToggle.textContent = dark ? '☀️' : '🌙'; if (logoImage) logoImage.src = dark ? 'logo-dark.png' : 'logo-light.png'; }
+    function applyTheme(dark) { document.body.classList.toggle('dark-mode', dark); if(themeToggle) themeToggle.textContent = dark ? '☀' : '☾'; if (logoImage) logoImage.src = dark ? 'logo-dark.png' : 'logo-light.png'; }
     applyTheme(localStorage.getItem('energyTheme') === 'dark');
     if(themeToggle) { themeToggle.onclick = () => { const isDark = !document.body.classList.contains('dark-mode'); applyTheme(isDark); localStorage.setItem('energyTheme', isDark ? 'dark' : 'light'); }; }
 
-    // Подвал
     function updateFooterAdminBtn() { const isAdmin = currentUser && currentUser.role === 'admin'; const adminBtn = document.getElementById('openAdminSuggestBtn'); if (adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none'; }
 
     let selectedSiteSuggestImageBase64 = null;
@@ -894,7 +850,7 @@
     window.deleteSiteSuggestion = async (id) => {
         if (confirm('Удалить это предложение?')) {
             await db.collection('site_suggestions').doc(id).delete();
-            document.getElementById('openAdminSuggestBtn').click(); // Перезагружаем список
+            document.getElementById('openAdminSuggestBtn').click();
         }
     };
 
@@ -906,22 +862,21 @@
             if (snap.empty) list.innerHTML = '<p style="text-align:center;">Пока нет предложений.</p>';
             else list.innerHTML = snap.docs.map(doc => { 
                 const d = doc.data(), date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('ru-RU') : ''; 
-                return `<div class="review-list-item" style="background:#f8fafc; padding:15px; border-radius:16px; margin-bottom:10px; border:1px solid #e2e8f0; position:relative;">
+                return `<div class="review-list-item" style="background:var(--bg); padding:15px; border-radius:16px; margin-bottom:10px; border:1px solid var(--border); position:relative;">
                     ${d.imageData ? `<img src="${d.imageData}" style="max-width:100%; border-radius:8px; margin-bottom:10px;">` : ''}
-                    <h4 style="color:#3182ce; margin-bottom:5px; padding-right:70px;">${escapeHtml(d.topic)}</h4>
-                    <p style="margin-bottom:5px;">${escapeHtml(d.text)}</p>
-                    <small style="color:#64748b;">От: ${escapeHtml(d.userName)} | ${date}</small>
-                    <button onclick="deleteSiteSuggestion('${doc.id}')" style="position:absolute; top:15px; right:15px; background:#e53e3e; color:white; border:none; padding:6px 12px; border-radius:10px; cursor:pointer; font-size:0.8rem;">Удалить</button>
+                    <h4 style="color:var(--primary); margin-bottom:5px; padding-right:70px;">${escapeHtml(d.topic)}</h4>
+                    <p style="margin-bottom:5px; color:var(--text);">${escapeHtml(d.text)}</p>
+                    <small style="color:var(--text-muted);">От: ${escapeHtml(d.userName)} | ${date}</small>
+                    <button onclick="deleteSiteSuggestion('${doc.id}')" style="position:absolute; top:15px; right:15px; background:#EF4444; color:white; border:none; padding:6px 12px; border-radius:10px; cursor:pointer; font-size:0.8rem; font-weight:bold;">Удалить</button>
                 </div>`; 
             }).join('');
-        } catch (error) { list.innerHTML = '<p style="text-align:center; color:red;">Ошибка загрузки.</p>'; }
+        } catch (error) { list.innerHTML = '<p style="text-align:center; color:#EF4444;">Ошибка загрузки.</p>'; }
     });
 
-    // ===== Старт =====
     document.addEventListener('DOMContentLoaded', async () => {
         const saved = localStorage.getItem('energyUser');
         if (saved) currentUser = JSON.parse(saved);
-        else showAuthModal(); // ИСПРАВЛЕНО: при входе показываем Авторизацию
+        else showAuthModal(); 
 
         await loadFavorites();
         updateUIByRole();
