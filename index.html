@@ -11,15 +11,22 @@
         .app-container { max-width: 1300px; margin: 0 auto; }
         .filters-panel { background: var(--surface); border-radius: 28px; padding: 18px 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
         .search-input { width: 100%; padding: 12px 18px; border-radius: 48px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1rem; margin-bottom: 16px; }
-        .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        
+        /* Увеличен отступ между строками фильтров */
+        .filters-row { display: flex; flex-direction: column; gap: 22px; }
+        
+        .brand-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--text); }
+        
+        .sort-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
         .sort-buttons { display: flex; gap: 12px; }
-        .sort-btn { background: var(--tag-bg); color: var(--text); border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; transition: all 0.2s; }
+        .sort-btn { background: var(--tag-bg); color: var(--text); border: none; padding: 6px 16px; border-radius: 40px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
         .sort-btn.active { background: var(--primary); color: white; }
+        
         .tags-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
         .filter-tags-group { display: flex; flex-wrap: wrap; gap: 12px; }
-        .filter-tag { background: var(--tag-bg); color: var(--text); padding: 6px 14px; border-radius: 40px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .filter-tag { background: var(--tag-bg); color: var(--text); padding: 6px 14px; border-radius: 40px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: 500; }
         .filter-tag.selected { background: var(--primary); color: white; }
-        .reset-filters { background: var(--border); color: var(--text); border: none; padding: 6px 18px; border-radius: 30px; cursor: pointer; margin-left: auto; }
+        .reset-filters { background: var(--border); color: var(--text); border: none; padding: 6px 18px; border-radius: 30px; cursor: pointer; margin-left: auto; font-weight: 500; }
         
         .suggest-bar {
             background: var(--surface);
@@ -103,7 +110,6 @@
         
         .new-badge { position: absolute; top: 12px; left: 12px; background: var(--primary); color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 10px; border-radius: 20px; letter-spacing: 0.3px; box-shadow: 0 2px 8px rgba(138, 43, 226, 0.3); pointer-events: none; }
         
-        .brand-filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--text); }
         .brand-filter-select { min-width: 220px; padding: 12px 16px; border-radius: 48px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 1rem; }
         
         .favorite-filter-btn { background: var(--secondary); border: none; color: white; padding: 12px 18px; border-radius: 40px; cursor: pointer; font-weight: 700; transition: 0.2s; }
@@ -397,10 +403,10 @@
     const NO_IMAGE_URI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#E2E8F0"/><text x="100" y="110" font-family="Arial,sans-serif" font-size="18" fill="#64748B" text-anchor="middle">Нет фото</text></svg>');
 
     const AVAILABLE_TAGS = [
-        { name: "Без сахара" }, { name: "С сахаром" }, { name: "50/50 на сахаре" },
-        { name: "Оригинальный" }, { name: "Обычные фрукты" }, { name: "Экзотический" },
-        { name: "Эксклюзив" }, { name: "Кислый" }, { name: "Сладкий" },
-        { name: "ОЧЕНЬ сладкий" }, { name: "Пресный" }, { name: "Снят с производства" }
+        { emoji: "🚫", name: "Без сахара" }, { emoji: "🍬", name: "С сахаром" }, { emoji: "😵", name: "50/50 на сахаре" },
+        { emoji: "🥤", name: "Оригинальный" }, { emoji: "🍇", name: "Обычные фрукты" }, { emoji: "🌴", name: "Экзотический" },
+        { emoji: "⭐", name: "Эксклюзив" }, { emoji: "🍋", name: "Кислый" }, { emoji: "🍰", name: "Сладкий" },
+        { emoji: "🍬🍬", name: "ОЧЕНЬ сладкий" }, { emoji: "💧", name: "Пресный" }, { emoji: "❌", name: "Снят с производства" }
     ];
 
     const BRAND_LABEL = 'Без бренда';
@@ -653,7 +659,21 @@
 
     function renderTagCheckboxes(container, selected = []) {
         if (!container) return;
-        container.innerHTML = ''; AVAILABLE_TAGS.forEach(tag => { const label = document.createElement('label'); label.className = 'tag-check'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = tag.name; if (selected.includes(tag.name)) cb.checked = true; const span = document.createElement('span'); span.innerText = tag.name; label.appendChild(cb); label.appendChild(span); container.appendChild(label); });
+        container.innerHTML = ''; 
+        AVAILABLE_TAGS.forEach(tag => { 
+            const label = document.createElement('label'); 
+            label.className = 'tag-check'; 
+            const cb = document.createElement('input'); 
+            cb.type = 'checkbox'; 
+            cb.value = tag.name; 
+            if (selected.includes(tag.name)) cb.checked = true; 
+            const span = document.createElement('span'); 
+            // ВОЗВРАЩАЕМ ЭМОДЗИ В ЧЕКБОКСЫ
+            span.innerText = `${tag.emoji} ${tag.name}`; 
+            label.appendChild(cb); 
+            label.appendChild(span); 
+            container.appendChild(label); 
+        });
     }
 
     function getSelectedTags(container) { return Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value); }
@@ -687,7 +707,12 @@
         if (!drinks.length) { cardsContainer.innerHTML = '<div class="empty-message">Ничего не найдено.</div>'; return; }
         const now = Date.now(), ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
         cardsContainer.innerHTML = drinks.map(drink => {
-            const brand = normalizeBrand(drink.brand), tagsHtml = (drink.tags || []).map(t => `<span class="tag-badge">${escapeHtml(t)}</span>`).join('');
+            const brand = normalizeBrand(drink.brand);
+            // ВОЗВРАЩАЕМ ЭМОДЗИ В КАРТОЧКИ
+            const tagsHtml = (drink.tags || []).map(t => { 
+                const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); 
+                return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`; 
+            }).join('');
             let isNew = false; if (drink.createdAt) { const createdDate = drink.createdAt.toDatetime ? drink.createdAt.toDate() : new Date(drink.createdAt); if (!isNaN(createdDate.getTime())) isNew = (now - createdDate.getTime()) < ONE_WEEK; }
             return `<div class="drink-card" data-id="${drink.id}">${isNew ? '<span class="new-badge">NEW</span>' : ''}<button class="favorite-toggle-btn ${isFavorite(drink.id) ? 'active' : ''}" data-favorite-id="${drink.id}" title="Избранное">${isFavorite(drink.id) ? '♥' : '♡'}</button><img class="card-img" src="${getImageSrc(drink)}" onerror="this.src='${NO_IMAGE_URI}'"><div class="card-info"><div class="card-headline"><div><div class="card-title">${escapeHtml(drink.name)}</div><div class="brand-badge">${escapeHtml(brand)}</div></div><div class="rating-value">${drink.rating ? drink.rating.toFixed(1) : '?'}</div></div><div class="tags-row"><div class="tags-list">${tagsHtml}</div></div></div></div>`;
         }).join('');
@@ -697,7 +722,11 @@
 
     async function openDetailModal(drink) {
         const reviews = await fetchReviews(drink.id);
-        const tagSpans = (drink.tags || []).map(t => `<span class="tag-badge">${escapeHtml(t)}</span>`).join('');
+        // ВОЗВРАЩАЕМ ЭМОДЗИ В ДЕТАЛЬНОЕ ОКНО
+        const tagSpans = (drink.tags || []).map(t => { 
+            const tagObj = AVAILABLE_TAGS.find(tt => tt.name === t); 
+            return `<span class="tag-badge">${tagObj?.emoji || ''} ${escapeHtml(t)}</span>`; 
+        }).join('');
         const isAdmin = currentUser?.role === 'admin', showReviewForm = currentUser && (currentUser.role === 'user' || currentUser.role === 'admin');
         let userSum = 0, userCount = 0; reviews.forEach(r => { userSum += r.rating; userCount++; });
         const userAvgRating = userCount ? (userSum / userCount).toFixed(1) : '—', brand = normalizeBrand(drink.brand);
@@ -759,7 +788,9 @@
     function renderFilterTags() {
         filterTagsContainer.innerHTML = ''; const sugarTags = ["Без сахара", "С сахаром", "50/50 на сахаре"];
         AVAILABLE_TAGS.forEach(tag => {
-            const span = document.createElement('span'); span.className = 'filter-tag'; if (selectedFilterTags.includes(tag.name)) span.classList.add('selected'); span.innerText = tag.name;
+            const span = document.createElement('span'); span.className = 'filter-tag'; if (selectedFilterTags.includes(tag.name)) span.classList.add('selected'); 
+            // ВОЗВРАЩАЕМ ЭМОДЗИ В ФИЛЬТРЫ
+            span.innerText = `${tag.emoji} ${tag.name}`;
             span.onclick = () => { if (sugarTags.includes(tag.name)) { if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name); else { selectedFilterTags = selectedFilterTags.filter(t => !sugarTags.includes(t)); selectedFilterTags.push(tag.name); } } else { if (selectedFilterTags.includes(tag.name)) selectedFilterTags = selectedFilterTags.filter(t => t !== tag.name); else selectedFilterTags.push(tag.name); } renderFilterTags(); applyFiltersAndRender(); };
             filterTagsContainer.appendChild(span);
         });
