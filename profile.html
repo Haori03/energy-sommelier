@@ -414,4 +414,213 @@ document.querySelectorAll('.tab-btn').forEach(btn => { btn.onclick = () => { doc
 
 async function loadLogs() {
     const snap = await db.collection('drink_logs').where('userLogin', '==', userProfile.login).get();
-    allLogs = snap.docs
+    allLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const totalDrank = allLogs.reduce((sum, log) => sum + (log.quantity || 0), 0);
+    const counts = {}; allLogs.forEach(log => counts[log.drinkName] = (counts[log.drinkName] || 0) + log.quantity);
+    let maxDrink = '—', maxCount = 0; for (const [drink, count] of Object.entries(counts)) { if (count > maxCount) { maxDrink = drink; maxCount = count; } }
+    renderExtendedStats(totalDrank, maxDrink, maxCount); renderCalendar(); 
+}
+
+function renderExtendedStats(totalDrank, maxDrink, maxCount) {
+    const regDate = userProfile.createdAt ? (userProfile.createdAt.toDate ? userProfile.createdAt.toDate() : new Date(userProfile.createdAt)) : new Date();
+    const stats = userProfile.stats || {};
+    document.getElementById('extendedStatsGrid').innerHTML = `<div class="ext-stat-item"><div class="ext-stat-label">Дата регистрации</div><div class="ext-stat-value">${regDate.toLocaleDateString('ru-RU')}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Любимый</div><div class="ext-stat-value">${escapeHtml(stats.favoriteDrink) || '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Нелюбимый</div><div class="ext-stat-value">${escapeHtml(stats.leastFavoriteDrink) || '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Всего выпито</div><div class="ext-stat-value">${totalDrank} шт.</div></div><div class="ext-stat-item"><div class="ext-stat-label">Больше всего выпито</div><div class="ext-stat-value">${maxDrink !== '—' ? `${escapeHtml(maxDrink)} (${maxCount} шт.)` : '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Другое</div><div class="ext-stat-value">${escapeHtml(stats.customNote) || '—'}</div></div>`;
+    if (isOwnProfile) document.getElementById('editStatsBtnContainer').innerHTML = `<button class="btn-edit-stats" onclick="openEditStats()">✏️ Редактировать</button>`;
+    loadStatsCards(totalDrank);
+}
+
+window.openEditStats = () => { const stats = userProfile.stats || {}; document.getElementById('statFavDrink').value = stats.favoriteDrink || ''; document.getElementById('statLeastDrink').value = stats.leastFavoriteDrink || ''; document.getElementById('statCustomNote').value = stats.customNote || ''; document.getElementById('editStatsModal').classList.add('active'); };
+document.getElementById('editStatsForm').onsubmit = async (e) => { e.preventDefault(); const newStats = { favoriteDrink: document.getElementById('statFavDrink').value.trim(), leastFavoriteDrink: document.getElementById('statLeastDrink').value.trim(), customNote: document.getElementById('statCustomNote').value.trim() }; await userDocRef.update({ stats: newStats }); userProfile.stats = newStats; document.getElementById('editStatsModal').classList.remove('active'); loadLogs(); };
+
+function renderCalendar() {
+    const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth(), monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
+    const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate(), startOffset = firstDay === 0 ? 6 : firstDay - 1; 
+    let html = `<div class="cal-day-name">Пн</div><div class="cal-day-name">Вт</div><div class="cal-day-name">Ср</div><div class="cal-day-name">Чт</div><div class="cal-day-name">Пт</div><div class="cal-day-name">Сб</div><div class="cal-day-name">Вс</div>`;
+    for (let i = 0; i < startOffset; i++) html += `<div class="cal-day empty"></div>`;
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayLogs = allLogs.filter(l => { const d = l.date ? (l.date.toDate ? l.date.toDate() : new Date(l.date)) : null; return d && d.getFullYear() === year && d.getMonth() === month && d.getDate() === day; });
+        const cans = dayLogs.reduce((sum, l) => sum + l.quantity, 0);
+        let dots = ''; if (cans > 0) dots = `<div class="dots-container">${'<div class="red-dot"></div>'.repeat(Math.min(cans, 10))}</div>`;
+        const isToday = new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year, dateStr = `${day}.${month + 1}.${year}`;
+        html += `<div class="cal-day ${cans > 0 ? 'has-drinks' : ''}" style="${isToday ? 'border-color: #2b7a4b;' : ''}" onclick="openCalendarDay('${dateStr}')">${day} ${dots}</div>`;
+    }
+    document.getElementById('calendarGrid').innerHTML = html;
+}
+
+window.openCalendarDay = (dateStr) => {
+    document.getElementById('calDayTitle').textContent = dateStr;
+    const list = document.getElementById('calDayList'), [d, m, y] = dateStr.split('.').map(Number);
+    const dayLogs = allLogs.filter(l => { const logDate = l.date ? (l.date.toDate ? l.date.toDate() : new Date(l.date)) : null; return logDate && logDate.getDate() === d && logDate.getMonth() === (m - 1) && logDate.getFullYear() === y; });
+    if (!dayLogs.length) list.innerHTML = '<p>В этот день ничего не выпито.</p>';
+    else list.innerHTML = dayLogs.map(log => `<div class="log-item"><div><strong>${escapeHtml(log.drinkName)}</strong></div><div>${log.quantity} шт.</div></div>`).join('');
+    document.getElementById('calendarDayModal').classList.add('active');
+};
+
+document.getElementById('prevMonth').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); };
+document.getElementById('nextMonth').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); };
+
+document.getElementById('btnIDrank').onclick = () => { document.getElementById('logDrinkDate').valueAsDate = new Date(); document.getElementById('drinkLogModal').classList.add('active'); };
+document.getElementById('drinkLogForm').onsubmit = async (e) => {
+    e.preventDefault(); const name = document.getElementById('logDrinkName').value.trim(), qty = parseInt(document.getElementById('logDrinkQty').value), dateStr = document.getElementById('logDrinkDate').value, dateObj = new Date(dateStr + 'T12:00:00');
+    await db.collection('drink_logs').add({ userLogin: userProfile.login, drinkName: name, quantity: qty, date: firebase.firestore.Timestamp.fromDate(dateObj), createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    document.getElementById('drinkLogModal').classList.remove('active'); document.getElementById('drinkLogForm').reset(); loadLogs();
+};
+document.getElementById('btnDeleteDrank').onclick = () => {
+    const list = document.getElementById('drinkLogsList');
+    if (!allLogs.length) list.innerHTML = '<p>Нет записей.</p>';
+    else {
+        const sorted = [...allLogs].sort((a, b) => (b.date ? b.date.toDate() : new Date(0)) - (a.date ? a.date.toDate() : new Date(0)));
+        list.innerHTML = sorted.map(log => { const d = log.date ? log.date.toDate().toLocaleDateString('ru-RU') : ''; return `<div class="log-item"><div><strong>${escapeHtml(log.drinkName)}</strong> (${log.quantity} шт.) <br><small>${d}</small></div><button class="btn-del-log" onclick="deleteLog('${log.id}')">×</button></div>`; }).join('');
+    }
+    document.getElementById('deleteDrankModal').classList.add('active');
+};
+window.deleteLog = async (id) => { if(!confirm('Удалить запись?')) return; await db.collection('drink_logs').doc(id).delete(); document.getElementById('deleteDrankModal').classList.remove('active'); loadLogs(); };
+
+async function loadStatsCards(totalDrank) {
+    const login = userProfile.login, reviewsSnap = await db.collection('reviews').where('userName', '==', login).get(), reviewCount = reviewsSnap.size, favCount = (userProfile.favorites || []).length, suggSnap = await db.collection('suggestions').where('userName', '==', login).get();
+    document.getElementById('mainStatsGrid').innerHTML = `<div class="stat-card clickable" onclick="showMyReviews()"><div class="stat-icon">⭐</div><div class="stat-label">Отзывов</div><div class="stat-value">${reviewCount}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div><div class="stat-card clickable" onclick="showMyFavorites()"><div class="stat-icon">❤️</div><div class="stat-label">В избранном</div><div class="stat-value">${favCount}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div><div class="stat-card clickable" onclick="showMySuggestions()"><div class="stat-icon">💡</div><div class="stat-label">Предложений</div><div class="stat-value">${suggSnap.size}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div>`;
+}
+
+window.showMyReviews = async () => {
+    const snap = await db.collection('reviews').where('userName', '==', userProfile.login).get(), container = document.getElementById('myReviewsList');
+    if (snap.empty) container.innerHTML = '<p>Отзывов пока нет.</p>';
+    else container.innerHTML = snap.docs.map(doc => { const r = doc.data(), drink = allDrinks.find(d => d.id === r.drinkId); return `<div class="review-list-item"><h4>${drink ? escapeHtml(drink.name) : 'Неизвестный энергетик'} — ${r.rating} ★</h4><p>${escapeHtml(r.text)}</p></div>`; }).join('');
+    document.getElementById('myReviewsModal').classList.add('active');
+};
+
+window.showMyFavorites = () => {
+    const container = document.getElementById('myFavsList'), favIds = userProfile.favorites || [];
+    if (!favIds.length) container.innerHTML = '<p>В избранном пусто.</p>';
+    else container.innerHTML = favIds.map(id => { const drink = allDrinks.find(d => d.id === id); if (!drink) return ''; const img = drink.imageData || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect width="60" height="60" fill="#e2e8f0"/></svg>'); return `<div class="fav-list-item"><img src="${img}"><span>${escapeHtml(drink.name)}</span></div>`; }).join('');
+    document.getElementById('myFavsModal').classList.add('active');
+};
+
+window.showMySuggestions = async () => {
+    const snap = await db.collection('suggestions').where('userName', '==', userProfile.login).get(), container = document.getElementById('mySuggsList');
+    if (snap.empty) container.innerHTML = '<p>Вы еще не предлагали энергетики.</p>';
+    else container.innerHTML = snap.docs.map(doc => { const s = doc.data(), likes = (s.likes || []).length; return `<div class="log-item"><div><strong>${escapeHtml(s.name)}</strong></div><div style="color: #e53e3e; font-weight: bold;">❤️ ${likes}</div></div>`; }).join('');
+    document.getElementById('mySuggsModal').classList.add('active');
+};
+
+async function loadFriendsAndRequests() {
+    const friends = userProfile.friends || [], sent = userProfile.sentRequests || [], incoming = userProfile.incomingRequests || [];
+    const containerFriends = document.getElementById('friendsList'), containerIncoming = document.getElementById('incomingRequestsSection'), containerSent = document.getElementById('sentRequestsSection');
+    if (isOwnProfile) {
+        if (incoming.length) { const html = await renderUserCards(incoming, 'incoming'); containerIncoming.innerHTML = `<div class="friend-section-title">Входящие заявки</div><div class="friends-list">${html}</div>`; } else containerIncoming.innerHTML = '';
+        if (sent.length) { const html = await renderUserCards(sent, 'sent'); containerSent.innerHTML = `<div class="friend-section-title">Отправленные заявки</div><div class="friends-list">${html}</div>`; } else containerSent.innerHTML = '';
+    } else { containerIncoming.innerHTML = ''; containerSent.innerHTML = ''; document.querySelector('.friend-section-title').textContent = 'Друзья пользователя'; }
+    if (friends.length) containerFriends.innerHTML = await renderUserCards(friends, 'friend');
+    else containerFriends.innerHTML = '<div class="empty-state">Друзей пока нет.</div>';
+}
+
+async function renderUserCards(logins, type) {
+    const results = await Promise.all(logins.map(login => db.collection('users').where('login', '==', login).get().then(s => s.empty ? { login, missing: true } : ({ id: s.docs[0].id, ...s.docs[0].data() }))));
+    return results.map(f => {
+        if (f.missing) return `<div class="friend-card"><div class="friend-info"><div class="friend-name">${escapeHtml(f.login)}</div><div class="friend-login">Удален</div></div></div>`;
+        const name = f.displayName || f.login, avatar = f.avatar || getAvatarUri(name, f.login);
+        let buttons = '';
+        if (isOwnProfile) {
+            if (type === 'incoming') buttons = `<div><button class="btn-accept" onclick="event.stopPropagation(); handleRequest('${f.login}', 'accept')">Принять</button><button class="btn-reject" onclick="event.stopPropagation(); handleRequest('${f.login}', 'reject')">Отклонить</button></div>`;
+            else if (type === 'sent') buttons = `<button class="btn-remove-friend" onclick="event.stopPropagation(); cancelRequest('${f.login}')">Отменить</button>`;
+            else if (type === 'friend') buttons = `<button class="btn-remove-friend" onclick="event.stopPropagation(); removeFriend('${f.login}')">Удалить</button>`;
+        }
+        return `<div class="friend-card" onclick="window.location.href='profile.html?user=${f.login}'" style="cursor: pointer;"><img class="friend-avatar" src="${escapeHtml(avatar)}" alt=""><div class="friend-info"><div class="friend-name">${escapeHtml(name)}</div><div class="friend-login">@${escapeHtml(f.login)}</div></div>${buttons}</div>`;
+    }).join('');
+}
+
+document.getElementById('addFriendBtn').onclick = async () => {
+    const input = document.getElementById('friendLoginInput'), searchQuery = input.value.trim(); if (!searchQuery) return;
+    try {
+        const snapByLogin = await db.collection('users').where('login', '==', searchQuery).get(); let targetDoc = null;
+        if (!snapByLogin.empty) targetDoc = snapByLogin.docs[0];
+        else { const snapByNick = await db.collection('users').where('displayName', '==', searchQuery).get(); if (!snapByNick.empty) targetDoc = snapByNick.docs[0]; }
+        if (!targetDoc) return alert('Пользователь не найден');
+        const targetData = targetDoc.data(), targetLogin = targetData.login;
+        if (targetLogin === userProfile.login) return alert('Нельзя добавить самого себя');
+        if ((userProfile.friends || []).includes(targetLogin)) return alert('Уже в друзьях');
+        if ((userProfile.sentRequests || []).includes(targetLogin)) return alert('Заявка уже отправлена');
+        if ((userProfile.incomingRequests || []).includes(targetLogin)) { await acceptFriend(targetLogin); return; }
+        await userDocRef.update({ sentRequests: firebase.firestore.FieldValue.arrayUnion(targetLogin) });
+        await targetDoc.ref.update({ incomingRequests: firebase.firestore.FieldValue.arrayUnion(userProfile.login) });
+        input.value = ''; userProfile.sentRequests = [...(userProfile.sentRequests||[]), targetLogin]; loadFriendsAndRequests(); alert('Заявка отправлена!');
+    } catch (e) { console.error(e); alert('Ошибка'); }
+};
+
+window.handleRequest = async (senderLogin, action) => {
+    if (action === 'accept') await acceptFriend(senderLogin);
+    else {
+        await userDocRef.update({ incomingRequests: firebase.firestore.FieldValue.arrayRemove(senderLogin) });
+        const senderSnap = await db.collection('users').where('login', '==', senderLogin).get();
+        if(!senderSnap.empty) await senderSnap.docs[0].ref.update({ sentRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+        userProfile.incomingRequests = userProfile.incomingRequests.filter(l => l !== senderLogin); loadFriendsAndRequests();
+    }
+};
+
+async function acceptFriend(senderLogin) {
+    await userDocRef.update({ friends: firebase.firestore.FieldValue.arrayUnion(senderLogin), incomingRequests: firebase.firestore.FieldValue.arrayRemove(senderLogin) });
+    const senderSnap = await db.collection('users').where('login', '==', senderLogin).get();
+    if(!senderSnap.empty) await senderSnap.docs[0].ref.update({ friends: firebase.firestore.FieldValue.arrayUnion(userProfile.login), sentRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+    userProfile.friends = [...(userProfile.friends||[]), senderLogin]; userProfile.incomingRequests = userProfile.incomingRequests.filter(l => l !== senderLogin); loadFriendsAndRequests();
+}
+
+window.cancelRequest = async (targetLogin) => {
+    await userDocRef.update({ sentRequests: firebase.firestore.FieldValue.arrayRemove(targetLogin) });
+    const targetSnap = await db.collection('users').where('login', '==', targetLogin).get();
+    if(!targetSnap.empty) await targetSnap.docs[0].ref.update({ incomingRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+    userProfile.sentRequests = userProfile.sentRequests.filter(l => l !== targetLogin); loadFriendsAndRequests();
+};
+
+window.removeFriend = async (targetLogin) => {
+    if(!confirm('Удалить из друзей?')) return;
+    await userDocRef.update({ friends: firebase.firestore.FieldValue.arrayRemove(targetLogin) });
+    const targetSnap = await db.collection('users').where('login', '==', targetLogin).get();
+    if(!targetSnap.empty) await targetSnap.docs[0].ref.update({ friends: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+    userProfile.friends = userProfile.friends.filter(l => l !== targetLogin); loadFriendsAndRequests();
+};
+
+// Подвал
+function updateFooterAdminBtn() { const isAdmin = currentUser && currentUser.role === 'admin'; const adminBtn = document.getElementById('openAdminSuggestBtn'); if (adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none'; }
+
+document.getElementById('openSiteSuggestBtn')?.addEventListener('click', () => {
+    if (!currentUser) return alert('Пожалуйста, войдите в аккаунт.');
+    document.getElementById('siteSuggestModal')?.classList.add('active');
+});
+
+document.getElementById('siteSuggestForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const topic = document.getElementById('siteSuggestTopic').value.trim(), text = document.getElementById('siteSuggestText').value.trim();
+    try {
+        await db.collection('site_suggestions').add({ topic, text, userName: currentUser.login, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        alert('Спасибо! Ваше предложение отправлено.');
+        document.getElementById('siteSuggestModal')?.classList.remove('active'); document.getElementById('siteSuggestForm')?.reset();
+    } catch (error) { alert('Ошибка.'); }
+});
+
+document.getElementById('openAdminSuggestBtn')?.addEventListener('click', async () => {
+    const list = document.getElementById('adminSiteSuggestList'); list.innerHTML = '<p style="text-align:center;">Загрузка...</p>';
+    document.getElementById('adminSiteSuggestModal')?.classList.add('active');
+    try {
+        const snap = await db.collection('site_suggestions').orderBy('createdAt', 'desc').get();
+        if (snap.empty) list.innerHTML = '<p style="text-align:center;">Пока нет предложений.</p>';
+        else list.innerHTML = snap.docs.map(doc => { const d = doc.data(), date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('ru-RU') : ''; return `<div class="review-list-item" style="background:#f8fafc; padding:15px; border-radius:16px; margin-bottom:10px; border:1px solid #e2e8f0;"><h4 style="color:#3182ce; margin-bottom:5px;">${escapeHtml(d.topic)}</h4><p style="margin-bottom:5px;">${escapeHtml(d.text)}</p><small style="color:#64748b;">От: ${escapeHtml(d.userName)} | ${date}</small></div>`; }).join('');
+    } catch (error) { list.innerHTML = '<p style="text-align:center; color:red;">Ошибка.</p>'; }
+});
+
+document.getElementById('closeSiteSuggestModal')?.addEventListener('click', () => document.getElementById('siteSuggestModal')?.classList.remove('active'));
+document.getElementById('closeAdminSiteSuggestModal')?.addEventListener('click', () => document.getElementById('adminSiteSuggestModal')?.classList.remove('active'));
+document.getElementById('closeDrinkLogModal')?.addEventListener('click', () => document.getElementById('drinkLogModal')?.classList.remove('active'));
+document.getElementById('closeDeleteDrankModal')?.addEventListener('click', () => document.getElementById('deleteDrankModal')?.classList.remove('active'));
+document.getElementById('closeEditStatsModal')?.addEventListener('click', () => document.getElementById('editStatsModal')?.classList.remove('active'));
+document.getElementById('closeMyReviewsModal')?.addEventListener('click', () => document.getElementById('myReviewsModal')?.classList.remove('active'));
+document.getElementById('closeMyFavsModal')?.addEventListener('click', () => document.getElementById('myFavsModal')?.classList.remove('active'));
+document.getElementById('closeMySuggsModal')?.addEventListener('click', () => document.getElementById('mySuggsModal')?.classList.remove('active'));
+document.getElementById('closeCalendarDayModal')?.addEventListener('click', () => document.getElementById('calendarDayModal')?.classList.remove('active'));
+window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); };
+
+document.getElementById('logoutBtn').onclick = () => { if (confirm('Выйти?')) { localStorage.removeItem('energyUser'); window.location.href = 'index.html'; } };
+
+window.addEventListener('DOMContentLoaded', () => { init(); });
+</script>
+</body>
+</html>
