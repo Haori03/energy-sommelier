@@ -8,142 +8,108 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
-        /* Базовые стили для профиля */
         .app-container { max-width: 1000px; margin: 0 auto; }
-        .btn-back { background: #4a6d8c; color: white; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-back:hover { transform: scale(0.96); background: #2b4f6e; }
+        .btn-back { background: var(--secondary); color: white; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-back:hover { transform: scale(0.96); background: var(--secondary-hover); }
         
-        .profile-card { background: #ffffff; border-radius: 32px; padding: 32px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); display: flex; gap: 28px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; position: relative; border: 1px solid #e2e8f0; }
-        body.dark-mode .profile-card { background: #1e293b; border-color: #334155; }
-
+        .profile-card { background: var(--surface); border-radius: 32px; padding: 32px; box-shadow: var(--shadow); display: flex; gap: 28px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; position: relative; border: 1px solid var(--border); }
         .avatar-wrapper { position: relative; flex-shrink: 0; }
-        .avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; background: #f8fafc; border: 4px solid #e2e8f0; }
-        body.dark-mode .avatar { background: #2d3a4e; border-color: #475569; }
-        .avatar-edit { position: absolute; bottom: 4px; right: 4px; background: #2b7a4b; color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; }
-        .avatar-edit:hover { transform: scale(1.1); }
+        .avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; background: var(--bg); border: 4px solid var(--border); }
+        .avatar-edit { position: absolute; bottom: 4px; right: 4px; background: var(--primary); color: white; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s; }
+        .avatar-edit:hover { transform: scale(1.1); background: var(--primary-hover); }
         
         .profile-info { flex: 1; min-width: 200px; }
-        .profile-info h1 { font-size: 2rem; margin-bottom: 8px; word-break: break-word; color: #1e2a3e; }
-        body.dark-mode .profile-info h1 { color: #f8fafc; }
+        .profile-info h1 { font-size: 2rem; margin-bottom: 8px; word-break: break-word; color: var(--text); }
         .profile-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
-        .role-badge { background: #eef2ff; color: #1e2a3e; padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; }
-        body.dark-mode .role-badge { background: #2d3a4e; color: #e2e8f0; }
-        .role-badge.admin { background: #fef3c7; color: #92400e; }
-        body.dark-mode .role-badge.admin { background: #422006; color: #fbbf24; }
-        .login-label { color: #64748b; font-size: 0.95rem; }
-        body.dark-mode .login-label { color: #94a3b8; }
-        .btn-edit-name { background: #4a6d8c; color: white; border: none; padding: 8px 18px; border-radius: 24px; font-weight: 600; cursor: pointer; font-size: 0.9rem; margin-bottom: 15px; }
-        .btn-edit-name:hover { background: #2b4f6e; }
+        .role-badge { background: var(--tag-bg); color: var(--text); padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; }
+        .role-badge.admin { background: #FFF3CD; color: #856404; }
+        body.dark-mode .role-badge.admin { background: #3B2F14; color: #FBBF24; }
+        .login-label { color: var(--text-muted); font-size: 0.95rem; }
+        .btn-edit-name { background: var(--secondary); color: white; border: none; padding: 8px 18px; border-radius: 24px; font-weight: 600; cursor: pointer; font-size: 0.9rem; margin-bottom: 15px; transition: 0.2s; }
+        .btn-edit-name:hover { background: var(--secondary-hover); }
         
         .action-buttons-profile { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn-drink { background: #2b7a4b; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: transform 0.2s; font-size: 0.9rem; }
-        .btn-drink:hover { background: #1f5f3a; transform: scale(0.96); }
-        .btn-delete-drink { background: #e53e3e; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: transform 0.2s; font-size: 0.9rem; }
-        .btn-delete-drink:hover { background: #c53030; transform: scale(0.96); }
+        .btn-drink { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn-drink:hover { background: var(--primary-hover); transform: scale(0.96); }
+        .btn-delete-drink { background: #EF4444; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn-delete-drink:hover { background: #DC2626; transform: scale(0.96); }
         
-        .tabs { display: flex; gap: 12px; margin-bottom: 20px; background: #ffffff; padding: 8px; border-radius: 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        body.dark-mode .tabs { background: #1e293b; border-color: #334155; }
-        .tab-btn { flex: 1; background: transparent; border: none; padding: 14px 20px; border-radius: 20px; font-size: 1rem; font-weight: 600; cursor: pointer; color: #1e2a3e; transition: 0.2s; }
-        body.dark-mode .tab-btn { color: #e2e8f0; }
-        .tab-btn.active { background: #2b7a4b; color: white; }
-        .tab-btn:not(.active):hover { background: #f1f5f9; }
-        body.dark-mode .tab-btn:not(.active):hover { background: #2d3a4e; }
+        .tabs { display: flex; gap: 12px; margin-bottom: 20px; background: var(--surface); padding: 8px; border-radius: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .tab-btn { flex: 1; background: transparent; border: none; padding: 14px 20px; border-radius: 20px; font-size: 1rem; font-weight: 600; cursor: pointer; color: var(--text); transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-btn:not(.active):hover { background: var(--tag-bg); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-        .stat-card { background: #ffffff; border-radius: 24px; padding: 20px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); text-align: center; border: 1px solid #e2e8f0; transition: transform 0.2s; }
-        body.dark-mode .stat-card { background: #1e293b; border-color: #334155; }
+        .stat-card { background: var(--surface); border-radius: 24px; padding: 20px; box-shadow: var(--shadow); text-align: center; border: 1px solid var(--border); transition: transform 0.2s; }
         .stat-card.clickable { cursor: pointer; }
-        .stat-card.clickable:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .stat-icon { font-size: 2rem; margin-bottom: 8px; }
-        .stat-label { font-size: 0.85rem; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        body.dark-mode .stat-label { color: #94a3b8; }
-        .stat-value { font-size: 2rem; font-weight: 900; color: #1e2a3e; }
-        body.dark-mode .stat-value { color: #f8fafc; }
-        .stat-sub { font-size: 0.85rem; color: #64748b; margin-top: 6px; }
-        body.dark-mode .stat-sub { color: #cbd5e1; }
+        .stat-card.clickable:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .stat-icon { font-size: 2rem; margin-bottom: 8px; color: var(--primary); }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .stat-value { font-size: 2rem; font-weight: 900; color: var(--text); }
+        .stat-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 6px; }
         
-        .btn-logout { background: #6c757d; color: white; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-logout:hover { background: #5a6268; transform: scale(0.96); }
-        body.dark-mode .btn-logout { background: #475569; }
+        .btn-logout { background: var(--secondary); color: white; border: none; padding: 0 20px; height: 52px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: var(--secondary-hover); transform: scale(0.96); }
 
         .extended-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px; }
-        .ext-stat-item { background: #ffffff; padding: 16px; border-radius: 20px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        body.dark-mode .ext-stat-item { background: #1e293b; border-color: #334155; }
-        .ext-stat-label { font-size: 0.8rem; color: #64748b; text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
-        body.dark-mode .ext-stat-label { color: #94a3b8; }
-        .ext-stat-value { font-size: 1.1rem; font-weight: 800; color: #1e2a3e; }
-        body.dark-mode .ext-stat-value { color: #f8fafc; }
+        .ext-stat-item { background: var(--surface); padding: 16px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .ext-stat-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
+        .ext-stat-value { font-size: 1.1rem; font-weight: 800; color: var(--text); }
         
-        .btn-edit-stats { background: #f4a261; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-top: 20px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-edit-stats:hover { background: #e08e4a; transform: scale(0.96); }
+        .btn-edit-stats { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-top: 20px; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-edit-stats:hover { background: var(--primary-hover); transform: scale(0.96); }
         
         .friends-header { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .friends-header input { flex: 1; min-width: 200px; padding: 12px 18px; border-radius: 40px; border: 1px solid #cbd5e1; font-size: 1rem; background: #ffffff; color: #1e2a3e; }
-        body.dark-mode .friends-header input { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+        .friends-header input { flex: 1; min-width: 200px; padding: 12px 18px; border-radius: 40px; border: 1px solid var(--border); font-size: 1rem; background: var(--surface); color: var(--text); }
         .friends-list { display: flex; flex-direction: column; gap: 12px; }
-        .friend-card { background: #ffffff; border-radius: 24px; padding: 14px 20px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 16px; border: 1px solid #e2e8f0; transition: transform 0.2s; }
-        body.dark-mode .friend-card { background: #1e293b; border-color: #334155; }
-        .friend-card:hover { transform: translateY(-2px); }
-        .friend-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #f8fafc; flex-shrink: 0; pointer-events: none; }
-        body.dark-mode .friend-avatar { background: #2d3a4e; }
+        .friend-card { background: var(--surface); border-radius: 24px; padding: 14px 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; border: 1px solid var(--border); transition: transform 0.2s, border-color 0.2s; }
+        .friend-card:hover { transform: translateY(-2px); border-color: var(--primary); }
+        .friend-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: var(--bg); flex-shrink: 0; pointer-events: none; }
         .friend-info { flex: 1; min-width: 0; pointer-events: none; }
-        .friend-name { font-weight: 700; font-size: 1.05rem; color: #1e2a3e; }
-        body.dark-mode .friend-name { color: #f8fafc; }
-        .friend-login { color: #64748b; font-size: 0.85rem; }
-        body.dark-mode .friend-login { color: #94a3b8; }
-        .btn-remove-friend, .btn-accept, .btn-reject { border: none; padding: 8px 16px; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
-        .btn-remove-friend, .btn-reject { background: #e53e3e; color: white; }
-        .btn-remove-friend:hover, .btn-reject:hover { background: #c53030; }
-        .btn-accept { background: #2b7a4b; color: white; margin-right: 8px; }
-        .btn-accept:hover { background: #1f5f3a; }
+        .friend-name { font-weight: 700; font-size: 1.05rem; color: var(--text); }
+        .friend-login { color: var(--text-muted); font-size: 0.85rem; }
         
-        .friend-section-title { font-size: 1.1rem; font-weight: 800; margin: 25px 0 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; color: #1e2a3e; }
-        body.dark-mode .friend-section-title { border-color: #334155; color: #f8fafc; }
+        .btn-remove-friend, .btn-accept, .btn-reject { border: none; padding: 8px 16px; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+        .btn-remove-friend, .btn-reject { background: #EF4444; color: white; }
+        .btn-remove-friend:hover, .btn-reject:hover { background: #DC2626; }
+        .btn-accept { background: var(--primary); color: white; margin-right: 8px; }
+        .btn-accept:hover { background: var(--primary-hover); }
+        
+        .friend-section-title { font-size: 1.1rem; font-weight: 800; margin: 25px 0 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; color: var(--text); }
 
-        .empty-state { text-align: center; padding: 40px 20px; color: #64748b; background: #ffffff; border-radius: 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        body.dark-mode .empty-state { background: #1e293b; border-color: #334155; color: #94a3b8; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); background: var(--surface); border-radius: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); }
 
-        .calendar-container { margin-top: 30px; background: #ffffff; padding: 20px; border-radius: 24px; box-shadow: 0 6px 14px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        body.dark-mode .calendar-container { background: #1e293b; border-color: #334155; }
+        .calendar-container { margin-top: 30px; background: var(--surface); padding: 20px; border-radius: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .calendar-title { font-size: 1.2rem; font-weight: 800; color: #1e2a3e; }
-        body.dark-mode .calendar-title { color: #f8fafc; }
-        .cal-nav-btn { background: #f1f5f9; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; color: #1e2a3e; transition: 0.2s; }
-        body.dark-mode .cal-nav-btn { background: #2d3a4e; color: #e2e8f0; }
-        .cal-nav-btn:hover { background: #e2e8f0; }
+        .calendar-title { font-size: 1.2rem; font-weight: 800; color: var(--text); }
+        .cal-nav-btn { background: var(--tag-bg); border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; color: var(--text); transition: 0.2s; }
+        .cal-nav-btn:hover { background: var(--border); }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
-        .cal-day-name { font-weight: bold; color: #64748b; font-size: 0.8rem; margin-bottom: 5px; }
-        .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; background: #f8fafc; position: relative; font-weight: 600; font-size: 0.9rem; color: #1e2a3e; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
-        body.dark-mode .cal-day { background: #0f172a; color: #e2e8f0; }
-        .cal-day:hover { transform: scale(1.1); }
+        .cal-day-name { font-weight: bold; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 5px; }
+        .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; background: var(--bg); position: relative; font-weight: 600; font-size: 0.9rem; color: var(--text); cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
+        .cal-day:hover { transform: scale(1.1); border-color: var(--primary); }
         .cal-day.empty { background: transparent; pointer-events: none; }
-        .cal-day.has-drinks { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
-        body.dark-mode .cal-day.has-drinks { background: #1e3a8a; color: #93c5fd; border-color: #1e40af; }
+        .cal-day.has-drinks { background: var(--tag-bg); color: var(--primary); border-color: var(--primary); }
         .dots-container { display: flex; gap: 2px; position: absolute; bottom: 4px; flex-wrap: wrap; justify-content: center; width: 80%; }
-        .red-dot { width: 5px; height: 5px; background: #ef4444; border-radius: 50%; }
+        .red-dot { width: 5px; height: 5px; background: var(--primary); border-radius: 50%; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.active { display: flex; }
-        .modal-content { background: #ffffff; width: 90%; max-width: 500px; border-radius: 36px; padding: 28px 24px; position: relative; max-height: 85vh; overflow-y: auto; border: 1px solid #e2e8f0; }
-        body.dark-mode .modal-content { background: #1e293b; border-color: #334155; }
-        .modal-close { position: absolute; top: 18px; right: 24px; font-size: 28px; background: none; border: none; cursor: pointer; color: #1e2a3e; }
-        body.dark-mode .modal-close { color: #e2e8f0; }
+        .modal-content { background: var(--surface); width: 90%; max-width: 500px; border-radius: 36px; padding: 28px 24px; position: relative; max-height: 85vh; overflow-y: auto; border: 1px solid var(--border); color: var(--text); }
+        .modal-close { position: absolute; top: 18px; right: 24px; font-size: 28px; background: none; border: none; cursor: pointer; color: var(--text-muted); }
+        .modal-close:hover { color: var(--primary); }
         
-        .review-list-item { background: #f8fafc; padding: 12px; border-radius: 16px; margin-bottom: 10px; border: 1px solid #e2e8f0; }
-        body.dark-mode .review-list-item { background: #0f172a; border-color: #334155; }
-        .review-list-item h4 { color: #3182ce; margin-bottom: 5px; }
-        body.dark-mode .review-list-item h4 { color: #63b3ed; }
+        .review-list-item { background: var(--bg); padding: 12px; border-radius: 16px; margin-bottom: 10px; border: 1px solid var(--border); }
+        .review-list-item h4 { color: var(--primary); margin-bottom: 5px; }
         
         .fav-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
-        .fav-list-item { background: #f8fafc; padding: 10px; border-radius: 12px; text-align: center; font-weight: bold; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 8px; border: 1px solid #e2e8f0; }
-        body.dark-mode .fav-list-item { background: #0f172a; border-color: #334155; }
+        .fav-list-item { background: var(--bg); padding: 10px; border-radius: 12px; text-align: center; font-weight: bold; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 8px; border: 1px solid var(--border); color: var(--text); }
         .fav-list-item img { width: 60px; height: 60px; object-fit: contain; }
 
-        .log-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #e2e8f0; }
-        body.dark-mode .log-item { background: #0f172a; border-color: #334155; }
-        .btn-del-log { background: #e53e3e; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; }
+        .log-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg); padding: 10px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); color: var(--text); }
+        .btn-del-log { background: #EF4444; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; }
 
         @media (max-width: 600px) {
             .profile-card { flex-direction: column; text-align: center; padding: 24px 16px; }
@@ -166,14 +132,14 @@
             <button class="btn-back" id="backBtn">← К коллекции</button>
             <div class="user-status" id="userStatus">Гость</div>
             <button class="btn-logout" id="logoutBtn">Выйти</button>
-            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <button class="theme-toggle" id="themeToggle">☾</button>
         </div>
     </div>
 
     <div class="profile-card">
         <div class="avatar-wrapper">
             <img id="avatarImg" class="avatar" src="logo-light.png" alt="Аватар">
-            <label class="avatar-edit" id="avatarEditLabel" for="avatarUpload" title="Загрузить аватар">✏️</label>
+            <label class="avatar-edit" id="avatarEditLabel" for="avatarUpload" title="Загрузить аватар">✎</label>
             <input type="file" id="avatarUpload" accept="image/*" style="display:none">
         </div>
         <div class="profile-info">
@@ -228,7 +194,6 @@
     </div>
 </div>
 
-<!-- ПОДВАЛ САЙТА -->
 <footer class="site-footer">
     <div class="footer-columns">
         <div class="footer-column">
@@ -245,7 +210,7 @@
             <h3>Есть идея?</h3>
             <p>Помоги мне сделать сайт еще лучше. Напиши, чего не хватает или что можно улучшить.</p>
             <button class="footer-btn" id="openSiteSuggestBtn">Предложить идею</button>
-            <button class="footer-btn" id="openAdminSuggestBtn" style="display:none; background:#e53e3e; margin-top:10px;">Посмотреть идеи (Админ)</button>
+            <button class="footer-btn" id="openAdminSuggestBtn" style="display:none; background:#EF4444; margin-top:10px;">Посмотреть идеи (Админ)</button>
         </div>
     </div>
     <div class="footer-bottom">
@@ -253,7 +218,6 @@
     </div>
 </footer>
 
-<!-- МОДАЛКА: ОТПРАВКА ПРЕДЛОЖЕНИЯ ПО САЙТУ -->
 <div id="siteSuggestModal" class="modal-overlay">
     <div class="modal-content">
         <button class="modal-close" id="closeSiteSuggestModal">&times;</button>
@@ -277,7 +241,6 @@
     </div>
 </div>
 
-<!-- МОДАЛКА: ПРОСМОТР ПРЕДЛОЖЕНИЙ (ТОЛЬКО ДЛЯ АДМИНА) -->
 <div id="adminSiteSuggestModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 600px;">
         <button class="modal-close" id="closeAdminSiteSuggestModal">&times;</button>
@@ -286,7 +249,6 @@
     </div>
 </div>
 
-<!-- ОСТАЛЬНЫЕ МОДАЛКИ -->
 <div id="drinkLogModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeDrinkLogModal">&times;</button><h2>Что выпил?</h2><form id="drinkLogForm"><div class="form-group"><label>Название энергетика</label><input type="text" id="logDrinkName" list="drinkSuggestions" placeholder="Начните вводить..." required><datalist id="drinkSuggestions"></datalist></div><div class="form-group"><label>Количество (банок)</label><input type="number" id="logDrinkQty" min="1" value="1" required></div><div class="form-group"><label>Дата</label><input type="date" id="logDrinkDate" required></div><button type="submit" class="btn-primary" style="width:100%">Добавить</button></form></div></div>
 <div id="deleteDrankModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeDeleteDrankModal">&times;</button><h2>Выпитое</h2><div id="drinkLogsList" style="max-height: 50vh; overflow-y: auto; margin-top: 15px;"></div></div></div>
 <div id="editStatsModal" class="modal-overlay"><div class="modal-content"><button class="modal-close" id="closeEditStatsModal">&times;</button><h2>Редактировать статы</h2><form id="editStatsForm"><div class="form-group"><label>Любимый энергетик</label><input type="text" id="statFavDrink" list="drinkSuggestions2"><datalist id="drinkSuggestions2"></datalist></div><div class="form-group"><label>Нелюбимый энергетик</label><input type="text" id="statLeastDrink"></div><div class="form-group"><label>О себе / Другое</label><textarea id="statCustomNote" rows="3"></textarea></div><button type="submit" class="btn-primary" style="width:100%">Сохранить</button></form></div></div>
@@ -326,7 +288,7 @@ let currentCalDate = new Date();
 const themeToggle = document.getElementById('themeToggle');
 function applyTheme(dark) {
     document.body.classList.toggle('dark-mode', dark);
-    if (themeToggle) themeToggle.textContent = dark ? '☀️' : '🌙';
+    if (themeToggle) themeToggle.textContent = dark ? '☀' : '☾';
     const logo = document.getElementById('logoImage');
     if (logo) logo.src = dark ? 'logo-dark.png' : 'logo-light.png';
 }
@@ -341,7 +303,7 @@ if (themeToggle) {
 document.getElementById('backBtn').onclick = () => window.location.href = 'index.html';
 
 function escapeHtml(str) { return str ? String(str).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m]) : ''; }
-function getAvatarUri(name, login) { return `data:image/svg+xml;charset=utf-8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#7c3aed"/><text x="100" y="130" font-family="Arial,sans-serif" font-size="90" font-weight="bold" fill="#fff" text-anchor="middle">${(name || login || '?')[0].toUpperCase()}</text></svg>`); }
+function getAvatarUri(name, login) { return `data:image/svg+xml;charset=utf-8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#8A2BE2"/><text x="100" y="130" font-family="Arial,sans-serif" font-size="90" font-weight="bold" fill="#fff" text-anchor="middle">${(name || login || '?')[0].toUpperCase()}</text></svg>`); }
 function resizeImageToSquare(file, targetSize = 400, quality = 0.85) { return new Promise((resolve, reject) => { if (!file || !file.type.match('image.*')) return resolve(null); const reader = new FileReader(); reader.onload = e => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = canvas.height = targetSize; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, targetSize, targetSize); const ratio = img.width / img.height; let dw, dh, dx, dy; if (ratio > 1) { dw = targetSize; dh = targetSize / ratio; dx = 0; dy = (targetSize - dh) / 2; } else { dh = targetSize; dw = targetSize * ratio; dx = (targetSize - dw) / 2; dy = 0; } ctx.drawImage(img, dx, dy, dw, dh); resolve(canvas.toDataURL('image/jpeg', quality)); }; img.onerror = reject; img.src = e.target.result; }; reader.onerror = reject; reader.readAsDataURL(file); }); }
 
 async function init() {
@@ -448,7 +410,7 @@ function renderCalendar() {
         const cans = dayLogs.reduce((sum, l) => sum + l.quantity, 0);
         let dots = ''; if (cans > 0) dots = `<div class="dots-container">${'<div class="red-dot"></div>'.repeat(Math.min(cans, 10))}</div>`;
         const isToday = new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year, dateStr = `${day}.${month + 1}.${year}`;
-        html += `<div class="cal-day ${cans > 0 ? 'has-drinks' : ''}" style="${isToday ? 'border-color: #2b7a4b;' : ''}" onclick="openCalendarDay('${dateStr}')">${day} ${dots}</div>`;
+        html += `<div class="cal-day ${cans > 0 ? 'has-drinks' : ''}" style="${isToday ? 'border-color: var(--primary);' : ''}" onclick="openCalendarDay('${dateStr}')">${day} ${dots}</div>`;
     }
     document.getElementById('calendarGrid').innerHTML = html;
 }
@@ -484,7 +446,7 @@ window.deleteLog = async (id) => { if(!confirm('Удалить запись?')) 
 
 async function loadStatsCards(totalDrank) {
     const login = userProfile.login, reviewsSnap = await db.collection('reviews').where('userName', '==', login).get(), reviewCount = reviewsSnap.size, favCount = (userProfile.favorites || []).length, suggSnap = await db.collection('suggestions').where('userName', '==', login).get();
-    document.getElementById('mainStatsGrid').innerHTML = `<div class="stat-card clickable" onclick="showMyReviews()"><div class="stat-icon">⭐</div><div class="stat-label">Отзывов</div><div class="stat-value">${reviewCount}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div><div class="stat-card clickable" onclick="showMyFavorites()"><div class="stat-icon">❤️</div><div class="stat-label">В избранном</div><div class="stat-value">${favCount}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div><div class="stat-card clickable" onclick="showMySuggestions()"><div class="stat-icon">💡</div><div class="stat-label">Предложений</div><div class="stat-value">${suggSnap.size}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div>`;
+    document.getElementById('mainStatsGrid').innerHTML = `<div class="stat-card clickable" onclick="showMyReviews()"><div class="stat-icon">★</div><div class="stat-label">Отзывов</div><div class="stat-value">${reviewCount}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div><div class="stat-card clickable" onclick="showMyFavorites()"><div class="stat-icon">♥</div><div class="stat-label">В избранном</div><div class="stat-value">${favCount}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div><div class="stat-card clickable" onclick="showMySuggestions()"><div class="stat-icon">☀</div><div class="stat-label">Предложений</div><div class="stat-value">${suggSnap.size}</div><div class="stat-sub">Нажмите, чтобы посмотреть</div></div>`;
 }
 
 window.showMyReviews = async () => {
@@ -497,14 +459,14 @@ window.showMyReviews = async () => {
 window.showMyFavorites = () => {
     const container = document.getElementById('myFavsList'), favIds = userProfile.favorites || [];
     if (!favIds.length) container.innerHTML = '<p>В избранном пусто.</p>';
-    else container.innerHTML = favIds.map(id => { const drink = allDrinks.find(d => d.id === id); if (!drink) return ''; const img = drink.imageData || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect width="60" height="60" fill="#e2e8f0"/></svg>'); return `<div class="fav-list-item"><img src="${img}"><span>${escapeHtml(drink.name)}</span></div>`; }).join('');
+    else container.innerHTML = favIds.map(id => { const drink = allDrinks.find(d => d.id === id); if (!drink) return ''; const img = drink.imageData || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect width="60" height="60" fill="#E2E8F0"/></svg>'); return `<div class="fav-list-item"><img src="${img}"><span>${escapeHtml(drink.name)}</span></div>`; }).join('');
     document.getElementById('myFavsModal').classList.add('active');
 };
 
 window.showMySuggestions = async () => {
     const snap = await db.collection('suggestions').where('userName', '==', userProfile.login).get(), container = document.getElementById('mySuggsList');
     if (snap.empty) container.innerHTML = '<p>Вы еще не предлагали энергетики.</p>';
-    else container.innerHTML = snap.docs.map(doc => { const s = doc.data(), likes = (s.likes || []).length; return `<div class="log-item"><div><strong>${escapeHtml(s.name)}</strong></div><div style="color: #e53e3e; font-weight: bold;">❤️ ${likes}</div></div>`; }).join('');
+    else container.innerHTML = snap.docs.map(doc => { const s = doc.data(), likes = (s.likes || []).length; return `<div class="log-item"><div><strong>${escapeHtml(s.name)}</strong></div><div style="color: #EF4444; font-weight: bold;">♥ ${likes}</div></div>`; }).join('');
     document.getElementById('mySuggsModal').classList.add('active');
 };
 
@@ -584,7 +546,6 @@ window.removeFriend = async (targetLogin) => {
     userProfile.friends = userProfile.friends.filter(l => l !== targetLogin); loadFriendsAndRequests();
 };
 
-// Подвал
 function updateFooterAdminBtn() { const isAdmin = currentUser && currentUser.role === 'admin'; const adminBtn = document.getElementById('openAdminSuggestBtn'); if (adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none'; }
 
 let selectedSiteSuggestImageBase64 = null;
@@ -624,7 +585,7 @@ document.getElementById('siteSuggestForm')?.addEventListener('submit', async (e)
 window.deleteSiteSuggestion = async (id) => {
     if (confirm('Удалить это предложение?')) {
         await db.collection('site_suggestions').doc(id).delete();
-        document.getElementById('openAdminSuggestBtn').click(); // Перезагружаем список
+        document.getElementById('openAdminSuggestBtn').click();
     }
 };
 
@@ -636,15 +597,15 @@ document.getElementById('openAdminSuggestBtn')?.addEventListener('click', async 
         if (snap.empty) list.innerHTML = '<p style="text-align:center;">Пока нет предложений.</p>';
         else list.innerHTML = snap.docs.map(doc => { 
             const d = doc.data(), date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('ru-RU') : ''; 
-            return `<div class="review-list-item" style="background:#f8fafc; padding:15px; border-radius:16px; margin-bottom:10px; border:1px solid #e2e8f0; position:relative;">
+            return `<div class="review-list-item" style="background:var(--bg); padding:15px; border-radius:16px; margin-bottom:10px; border:1px solid var(--border); position:relative;">
                 ${d.imageData ? `<img src="${d.imageData}" style="max-width:100%; border-radius:8px; margin-bottom:10px;">` : ''}
-                <h4 style="color:#3182ce; margin-bottom:5px; padding-right:70px;">${escapeHtml(d.topic)}</h4>
-                <p style="margin-bottom:5px;">${escapeHtml(d.text)}</p>
-                <small style="color:#64748b;">От: ${escapeHtml(d.userName)} | ${date}</small>
-                <button onclick="deleteSiteSuggestion('${doc.id}')" style="position:absolute; top:15px; right:15px; background:#e53e3e; color:white; border:none; padding:6px 12px; border-radius:10px; cursor:pointer; font-size:0.8rem;">Удалить</button>
+                <h4 style="color:var(--primary); margin-bottom:5px; padding-right:70px;">${escapeHtml(d.topic)}</h4>
+                <p style="margin-bottom:5px; color:var(--text);">${escapeHtml(d.text)}</p>
+                <small style="color:var(--text-muted);">От: ${escapeHtml(d.userName)} | ${date}</small>
+                <button onclick="deleteSiteSuggestion('${doc.id}')" style="position:absolute; top:15px; right:15px; background:#EF4444; color:white; border:none; padding:6px 12px; border-radius:10px; cursor:pointer; font-size:0.8rem; font-weight:bold;">Удалить</button>
             </div>`; 
         }).join('');
-    } catch (error) { list.innerHTML = '<p style="text-align:center; color:red;">Ошибка загрузки.</p>'; }
+    } catch (error) { list.innerHTML = '<p style="text-align:center; color:#EF4444;">Ошибка загрузки.</p>'; }
 });
 
 document.getElementById('closeSiteSuggestModal')?.addEventListener('click', () => document.getElementById('siteSuggestModal')?.classList.remove('active'));
