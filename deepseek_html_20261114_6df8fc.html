@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Профиль | Windows XP Edition</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="app-container" style="max-width: 1000px; margin: 0 auto;">
+    
+    <!-- ШАПКА -->
+    <div class="header">
+        <div class="logo" style="font-weight:bold; font-size:16px; color:#000080; text-shadow: 1px 1px 0 #fff;">Профиль</div>
+        <div class="header-buttons" style="display:flex; gap:8px; align-items:center;">
+            <button class="btn-back" id="backBtn" style="background:#ece9d8; border:1px solid #003c74; color:black; box-shadow: inset 1px 1px 0 #fff;">← К коллекции</button>
+            <div class="user-status" id="userStatus">Гость</div>
+            <button class="btn-logout" id="logoutBtn">Выйти</button>
+            <button class="theme-toggle" id="themeToggle" style="padding: 2px 6px;">Сменить тему</button>
+        </div>
+    </div>
+
+    <!-- КАРТОЧКА ПРОФИЛЯ -->
+    <div class="xp-window">
+        <div class="xp-title-bar">
+            <span>Свойства учетной записи</span>
+            <div class="xp-controls"><span class="xp-btn-close">×</span></div>
+        </div>
+        <div class="xp-window-body" style="display:flex; gap:20px; flex-wrap:wrap; align-items:center;">
+            <div style="position:relative;">
+                <img id="avatarImg" src="logo-light.png" style="width:100px; height:100px; object-fit:cover; border:2px inset #7f9db9; background:#fff;">
+                <label id="avatarEditLabel" for="avatarUpload" style="position:absolute; bottom:0; right:0; background:#ece9d8; border:1px solid #003c74; padding:2px 5px; cursor:pointer;">...</label>
+                <input type="file" id="avatarUpload" accept="image/*" style="display:none">
+            </div>
+            <div style="flex:1; min-width:200px;">
+                <h1 id="displayName" style="font-size:18px; margin-bottom:5px; color:#000080;">Загрузка...</h1>
+                <div style="margin-bottom:10px;"><span id="roleBadge" style="background:#fff; border:1px solid #7f9db9; padding:2px 6px;">Пользователь</span> <span id="loginLabel" style="color:#666;"></span></div>
+                <button class="btn-edit-name" id="editNameBtn">Изменить имя</button>
+                <div id="drinkActionBtns" style="margin-top:10px; display:flex; gap:8px;">
+                    <button class="btn-drink" id="btnIDrank">Я выпил</button>
+                    <button class="btn-delete-drink" id="btnDeleteDrank">Удалить выпитое</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКИ -->
+    <div style="display:flex; gap:2px; margin-bottom:-2px; position:relative; z-index:1;">
+        <button class="tab-btn active" data-tab="stats" style="border:2px solid var(--xp-border); border-bottom:none; border-radius:5px 5px 0 0; padding:5px 15px; background:var(--xp-window-bg); font-weight:bold;">Статистика</button>
+        <button class="tab-btn" data-tab="friends" style="border:2px solid var(--xp-border); border-bottom:none; border-radius:5px 5px 0 0; padding:5px 15px; background:#d1c5b0;">Друзья</button>
+    </div>
+
+    <!-- КОНТЕНТ СТАТИСТИКИ -->
+    <div id="statsTab" class="tab-content active xp-window" style="border-radius:0 5px 5px 5px; padding:15px;">
+        <div class="stats-grid" id="mainStatsGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px;"></div>
+        <div class="extended-stats" id="extendedStatsGrid" style="margin-top:15px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px;"></div>
+        <div style="text-align:center; margin-top:15px;" id="editStatsBtnContainer"></div>
+        
+        <div style="margin-top:20px; border-top:1px solid #7f9db9; padding-top:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <button class="cal-nav-btn" id="prevMonth" style="padding:2px 8px;">←</button>
+                <div id="calendarTitle" style="font-weight:bold; font-size:14px; color:#000080;">Месяц</div>
+                <button class="cal-nav-btn" id="nextMonth" style="padding:2px 8px;">→</button>
+            </div>
+            <div id="calendarGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; text-align:center;"></div>
+        </div>
+    </div>
+
+    <!-- КОНТЕНТ ДРУЗЕЙ -->
+    <div id="friendsTab" class="tab-content xp-window" style="border-radius:0 5px 5px 5px; padding:15px;">
+        <div id="addFriendSection" style="display:flex; gap:5px; margin-bottom:15px;">
+            <input type="text" id="friendLoginInput" placeholder="Логин или ник друга" style="flex:1;">
+            <button id="addFriendBtn" class="btn-primary">Отправить заявку</button>
+        </div>
+        <div id="incomingRequestsSection"></div>
+        <div id="sentRequestsSection"></div>
+        <div style="font-weight:bold; margin:15px 0 5px; border-bottom:1px solid #7f9db9; padding-bottom:5px;">Мои друзья</div>
+        <div id="friendsList" style="display:flex; flex-direction:column; gap:5px;"></div>
+    </div>
+</div>
+
+<!-- ПОДВАЛ -->
+<footer class="site-footer">
+    <div class="footer-columns">
+        <div class="footer-column"><h3>О проекте</h3><p>Энергетический сомелье Ivan.</p></div>
+        <div class="footer-column"><h3>Контакты</h3><p>Email: ww.jazjaz.43@yandex.ru</p></div>
+    </div>
+    <div class="footer-bottom">© 2026 Энергетический сомелье Ivan. Windows XP Edition.</div>
+</footer>
+
+<!-- МОДАЛКИ (ТАКИЕ ЖЕ, КАК В INDEX.HTML) -->
+<div id="siteSuggestModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Предложить идею</span><button class="modal-close" id="closeSiteSuggestModal">×</button></div><div class="modal-body"><form id="siteSuggestForm"><div class="form-group"><label>Тема</label><input type="text" id="siteSuggestTopic" required style="width:100%;"></div><div class="form-group"><label>Описание</label><textarea id="siteSuggestText" rows="3" required style="width:100%;"></textarea></div><div class="form-group"><label>Фото</label><input type="file" id="siteSuggestImage" accept="image/*"><div id="siteSuggestImagePreview"></div></div><button type="submit" class="btn-primary" style="width:100%;">Отправить</button></form></div></div></div>
+
+<div id="adminSiteSuggestModal" class="modal-overlay"><div class="modal-content" style="max-width: 600px;"><div class="modal-header"><span>Идеи по сайту</span><button class="modal-close" id="closeAdminSiteSuggestModal">×</button></div><div class="modal-body"><div id="adminSiteSuggestList" style="max-height: 60vh; overflow-y: auto;"></div></div></div></div>
+
+<div id="drinkLogModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Что выпил?</span><button class="modal-close" id="closeDrinkLogModal">×</button></div><div class="modal-body"><form id="drinkLogForm"><div class="form-group"><label>Название энергетика</label><input type="text" id="logDrinkName" list="drinkSuggestions" required style="width:100%;"><datalist id="drinkSuggestions"></datalist></div><div class="form-group"><label>Количество (банок)</label><input type="number" id="logDrinkQty" min="1" value="1" required style="width:100%;"></div><div class="form-group"><label>Дата</label><input type="date" id="logDrinkDate" required style="width:100%;"></div><button type="submit" class="btn-primary" style="width:100%;">Добавить</button></form></div></div></div>
+
+<div id="deleteDrankModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Выпитое</span><button class="modal-close" id="closeDeleteDrankModal">×</button></div><div class="modal-body"><div id="drinkLogsList" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
+
+<div id="editStatsModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Редактировать статы</span><button class="modal-close" id="closeEditStatsModal">×</button></div><div class="modal-body"><form id="editStatsForm"><div class="form-group"><label>Любимый энергетик</label><input type="text" id="statFavDrink" list="drinkSuggestions2" style="width:100%;"><datalist id="drinkSuggestions2"></datalist></div><div class="form-group"><label>Нелюбимый энергетик</label><input type="text" id="statLeastDrink" style="width:100%;"></div><div class="form-group"><label>О себе / Другое</label><textarea id="statCustomNote" rows="3" style="width:100%;"></textarea></div><button type="submit" class="btn-primary" style="width:100%;">Сохранить</button></form></div></div></div>
+
+<div id="myReviewsModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Мои отзывы</span><button class="modal-close" id="closeMyReviewsModal">×</button></div><div class="modal-body"><div id="myReviewsList" style="max-height: 60vh; overflow-y: auto;"></div></div></div></div>
+
+<div id="myFavsModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Избранное</span><button class="modal-close" id="closeMyFavsModal">×</button></div><div class="modal-body"><div id="myFavsList" style="display:flex; flex-wrap:wrap; gap:10px; max-height: 60vh; overflow-y: auto;"></div></div></div></div>
+
+<div id="mySuggsModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Предложенные энергетики</span><button class="modal-close" id="closeMySuggsModal">×</button></div><div class="modal-body"><div id="mySuggsList" style="max-height: 60vh; overflow-y: auto;"></div></div></div></div>
+
+<div id="calendarDayModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span id="calDayTitle">Дата</span><button class="modal-close" id="closeCalendarDayModal">×</button></div><div class="modal-body"><div id="calDayList" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
+
+<script>
+    // ВЕСЬ JS КОД ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ!
+    // (Вставь свой рабочий JS из предыдущей версии)
+</script>
+</body>
+</html>
