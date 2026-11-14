@@ -7,15 +7,75 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        .app-container { max-width: 1000px; margin: 0 auto; }
+        
+        /* Настройка вкладок под XP */
+        .tab-btn { border: 2px solid var(--xp-border); border-bottom: none; border-radius: 5px 5px 0 0; padding: 5px 15px; background: #d1c5b0; font-weight: bold; cursor: pointer; font-family: Tahoma, sans-serif; font-size: 11px; }
+        .tab-btn.active { background: var(--xp-window-bg); position: relative; z-index: 2; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Статистика */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .stat-card { background: #fff; border: 1px solid #7f9db9; padding: 5px 10px; }
+        .stat-icon { font-size: 16px; margin-bottom: 2px; color: #000080; }
+        .stat-label { font-size: 10px; color: #666; text-transform: uppercase; }
+        .stat-value { font-size: 14px; font-weight: bold; color: #000080; }
+        .stat-sub { font-size: 10px; color: #333; }
+
+        .extended-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 15px; }
+        .ext-stat-item { background: #fff; border: 1px solid #7f9db9; padding: 5px 10px; }
+        .ext-stat-label { font-size: 10px; color: #666; text-transform: uppercase; }
+        .ext-stat-value { font-size: 12px; font-weight: bold; color: #000080; }
+        
+        /* Календарь */
+        .calendar-container { margin-top: 20px; border-top: 1px solid #7f9db9; padding-top: 15px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .calendar-title { font-size: 14px; font-weight: bold; color: #000080; }
+        .cal-nav-btn { padding: 2px 8px; font-weight: bold; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+        .cal-day-name { font-weight: bold; color: #666; font-size: 10px; margin-bottom: 2px; }
+        .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #7f9db9; background: #fff; position: relative; font-size: 11px; cursor: pointer; }
+        .cal-day:hover { background: #e0e0e0; }
+        .cal-day.empty { border: none; background: transparent; pointer-events: none; }
+        .cal-day.has-drinks { background: #e8f0fe; border-color: #000080; font-weight: bold; }
+        .dots-container { display: flex; gap: 1px; position: absolute; bottom: 2px; flex-wrap: wrap; justify-content: center; width: 80%; }
+        .red-dot { width: 4px; height: 4px; background: #cc0000; border-radius: 50%; }
+
+        /* Друзья */
+        .friends-header { display: flex; gap: 5px; margin-bottom: 15px; }
+        .friends-header input { flex: 1; }
+        .friends-list { display: flex; flex-direction: column; gap: 5px; }
+        .friend-card { background: #fff; border: 1px solid #7f9db9; padding: 5px 10px; display: flex; align-items: center; gap: 10px; }
+        .friend-card:hover { background: #f0f0f0; }
+        .friend-avatar { width: 40px; height: 40px; border: 1px solid #7f9db9; background: #fff; object-fit: cover; pointer-events: none; }
+        .friend-info { flex: 1; pointer-events: none; }
+        .friend-name { font-weight: bold; color: #000080; font-size: 12px; }
+        .friend-login { color: #666; font-size: 10px; }
+        .friend-section-title { font-weight: bold; margin: 15px 0 5px; border-bottom: 1px solid #7f9db9; padding-bottom: 5px; color: #000080; }
+        
+        /* Кнопки в списках */
+        .btn-accept { background: #ece9d8; border: 1px solid #003c74; padding: 2px 8px; cursor: pointer; font-size: 10px; }
+        .btn-reject, .btn-remove-friend { background: #ece9d8; border: 1px solid #003c74; padding: 2px 8px; cursor: pointer; font-size: 10px; }
+        
+        /* Модалки профиля */
+        .review-list-item { background: #fff; border: 1px solid #7f9db9; padding: 10px; margin-bottom: 5px; }
+        .fav-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+        .fav-list-item { background: #fff; border: 1px solid #7f9db9; padding: 5px; text-align: center; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .fav-list-item img { width: 50px; height: 50px; object-fit: contain; }
+        .log-item { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #7f9db9; padding: 5px 10px; margin-bottom: 5px; }
+        .btn-del-log { background: #e9431b; color: #fff; border: 1px solid #fff; font-weight: bold; width: 18px; height: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    </style>
 </head>
 <body>
-<div class="app-container" style="max-width: 1000px; margin: 0 auto;">
+<div class="app-container">
     
     <!-- ШАПКА -->
     <div class="header">
         <div class="logo" style="font-weight:bold; font-size:16px; color:#000080; text-shadow: 1px 1px 0 #fff;">Профиль</div>
-        <div class="header-buttons" style="display:flex; gap:8px; align-items:center;">
-            <button class="btn-back" id="backBtn" style="background:#ece9d8; border:1px solid #003c74; color:black; box-shadow: inset 1px 1px 0 #fff;">← К коллекции</button>
+        <div class="header-buttons" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button class="btn-back" id="backBtn">← К коллекции</button>
             <div class="user-status" id="userStatus">Гость</div>
             <button class="btn-logout" id="logoutBtn">Выйти</button>
             <button class="theme-toggle" id="themeToggle" style="padding: 2px 6px;">Сменить тему</button>
@@ -31,14 +91,17 @@
         <div class="xp-window-body" style="display:flex; gap:20px; flex-wrap:wrap; align-items:center;">
             <div style="position:relative;">
                 <img id="avatarImg" src="logo-light.png" style="width:100px; height:100px; object-fit:cover; border:2px inset #7f9db9; background:#fff;">
-                <label id="avatarEditLabel" for="avatarUpload" style="position:absolute; bottom:0; right:0; background:#ece9d8; border:1px solid #003c74; padding:2px 5px; cursor:pointer;">...</label>
+                <label id="avatarEditLabel" for="avatarUpload" title="Загрузить аватар" style="position:absolute; bottom:0; right:0; background:#ece9d8; border:1px solid #003c74; padding:1px 5px; cursor:pointer; font-size:10px;">...</label>
                 <input type="file" id="avatarUpload" accept="image/*" style="display:none">
             </div>
             <div style="flex:1; min-width:200px;">
                 <h1 id="displayName" style="font-size:18px; margin-bottom:5px; color:#000080;">Загрузка...</h1>
-                <div style="margin-bottom:10px;"><span id="roleBadge" style="background:#fff; border:1px solid #7f9db9; padding:2px 6px;">Пользователь</span> <span id="loginLabel" style="color:#666;"></span></div>
+                <div style="margin-bottom:10px;">
+                    <span id="roleBadge" style="background:#fff; border:1px solid #7f9db9; padding:2px 6px;">Пользователь</span> 
+                    <span id="loginLabel" style="color:#666;"></span>
+                </div>
                 <button class="btn-edit-name" id="editNameBtn">Изменить имя</button>
-                <div id="drinkActionBtns" style="margin-top:10px; display:flex; gap:8px;">
+                <div id="drinkActionBtns" style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
                     <button class="btn-drink" id="btnIDrank">Я выпил</button>
                     <button class="btn-delete-drink" id="btnDeleteDrank">Удалить выпитое</button>
                 </div>
@@ -48,36 +111,38 @@
 
     <!-- ВКЛАДКИ -->
     <div style="display:flex; gap:2px; margin-bottom:-2px; position:relative; z-index:1;">
-        <button class="tab-btn active" data-tab="stats" style="border:2px solid var(--xp-border); border-bottom:none; border-radius:5px 5px 0 0; padding:5px 15px; background:var(--xp-window-bg); font-weight:bold;">Статистика</button>
-        <button class="tab-btn" data-tab="friends" style="border:2px solid var(--xp-border); border-bottom:none; border-radius:5px 5px 0 0; padding:5px 15px; background:#d1c5b0;">Друзья</button>
+        <button class="tab-btn active" data-tab="stats">Статистика</button>
+        <button class="tab-btn" data-tab="friends">Друзья</button>
     </div>
 
-    <!-- КОНТЕНТ СТАТИСТИКИ -->
-    <div id="statsTab" class="tab-content active xp-window" style="border-radius:0 5px 5px 5px; padding:15px;">
-        <div class="stats-grid" id="mainStatsGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px;"></div>
-        <div class="extended-stats" id="extendedStatsGrid" style="margin-top:15px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px;"></div>
+    <!-- ВКЛАДКА: СТАТИСТИКА -->
+    <div id="statsTab" class="tab-content active xp-window" style="border-radius:0 5px 5px 5px; padding:15px; position:relative; z-index:0;">
+        <div class="stats-grid" id="mainStatsGrid"></div>
+        <div class="extended-stats" id="extendedStatsGrid"></div>
         <div style="text-align:center; margin-top:15px;" id="editStatsBtnContainer"></div>
         
-        <div style="margin-top:20px; border-top:1px solid #7f9db9; padding-top:15px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <button class="cal-nav-btn" id="prevMonth" style="padding:2px 8px;">←</button>
-                <div id="calendarTitle" style="font-weight:bold; font-size:14px; color:#000080;">Месяц</div>
-                <button class="cal-nav-btn" id="nextMonth" style="padding:2px 8px;">→</button>
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="cal-nav-btn" id="prevMonth">←</button>
+                <div class="calendar-title" id="calendarTitle">Месяц</div>
+                <button class="cal-nav-btn" id="nextMonth">→</button>
             </div>
-            <div id="calendarGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; text-align:center;"></div>
+            <div class="calendar-grid" id="calendarGrid"></div>
         </div>
     </div>
 
-    <!-- КОНТЕНТ ДРУЗЕЙ -->
-    <div id="friendsTab" class="tab-content xp-window" style="border-radius:0 5px 5px 5px; padding:15px;">
-        <div id="addFriendSection" style="display:flex; gap:5px; margin-bottom:15px;">
-            <input type="text" id="friendLoginInput" placeholder="Логин или ник друга" style="flex:1;">
+    <!-- ВКЛАДКА: ДРУЗЬЯ -->
+    <div id="friendsTab" class="tab-content xp-window" style="border-radius:0 5px 5px 5px; padding:15px; position:relative; z-index:0;">
+        <div class="friends-header" id="addFriendSection">
+            <input type="text" id="friendLoginInput" placeholder="Введите логин или ник друга">
             <button id="addFriendBtn" class="btn-primary">Отправить заявку</button>
         </div>
+        
         <div id="incomingRequestsSection"></div>
         <div id="sentRequestsSection"></div>
-        <div style="font-weight:bold; margin:15px 0 5px; border-bottom:1px solid #7f9db9; padding-bottom:5px;">Мои друзья</div>
-        <div id="friendsList" style="display:flex; flex-direction:column; gap:5px;"></div>
+        
+        <div class="friend-section-title">Мои друзья</div>
+        <div id="friendsList" class="friends-list"></div>
     </div>
 </div>
 
@@ -85,12 +150,17 @@
 <footer class="site-footer">
     <div class="footer-columns">
         <div class="footer-column"><h3>О проекте</h3><p>Энергетический сомелье Ivan.</p></div>
-        <div class="footer-column"><h3>Контакты</h3><p>Email: ww.jazjaz.43@yandex.ru</p></div>
+        <div class="footer-column"><h3>Контакты</h3><p>Email: <a href="mailto:ww.jazjaz.43@yandex.ru">ww.jazjaz.43@yandex.ru</a></p></div>
+        <div class="footer-column">
+            <h3>Есть идея?</h3>
+            <button class="footer-btn" id="openSiteSuggestBtn">Предложить идею</button>
+            <button class="footer-btn" id="openAdminSuggestBtn" style="display:none; background:#e9431b; color:white; margin-top:5px;">Идеи (Админ)</button>
+        </div>
     </div>
     <div class="footer-bottom">© 2026 Энергетический сомелье Ivan. Windows XP Edition.</div>
 </footer>
 
-<!-- МОДАЛКИ (ТАКИЕ ЖЕ, КАК В INDEX.HTML) -->
+<!-- МОДАЛКИ -->
 <div id="siteSuggestModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Предложить идею</span><button class="modal-close" id="closeSiteSuggestModal">×</button></div><div class="modal-body"><form id="siteSuggestForm"><div class="form-group"><label>Тема</label><input type="text" id="siteSuggestTopic" required style="width:100%;"></div><div class="form-group"><label>Описание</label><textarea id="siteSuggestText" rows="3" required style="width:100%;"></textarea></div><div class="form-group"><label>Фото</label><input type="file" id="siteSuggestImage" accept="image/*"><div id="siteSuggestImagePreview"></div></div><button type="submit" class="btn-primary" style="width:100%;">Отправить</button></form></div></div></div>
 
 <div id="adminSiteSuggestModal" class="modal-overlay"><div class="modal-content" style="max-width: 600px;"><div class="modal-header"><span>Идеи по сайту</span><button class="modal-close" id="closeAdminSiteSuggestModal">×</button></div><div class="modal-body"><div id="adminSiteSuggestList" style="max-height: 60vh; overflow-y: auto;"></div></div></div></div>
@@ -103,15 +173,362 @@
 
 <div id="myReviewsModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Мои отзывы</span><button class="modal-close" id="closeMyReviewsModal">×</button></div><div class="modal-body"><div id="myReviewsList" style="max-height: 60vh; overflow-y: auto;"></div></div></div></div>
 
-<div id="myFavsModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Избранное</span><button class="modal-close" id="closeMyFavsModal">×</button></div><div class="modal-body"><div id="myFavsList" style="display:flex; flex-wrap:wrap; gap:10px; max-height: 60vh; overflow-y: auto;"></div></div></div></div>
+<div id="myFavsModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Избранное</span><button class="modal-close" id="closeMyFavsModal">×</button></div><div class="modal-body"><div id="myFavsList" class="fav-list-grid" style="max-height: 60vh; overflow-y: auto;"></div></div></div></div>
 
 <div id="mySuggsModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span>Предложенные энергетики</span><button class="modal-close" id="closeMySuggsModal">×</button></div><div class="modal-body"><div id="mySuggsList" style="max-height: 60vh; overflow-y: auto;"></div></div></div></div>
 
 <div id="calendarDayModal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><span id="calDayTitle">Дата</span><button class="modal-close" id="closeCalendarDayModal">×</button></div><div class="modal-body"><div id="calDayList" style="max-height: 50vh; overflow-y: auto;"></div></div></div></div>
 
 <script>
-    // ВЕСЬ JS КОД ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ!
-    // (Вставь свой рабочий JS из предыдущей версии)
+const firebaseConfig = {
+    apiKey: "AIzaSyDQGjVUA8w66eGudNSK0s6PMOSjEYQbpWY",
+    authDomain: "energy-1363c.firebaseapp.com",
+    projectId: "energy-1363c",
+    storageBucket: "energy-1363c.firebasestorage.app",
+    messagingSenderId: "735189971999",
+    appId: "1:735189971999:web:bf662f3add5b5967ae912a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+db.settings({ experimentalForceLongPolling: true });
+
+const saved = localStorage.getItem('energyUser');
+const currentUser = saved ? JSON.parse(saved) : null;
+if (!currentUser) { window.location.replace('index.html'); }
+
+const urlParams = new URLSearchParams(window.location.search);
+const viewUserLogin = urlParams.get('user');
+const targetLogin = viewUserLogin || currentUser.login;
+const isOwnProfile = targetLogin === currentUser.login;
+
+let userDocRef = null;
+let userProfile = {};
+let allDrinks = []; 
+let allLogs = []; 
+let currentCalDate = new Date();
+
+const themeToggle = document.getElementById('themeToggle');
+function applyTheme(dark) {
+    document.body.classList.toggle('dark-mode', dark);
+    if (themeToggle) themeToggle.textContent = dark ? 'Светлая тема' : 'Классическая тема';
+}
+applyTheme(localStorage.getItem('energyTheme') === 'dark');
+if (themeToggle) {
+    themeToggle.onclick = () => {
+        const isDark = !document.body.classList.contains('dark-mode');
+        applyTheme(isDark);
+        localStorage.setItem('energyTheme', isDark ? 'dark' : 'light');
+    };
+}
+document.getElementById('backBtn').onclick = () => window.location.href = 'index.html';
+
+function escapeHtml(str) { return str ? String(str).replace(/[&<>"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m]) : ''; }
+function getAvatarUri(name, login) { return `data:image/svg+xml;charset=utf-8,` + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#8A2BE2"/><text x="100" y="130" font-family="Arial,sans-serif" font-size="90" font-weight="bold" fill="#fff" text-anchor="middle">${(name || login || '?')[0].toUpperCase()}</text></svg>`); }
+function resizeImageToSquare(file, targetSize = 400, quality = 0.85) { return new Promise((resolve, reject) => { if (!file || !file.type.match('image.*')) return resolve(null); const reader = new FileReader(); reader.onload = e => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = canvas.height = targetSize; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, targetSize, targetSize); const ratio = img.width / img.height; let dw, dh, dx, dy; if (ratio > 1) { dw = targetSize; dh = targetSize / ratio; dx = 0; dy = (targetSize - dh) / 2; } else { dh = targetSize; dw = targetSize * ratio; dx = (targetSize - dw) / 2; dy = 0; } ctx.drawImage(img, dx, dy, dw, dh); resolve(canvas.toDataURL('image/jpeg', quality)); }; img.onerror = reject; img.src = e.target.result; }; reader.onerror = reject; reader.readAsDataURL(file); }); }
+
+async function init() {
+    document.getElementById('displayName').textContent = 'Загрузка...';
+    
+    if (!isOwnProfile) {
+        document.getElementById('editNameBtn').style.display = 'none';
+        document.getElementById('avatarEditLabel').style.display = 'none';
+        document.getElementById('drinkActionBtns').style.display = 'none';
+        document.getElementById('addFriendSection').style.display = 'none';
+        document.getElementById('editStatsBtnContainer').style.display = 'none';
+    }
+
+    try {
+        const drinksSnap = await db.collection('energydrinks').get();
+        allDrinks = drinksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const optionsHtml = allDrinks.map(d => `<option value="${escapeHtml(d.name)}">`).join('');
+        if(document.getElementById('drinkSuggestions')) document.getElementById('drinkSuggestions').innerHTML = optionsHtml;
+        if(document.getElementById('drinkSuggestions2')) document.getElementById('drinkSuggestions2').innerHTML = optionsHtml;
+
+        const snap = await db.collection('users').where('login', '==', targetLogin).get();
+        if (!snap.empty) {
+            userDocRef = snap.docs[0].ref;
+            userProfile = snap.docs[0].data();
+            
+            if (userProfile.avatar) localStorage.setItem('cachedAvatar_' + userProfile.login, userProfile.avatar);
+
+            if (!userProfile.createdAt && isOwnProfile) {
+                await userDocRef.update({ createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                userProfile.createdAt = new Date();
+            }
+            renderProfile();
+            await loadLogs(); 
+            loadFriendsAndRequests();
+        } else {
+            document.getElementById('displayName').textContent = 'Пользователь не найден';
+        }
+    } catch (e) {
+        console.error("Ошибка:", e);
+        document.getElementById('mainStatsGrid').innerHTML = '<div style="padding:10px; border:1px solid #7f9db9; background:#fff;">Ошибка сети</div>';
+    }
+}
+
+function renderProfile() {
+    const login = userProfile.login, name = userProfile.displayName || login, isAdmin = userProfile.role === 'admin';
+    document.getElementById('displayName').textContent = name;
+    document.getElementById('loginLabel').textContent = '@' + login;
+    document.getElementById('roleBadge').textContent = isAdmin ? 'Админ' : 'Пользователь';
+    document.getElementById('userStatus').textContent = `${currentUser.login}`;
+    document.getElementById('avatarImg').src = userProfile.avatar || getAvatarUri(name, login);
+    updateFooterAdminBtn();
+}
+
+document.getElementById('avatarUpload').onchange = async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const base64 = await resizeImageToSquare(file, 400, 0.85); if (!base64) return;
+    await userDocRef.update({ avatar: base64 }); userProfile.avatar = base64; document.getElementById('avatarImg').src = base64;
+};
+
+document.getElementById('editNameBtn').onclick = async () => {
+    const currentName = userProfile.displayName || userProfile.login;
+    const newName = prompt('Введите новое имя:', currentName);
+    if (!newName || !newName.trim() || newName.trim() === currentName) return;
+    const trimmedName = newName.trim();
+    try {
+        const snap = await db.collection('users').where('displayName', '==', trimmedName).get();
+        if (!snap.empty) return alert('Этот никнейм уже занят!');
+        await userDocRef.update({ displayName: trimmedName });
+        userProfile.displayName = trimmedName; renderProfile(); alert('Имя изменено!');
+    } catch(e) { alert('Ошибка'); }
+};
+
+document.querySelectorAll('.tab-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); btn.classList.add('active'); document.getElementById(btn.dataset.tab + 'Tab').classList.add('active'); }; });
+
+async function loadLogs() {
+    const snap = await db.collection('drink_logs').where('userLogin', '==', userProfile.login).get();
+    allLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const totalDrank = allLogs.reduce((sum, log) => sum + (log.quantity || 0), 0);
+    const counts = {}; allLogs.forEach(log => counts[log.drinkName] = (counts[log.drinkName] || 0) + log.quantity);
+    let maxDrink = '—', maxCount = 0; for (const [drink, count] of Object.entries(counts)) { if (count > maxCount) { maxDrink = drink; maxCount = count; } }
+    renderExtendedStats(totalDrank, maxDrink, maxCount); renderCalendar(); 
+}
+
+function renderExtendedStats(totalDrank, maxDrink, maxCount) {
+    const regDate = userProfile.createdAt ? (userProfile.createdAt.toDate ? userProfile.createdAt.toDate() : new Date(userProfile.createdAt)) : new Date();
+    const stats = userProfile.stats || {};
+    document.getElementById('extendedStatsGrid').innerHTML = `<div class="ext-stat-item"><div class="ext-stat-label">Дата регистрации</div><div class="ext-stat-value">${regDate.toLocaleDateString('ru-RU')}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Любимый</div><div class="ext-stat-value">${escapeHtml(stats.favoriteDrink) || '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Нелюбимый</div><div class="ext-stat-value">${escapeHtml(stats.leastFavoriteDrink) || '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Всего выпито</div><div class="ext-stat-value">${totalDrank} шт.</div></div><div class="ext-stat-item"><div class="ext-stat-label">Больше всего выпито</div><div class="ext-stat-value">${maxDrink !== '—' ? `${escapeHtml(maxDrink)} (${maxCount} шт.)` : '—'}</div></div><div class="ext-stat-item"><div class="ext-stat-label">Другое</div><div class="ext-stat-value">${escapeHtml(stats.customNote) || '—'}</div></div>`;
+    if (isOwnProfile) document.getElementById('editStatsBtnContainer').innerHTML = `<button class="btn-edit-stats btn-primary" onclick="openEditStats()">Редактировать</button>`;
+    loadStatsCards(totalDrank);
+}
+
+window.openEditStats = () => { const stats = userProfile.stats || {}; document.getElementById('statFavDrink').value = stats.favoriteDrink || ''; document.getElementById('statLeastDrink').value = stats.leastFavoriteDrink || ''; document.getElementById('statCustomNote').value = stats.customNote || ''; document.getElementById('editStatsModal').classList.add('active'); };
+document.getElementById('editStatsForm').onsubmit = async (e) => { e.preventDefault(); const newStats = { favoriteDrink: document.getElementById('statFavDrink').value.trim(), leastFavoriteDrink: document.getElementById('statLeastDrink').value.trim(), customNote: document.getElementById('statCustomNote').value.trim() }; await userDocRef.update({ stats: newStats }); userProfile.stats = newStats; document.getElementById('editStatsModal').classList.remove('active'); loadLogs(); };
+
+function renderCalendar() {
+    const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth(), monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
+    const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate(), startOffset = firstDay === 0 ? 6 : firstDay - 1; 
+    let html = `<div class="cal-day-name">Пн</div><div class="cal-day-name">Вт</div><div class="cal-day-name">Ср</div><div class="cal-day-name">Чт</div><div class="cal-day-name">Пт</div><div class="cal-day-name">Сб</div><div class="cal-day-name">Вс</div>`;
+    for (let i = 0; i < startOffset; i++) html += `<div class="cal-day empty"></div>`;
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayLogs = allLogs.filter(l => { const d = l.date ? (l.date.toDate ? l.date.toDate() : new Date(l.date)) : null; return d && d.getFullYear() === year && d.getMonth() === month && d.getDate() === day; });
+        const cans = dayLogs.reduce((sum, l) => sum + l.quantity, 0);
+        let dots = ''; if (cans > 0) dots = `<div class="dots-container">${'<div class="red-dot"></div>'.repeat(Math.min(cans, 10))}</div>`;
+        const isToday = new Date().getDate() === day && new Date().getMonth() === month && new Date().getFullYear() === year, dateStr = `${day}.${month + 1}.${year}`;
+        html += `<div class="cal-day ${cans > 0 ? 'has-drinks' : ''}" style="${isToday ? 'border: 2px solid #000080;' : ''}" onclick="openCalendarDay('${dateStr}')">${day} ${dots}</div>`;
+    }
+    document.getElementById('calendarGrid').innerHTML = html;
+}
+
+window.openCalendarDay = (dateStr) => {
+    document.getElementById('calDayTitle').textContent = dateStr;
+    const list = document.getElementById('calDayList'), [d, m, y] = dateStr.split('.').map(Number);
+    const dayLogs = allLogs.filter(l => { const logDate = l.date ? (l.date.toDate ? l.date.toDate() : new Date(l.date)) : null; return logDate && logDate.getDate() === d && logDate.getMonth() === (m - 1) && logDate.getFullYear() === y; });
+    if (!dayLogs.length) list.innerHTML = '<p style="padding:10px;">В этот день ничего не выпито.</p>';
+    else list.innerHTML = dayLogs.map(log => `<div class="log-item"><div><b>${escapeHtml(log.drinkName)}</b></div><div>${log.quantity} шт.</div></div>`).join('');
+    document.getElementById('calendarDayModal').classList.add('active');
+};
+
+document.getElementById('prevMonth').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); };
+document.getElementById('nextMonth').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); };
+
+document.getElementById('btnIDrank').onclick = () => { document.getElementById('logDrinkDate').valueAsDate = new Date(); document.getElementById('drinkLogModal').classList.add('active'); };
+document.getElementById('drinkLogForm').onsubmit = async (e) => {
+    e.preventDefault(); const name = document.getElementById('logDrinkName').value.trim(), qty = parseInt(document.getElementById('logDrinkQty').value), dateStr = document.getElementById('logDrinkDate').value, dateObj = new Date(dateStr + 'T12:00:00');
+    await db.collection('drink_logs').add({ userLogin: userProfile.login, drinkName: name, quantity: qty, date: firebase.firestore.Timestamp.fromDate(dateObj), createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    document.getElementById('drinkLogModal').classList.remove('active'); document.getElementById('drinkLogForm').reset(); loadLogs();
+};
+document.getElementById('btnDeleteDrank').onclick = () => {
+    const list = document.getElementById('drinkLogsList');
+    if (!allLogs.length) list.innerHTML = '<p style="padding:10px;">Нет записей.</p>';
+    else {
+        const sorted = [...allLogs].sort((a, b) => (b.date ? b.date.toDate() : new Date(0)) - (a.date ? a.date.toDate() : new Date(0)));
+        list.innerHTML = sorted.map(log => { const d = log.date ? log.date.toDate().toLocaleDateString('ru-RU') : ''; return `<div class="log-item"><div><b>${escapeHtml(log.drinkName)}</b> (${log.quantity} шт.) <br><small>${d}</small></div><button class="btn-del-log" onclick="deleteLog('${log.id}')">×</button></div>`; }).join('');
+    }
+    document.getElementById('deleteDrankModal').classList.add('active');
+};
+window.deleteLog = async (id) => { if(!confirm('Удалить запись?')) return; await db.collection('drink_logs').doc(id).delete(); document.getElementById('deleteDrankModal').classList.remove('active'); loadLogs(); };
+
+async function loadStatsCards(totalDrank) {
+    const login = userProfile.login, reviewsSnap = await db.collection('reviews').where('userName', '==', login).get(), reviewCount = reviewsSnap.size, favCount = (userProfile.favorites || []).length, suggSnap = await db.collection('suggestions').where('userName', '==', login).get();
+    document.getElementById('mainStatsGrid').innerHTML = `<div class="stat-card" style="cursor:pointer;" onclick="showMyReviews()"><div class="stat-label">Отзывов</div><div class="stat-value">${reviewCount}</div></div><div class="stat-card" style="cursor:pointer;" onclick="showMyFavorites()"><div class="stat-label">В избранном</div><div class="stat-value">${favCount}</div></div><div class="stat-card" style="cursor:pointer;" onclick="showMySuggestions()"><div class="stat-label">Предложений</div><div class="stat-value">${suggSnap.size}</div></div>`;
+}
+
+window.showMyReviews = async () => {
+    const snap = await db.collection('reviews').where('userName', '==', userProfile.login).get(), container = document.getElementById('myReviewsList');
+    if (snap.empty) container.innerHTML = '<p style="padding:10px;">Отзывов пока нет.</p>';
+    else container.innerHTML = snap.docs.map(doc => { const r = doc.data(), drink = allDrinks.find(d => d.id === r.drinkId); return `<div class="review-list-item"><b style="color:#000080;">${drink ? escapeHtml(drink.name) : 'Неизвестный энергетик'} — ${r.rating} ★</b><p>${escapeHtml(r.text)}</p></div>`; }).join('');
+    document.getElementById('myReviewsModal').classList.add('active');
+};
+
+window.showMyFavorites = () => {
+    const container = document.getElementById('myFavsList'), favIds = userProfile.favorites || [];
+    if (!favIds.length) container.innerHTML = '<p style="padding:10px;">В избранном пусто.</p>';
+    else container.innerHTML = favIds.map(id => { const drink = allDrinks.find(d => d.id === id); if (!drink) return ''; const img = drink.imageData || 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect width="60" height="60" fill="#E2E8F0"/></svg>'); return `<div class="fav-list-item"><img src="${img}"><span>${escapeHtml(drink.name)}</span></div>`; }).join('');
+    document.getElementById('myFavsModal').classList.add('active');
+};
+
+window.showMySuggestions = async () => {
+    const snap = await db.collection('suggestions').where('userName', '==', userProfile.login).get(), container = document.getElementById('mySuggsList');
+    if (snap.empty) container.innerHTML = '<p style="padding:10px;">Вы еще не предлагали энергетики.</p>';
+    else container.innerHTML = snap.docs.map(doc => { const s = doc.data(), likes = (s.likes || []).length; return `<div class="log-item"><div><b>${escapeHtml(s.name)}</b></div><div style="color: #cc0000; font-weight: bold;">♥ ${likes}</div></div>`; }).join('');
+    document.getElementById('mySuggsModal').classList.add('active');
+};
+
+async function loadFriendsAndRequests() {
+    const friends = userProfile.friends || [], sent = userProfile.sentRequests || [], incoming = userProfile.incomingRequests || [];
+    const containerFriends = document.getElementById('friendsList'), containerIncoming = document.getElementById('incomingRequestsSection'), containerSent = document.getElementById('sentRequestsSection');
+    if (isOwnProfile) {
+        if (incoming.length) { const html = await renderUserCards(incoming, 'incoming'); containerIncoming.innerHTML = `<div class="friend-section-title">Входящие заявки</div><div class="friends-list">${html}</div>`; } else containerIncoming.innerHTML = '';
+        if (sent.length) { const html = await renderUserCards(sent, 'sent'); containerSent.innerHTML = `<div class="friend-section-title">Отправленные заявки</div><div class="friends-list">${html}</div>`; } else containerSent.innerHTML = '';
+    } else { containerIncoming.innerHTML = ''; containerSent.innerHTML = ''; document.querySelector('.friend-section-title').textContent = 'Друзья пользователя'; }
+    if (friends.length) containerFriends.innerHTML = await renderUserCards(friends, 'friend');
+    else containerFriends.innerHTML = '<div style="padding:10px; background:#fff; border:1px solid #7f9db9;">Друзей пока нет.</div>';
+}
+
+async function renderUserCards(logins, type) {
+    const results = await Promise.all(logins.map(login => db.collection('users').where('login', '==', login).get().then(s => s.empty ? { login, missing: true } : ({ id: s.docs[0].id, ...s.docs[0].data() }))));
+    return results.map(f => {
+        if (f.missing) return `<div class="friend-card"><div class="friend-info"><div class="friend-name">${escapeHtml(f.login)}</div><div class="friend-login">Удален</div></div></div>`;
+        const name = f.displayName || f.login, avatar = f.avatar || getAvatarUri(name, f.login);
+        let buttons = '';
+        if (isOwnProfile) {
+            if (type === 'incoming') buttons = `<div><button class="btn-accept" onclick="event.stopPropagation(); handleRequest('${f.login}', 'accept')">Принять</button><button class="btn-reject" onclick="event.stopPropagation(); handleRequest('${f.login}', 'reject')">Отклонить</button></div>`;
+            else if (type === 'sent') buttons = `<button class="btn-remove-friend" onclick="event.stopPropagation(); cancelRequest('${f.login}')">Отменить</button>`;
+            else if (type === 'friend') buttons = `<button class="btn-remove-friend" onclick="event.stopPropagation(); removeFriend('${f.login}')">Удалить</button>`;
+        }
+        return `<div class="friend-card" onclick="window.location.href='profile.html?user=${f.login}'" style="cursor: pointer;"><img class="friend-avatar" src="${escapeHtml(avatar)}" alt=""><div class="friend-info"><div class="friend-name">${escapeHtml(name)}</div><div class="friend-login">@${escapeHtml(f.login)}</div></div>${buttons}</div>`;
+    }).join('');
+}
+
+document.getElementById('addFriendBtn').onclick = async () => {
+    const input = document.getElementById('friendLoginInput'), searchQuery = input.value.trim(); if (!searchQuery) return;
+    try {
+        const snapByLogin = await db.collection('users').where('login', '==', searchQuery).get(); let targetDoc = null;
+        if (!snapByLogin.empty) targetDoc = snapByLogin.docs[0];
+        else { const snapByNick = await db.collection('users').where('displayName', '==', searchQuery).get(); if (!snapByNick.empty) targetDoc = snapByNick.docs[0]; }
+        if (!targetDoc) return alert('Пользователь не найден');
+        const targetData = targetDoc.data(), targetLogin = targetData.login;
+        if (targetLogin === userProfile.login) return alert('Нельзя добавить самого себя');
+        if ((userProfile.friends || []).includes(targetLogin)) return alert('Уже в друзьях');
+        if ((userProfile.sentRequests || []).includes(targetLogin)) return alert('Заявка уже отправлена');
+        if ((userProfile.incomingRequests || []).includes(targetLogin)) { await acceptFriend(targetLogin); return; }
+        await userDocRef.update({ sentRequests: firebase.firestore.FieldValue.arrayUnion(targetLogin) });
+        await targetDoc.ref.update({ incomingRequests: firebase.firestore.FieldValue.arrayUnion(userProfile.login) });
+        input.value = ''; userProfile.sentRequests = [...(userProfile.sentRequests||[]), targetLogin]; loadFriendsAndRequests(); alert('Заявка отправлена!');
+    } catch (e) { console.error(e); alert('Ошибка'); }
+};
+
+window.handleRequest = async (senderLogin, action) => {
+    if (action === 'accept') await acceptFriend(senderLogin);
+    else {
+        await userDocRef.update({ incomingRequests: firebase.firestore.FieldValue.arrayRemove(senderLogin) });
+        const senderSnap = await db.collection('users').where('login', '==', senderLogin).get();
+        if(!senderSnap.empty) await senderSnap.docs[0].ref.update({ sentRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+        userProfile.incomingRequests = userProfile.incomingRequests.filter(l => l !== senderLogin); loadFriendsAndRequests();
+    }
+};
+
+async function acceptFriend(senderLogin) {
+    await userDocRef.update({ friends: firebase.firestore.FieldValue.arrayUnion(senderLogin), incomingRequests: firebase.firestore.FieldValue.arrayRemove(senderLogin) });
+    const senderSnap = await db.collection('users').where('login', '==', senderLogin).get();
+    if(!senderSnap.empty) await senderSnap.docs[0].ref.update({ friends: firebase.firestore.FieldValue.arrayUnion(userProfile.login), sentRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+    userProfile.friends = [...(userProfile.friends||[]), senderLogin]; userProfile.incomingRequests = userProfile.incomingRequests.filter(l => l !== senderLogin); loadFriendsAndRequests();
+}
+
+window.cancelRequest = async (targetLogin) => {
+    await userDocRef.update({ sentRequests: firebase.firestore.FieldValue.arrayRemove(targetLogin) });
+    const targetSnap = await db.collection('users').where('login', '==', targetLogin).get();
+    if(!targetSnap.empty) await targetSnap.docs[0].ref.update({ incomingRequests: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+    userProfile.sentRequests = userProfile.sentRequests.filter(l => l !== targetLogin); loadFriendsAndRequests();
+};
+
+window.removeFriend = async (targetLogin) => {
+    if(!confirm('Удалить из друзей?')) return;
+    await userDocRef.update({ friends: firebase.firestore.FieldValue.arrayRemove(targetLogin) });
+    const targetSnap = await db.collection('users').where('login', '==', targetLogin).get();
+    if(!targetSnap.empty) await targetSnap.docs[0].ref.update({ friends: firebase.firestore.FieldValue.arrayRemove(userProfile.login) });
+    userProfile.friends = userProfile.friends.filter(l => l !== targetLogin); loadFriendsAndRequests();
+};
+
+function updateFooterAdminBtn() { const isAdmin = currentUser && currentUser.role === 'admin'; const adminBtn = document.getElementById('openAdminSuggestBtn'); if (adminBtn) adminBtn.style.display = isAdmin ? 'block' : 'none'; }
+
+let selectedSiteSuggestImageBase64 = null;
+document.getElementById('siteSuggestImage')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) { selectedSiteSuggestImageBase64 = null; document.getElementById('siteSuggestImagePreview').innerHTML = ''; return; }
+    try {
+        selectedSiteSuggestImageBase64 = await resizeImageToSquare(file, 800, 0.8);
+        document.getElementById('siteSuggestImagePreview').innerHTML = `<img src="${selectedSiteSuggestImageBase64}" style="max-width:150px;border:1px solid #7f9db9; margin-top:10px;">`;
+    } catch (err) { alert('Ошибка фото'); }
+});
+
+document.getElementById('openSiteSuggestBtn')?.addEventListener('click', () => {
+    if (!currentUser) return alert('Войдите в аккаунт.');
+    document.getElementById('siteSuggestModal')?.classList.add('active');
+});
+
+document.getElementById('siteSuggestForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const topic = document.getElementById('siteSuggestTopic').value.trim(), text = document.getElementById('siteSuggestText').value.trim();
+    try {
+        await db.collection('site_suggestions').add({ topic, text, imageData: selectedSiteSuggestImageBase64, userName: currentUser.login, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        alert('Спасибо! Ваше предложение отправлено.');
+        closeAllModals(); document.getElementById('siteSuggestForm')?.reset(); document.getElementById('siteSuggestImagePreview').innerHTML = ''; selectedSiteSuggestImageBase64 = null;
+    } catch (error) { alert('Ошибка при отправке.'); }
+});
+
+window.deleteSiteSuggestion = async (id) => {
+    if (confirm('Удалить это предложение?')) { await db.collection('site_suggestions').doc(id).delete(); document.getElementById('openAdminSuggestBtn').click(); }
+};
+
+document.getElementById('openAdminSuggestBtn')?.addEventListener('click', async () => {
+    const list = document.getElementById('adminSiteSuggestList'); list.innerHTML = '<p>Загрузка...</p>';
+    document.getElementById('adminSiteSuggestModal')?.classList.add('active');
+    try {
+        const snap = await db.collection('site_suggestions').orderBy('createdAt', 'desc').get();
+        if (snap.empty) list.innerHTML = '<p>Пока нет предложений.</p>';
+        else list.innerHTML = snap.docs.map(doc => { 
+            const d = doc.data(), date = d.createdAt ? d.createdAt.toDate().toLocaleDateString('ru-RU') : ''; 
+            return `<div style="background:#fff; border:1px solid #7f9db9; padding:10px; margin-bottom:5px; position:relative;">
+                ${d.imageData ? `<img src="${d.imageData}" style="max-width:100%; border:1px solid #7f9db9; margin-bottom:5px;">` : ''}
+                <div style="font-weight:bold; color:#000080; padding-right:60px;">${escapeHtml(d.topic)}</div>
+                <div>${escapeHtml(d.text)}</div>
+                <div style="font-size:10px; color:#666;">От: ${escapeHtml(d.userName)} | ${date}</div>
+                <button onclick="deleteSiteSuggestion('${doc.id}')" style="position:absolute; top:10px; right:10px; background:#e9431b; color:white; border:none; padding:2px 5px; cursor:pointer;">Удалить</button>
+            </div>`; 
+        }).join('');
+    } catch (error) { list.innerHTML = '<p style="color:red;">Ошибка загрузки.</p>'; }
+});
+
+document.getElementById('closeSiteSuggestModal')?.addEventListener('click', () => document.getElementById('siteSuggestModal')?.classList.remove('active'));
+document.getElementById('closeAdminSiteSuggestModal')?.addEventListener('click', () => document.getElementById('adminSiteSuggestModal')?.classList.remove('active'));
+document.getElementById('closeDrinkLogModal')?.addEventListener('click', () => document.getElementById('drinkLogModal')?.classList.remove('active'));
+document.getElementById('closeDeleteDrankModal')?.addEventListener('click', () => document.getElementById('deleteDrankModal')?.classList.remove('active'));
+document.getElementById('closeEditStatsModal')?.addEventListener('click', () => document.getElementById('editStatsModal')?.classList.remove('active'));
+document.getElementById('closeMyReviewsModal')?.addEventListener('click', () => document.getElementById('myReviewsModal')?.classList.remove('active'));
+document.getElementById('closeMyFavsModal')?.addEventListener('click', () => document.getElementById('myFavsModal')?.classList.remove('active'));
+document.getElementById('closeMySuggsModal')?.addEventListener('click', () => document.getElementById('mySuggsModal')?.classList.remove('active'));
+document.getElementById('closeCalendarDayModal')?.addEventListener('click', () => document.getElementById('calendarDayModal')?.classList.remove('active'));
+window.onclick = (e) => { if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active'); };
+
+document.getElementById('logoutBtn').onclick = () => { if (confirm('Выйти?')) { localStorage.removeItem('energyUser'); window.location.href = 'index.html'; } };
+
+window.addEventListener('DOMContentLoaded', () => { init(); });
 </script>
 </body>
 </html>
